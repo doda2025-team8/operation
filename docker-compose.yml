@@ -9,12 +9,14 @@ services:
     depends_on:
       - app-service
       - app-frontend
+    restart: unless-stopped
   
   model-service:
     image: ghcr.io/doda2025-team8/model-service:latest
     container_name: model-service
     ports:
       - "8081:8081"
+    restart: unless-stopped
 
   app-service:
     image: app-service
@@ -23,7 +25,9 @@ services:
       - MODEL_HOST=http://model-service:8081
     depends_on:
       - model-service
+    restart: unless-stopped
 
   app-frontend:
     image: app-frontend
     container_name: app-frontend
+    restart: unless-stopped
