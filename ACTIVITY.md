@@ -20,6 +20,6 @@ No work done.
 
 - Horia \
   https://github.com/doda2025-team8/model-service/pull/8 \
-  Implemented initial containerization for `model-service`
-  Initialized set up and created rulesets to protect default branches
+  Implemented initial containerization for `model-service` \
+  Initialized set up and created rulesets to protect default branches \
   Reviewed PRs and provided feedback
