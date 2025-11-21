@@ -9,7 +9,8 @@ services:
     depends_on:
       - app-service
       - app-frontend
-  
+    restart: unless-stopped
+
   model-service:
     image: ghcr.io/doda2025-team8/model-service:${MODEL_SERVICE_VERSION}
     container_name: model-service
@@ -20,6 +21,7 @@ services:
       - GITHUB_REPO=${GITHUB_REPO}
     volumes:
       - ./output:${MODEL_DIR}
+    restart: unless-stopped
 
   app-service:
     image: ghcr.io/doda2025-team8/app-service:${APP_SERVICE_VERSION}
@@ -28,7 +30,11 @@ services:
       - MODEL_HOST=${MODEL_HOST}
     depends_on:
       - model-service
+    restart: unless-stopped
 
   app-frontend:
     image: ghcr.io/doda2025-team8/app-frontend:${APP_FRONTEND_VERSION}
     container_name: app-frontend
+    restart: unless-stopped
+
+
