@@ -17,8 +17,8 @@ Links to repositories:
 
 ``lib-version``: https://github.com/doda2025-team8/lib-version/releases/tag/a1 \
 ``app-service``:  https://github.com/doda2025-team8/app-service/releases/tag/a1 \
-``app-frontend``: https://github.com/doda2025-team8/app-frontend/releases/tag/a1 \ 
-``model-service``: https://github.com/doda2025-team8/model-service/releases/tag/a1 \
+``app-frontend``: https://github.com/doda2025-team8/app-frontend/releases/tag/a1 \
+``model-service``: https://github.com/doda2025-team8/model-service/releases/tag/a1 
 
 An NGINX reverse proxy was configured to serve the frontend and safely forward API calls to the backend from the same origin to avoid CORS issues.
 
