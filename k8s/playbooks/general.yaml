@@ -1,0 +1,8 @@
+# playbooks/general.yaml
+- name: Prepare OS baseline
+  hosts: kubernetes
+  become: yes
+  tasks:
+    - name: Disable swap immediately
+      command: swapoff -a
+      changed_when: false

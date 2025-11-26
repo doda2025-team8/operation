@@ -21,6 +21,11 @@ Vagrant.configure("2") do |config|
       v.memory = CTRL_MEMORY
       v.cpus = CTRL_CPU
     end
+    ctrl.vm.provision "ansible" do |ansible|
+      ansible.playbook = "playbooks/general.yaml"
+      ansible.inventory_path = "inventory/hosts.ini"
+      ansible.limit = "ctrl"
+    end    
   end
 
   # Worker nodes 
