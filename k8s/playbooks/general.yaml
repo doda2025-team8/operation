@@ -6,3 +6,16 @@
     - name: Disable swap immediately
       command: swapoff -a
       changed_when: false
+    
+    - name: Ensure swap is disabled on reboot
+      replace:
+        path: /etc/fstab
+        regexp: '^([^#].*\s+swap\s+.*)$'
+        replace: '# \1'
+
+    - name: Load required kernel modules
+      copy:
+        dest: /etc/modules-load.d/k8s.conf
+        content: |
+          overlay
+          br_netfilter

@@ -41,6 +41,7 @@ Vagrant.configure("2") do |config|
         ansible.playbook = "playbooks/general.yaml"
         ansible.inventory_path = "inventory/hosts.ini"
         ansible.limit = "node"
+      end
     end
   end
 end
