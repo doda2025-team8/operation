@@ -37,6 +37,10 @@ Vagrant.configure("2") do |config|
         v.memory = WORKER_MEMORY
         v.cpus = N_WORKERS
       end
+      node.vm.provision "ansible" do |ansible|
+        ansible.playbook = "playbooks/general.yaml"
+        ansible.inventory_path = "inventory/hosts.ini"
+        ansible.limit = "node"
     end
   end
 end
