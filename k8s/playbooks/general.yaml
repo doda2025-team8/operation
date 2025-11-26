@@ -1,7 +1,7 @@
 # playbooks/general.yaml
 - name: Prepare OS baseline
   hosts: kubernetes
-  become: yes
+  become: true
   tasks:
     - name: Disable swap immediately
       command: swapoff -a
@@ -19,3 +19,86 @@
         content: |
           overlay
           br_netfilter
+
+    # Step 9
+    - name: Ensure APT can use HTTPS
+      apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - gnupg
+        state: present
+
+    - name: Add Kubernetes APT GPG key
+      apt_key:
+        url: https://pkgs.k8s.io/core:/stable:/v1.32/deb/Release.key
+        state: present
+
+    - name: Run apt update before adding repo
+      apt:
+        update_cache: yes
+
+    - name: Add Kubernetes APT repository
+      apt_repository:
+        repo: "deb https://pkgs.k8s.io/core:/stable:/v1.32/deb/ /"
+        filename: kubernetes
+        state: present
+
+    - name: Update APT cache after adding Kubernetes repo
+      apt:
+        update_cache: yes
+
+    # Step 10
+    - name: Install container runtime and Kubernetes tools
+      apt:
+        name:
+          - containerd
+          - runc
+          - kubeadm
+          - kubelet
+          - kubectl
+        state: present
+        update_cache: yes
+
+    # Step 11
+    - name: Ensure containerd config directory exists
+      file:
+        path: /etc/containerd
+        state: directory
+
+    - name: Generate default containerd config if missing
+      shell: "containerd config default > /etc/containerd/config.toml"
+      args:
+        creates: /etc/containerd/config.toml
+
+    - name: Set sandbox_image in containerd config
+      lineinfile:
+        path: /etc/containerd/config.toml
+        regexp: '^(\s*)sandbox_image\s*='
+        line: '    sandbox_image = "registry.k8s.io/pause:3.10"'
+        backrefs: yes
+
+    - name: Disable AppArmor in containerd CRI plugin
+      lineinfile:
+        path: /etc/containerd/config.toml
+        regexp: '^(\s*)disable_apparmor\s*='
+        line: '    disable_apparmor = true'
+        backrefs: yes
+        insertafter: '\[plugins."io.containerd.grpc.v1.cri"\]'
+
+    - name: Enable SystemdCgroup in containerd
+      lineinfile:
+        path: /etc/containerd/config.toml
+        regexp: '^\s*SystemdCgroup\s*='
+        line: '          SystemdCgroup = true'
+
+    # Step 12
+    - name: Enable and start kubelet
+      service:
+        name: kubelet
+        enabled: yes
+        state: started
+
+
+
