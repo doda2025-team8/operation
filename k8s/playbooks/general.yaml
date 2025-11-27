@@ -62,17 +62,42 @@
         update_cache: yes
 
     # Step 10
+    - name: Get available version for containerd
+      shell: apt-cache madison containerd | grep 1.7.24 | awk '{print $3}'
+      register: containerd_version
+      changed_when: false
+
+    - name: Get available version for runc
+      shell: apt-cache madison runc | grep 1.1.12 | awk '{print $3}'
+      register: runc_version
+      changed_when: false
+
+    - name: Get available version for kubeadm
+      shell: apt-cache madison kubeadm | grep 1.32.4 | awk '{print $3}'
+      register: kubeadm_version
+      changed_when: false
+
+    - name: Get available version for kubelet
+      shell: apt-cache madison kubelet | grep 1.32.4 | awk '{print $3}'
+      register: kubelet_version
+      changed_when: false
+
+    - name: Get available version for kubectl
+      shell: apt-cache madison kubectl | grep 1.32.4 | awk '{print $3}'
+      register: kubectl_version
+      changed_when: false
+
     - name: Install container runtime and Kubernetes tools
       apt:
         name:
-          - containerd
-          - runc
-          - kubeadm
-          - kubelet
-          - kubectl
+          - "containerd={{ containerd_version.stdout }}"
+          - "runc={{ runc_version.stdout }}"
+          - "kubeadm={{ kubeadm_version.stdout }}"
+          - "kubelet={{ kubelet_version.stdout }}"
+          - "kubectl={{ kubectl_version.stdout }}"
         state: present
         update_cache: yes
-
+        
     # Step 11
     - name: Ensure containerd config directory exists
       file:
