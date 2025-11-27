@@ -45,3 +45,10 @@ No work done.
   Implemented initial containerization for `model-service` \
   Initialized set up and created rulesets to protect default branches \
   Reviewed PRs and provided feedback
+
+### Week Q2.3 (24 Nov+)
+
+- Vincent \ 
+  https://github.com/doda2025-team8/operation/pull/11 \
+  https://github.com/doda2025-team8/operation/pull/14 \ 
+  I setup the steps 9 through 12 of the second assignment that covered the setting up of the Kubernetes repository, as well as installing the Kubernetes libraries, its dependencies and some extra libraries for future use. This is all done in the `operation` repository in the file `k8s/playbooks/general.yml`.
