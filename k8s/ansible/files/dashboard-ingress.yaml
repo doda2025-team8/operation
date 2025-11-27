@@ -1,0 +1,22 @@
+# Create an Ingress to provide convenient 
+# access to the dashboard
+# ingress controller will route traffic to the dashboard service(port 443)
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: dashboard-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+spec:
+  ingressClassName: "nginx"
+  rules: 
+  - host: dashboard.local
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: kubernetes-dashboard # this name can be wrong if we use the new version -> kubernetes-dashboard-kong-proxy
+            port:
+              number: 443

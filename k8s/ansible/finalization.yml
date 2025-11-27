@@ -1,0 +1,155 @@
+- hosts: ctrl
+  become: true
+  
+  # [IMPORTANT DEPENDENCY - Member 4]
+  # We assume the "vagrant" user has kubectl configured (Step 14).
+  # If Member 4 configured "root" or another user, change this username.
+  become_user: vagrant
+  
+  vars:
+    metallb_ip_range: "192.168.56.90-192.168.56.99"
+    
+    nginx_ingress_ip: "192.168.56.91"
+
+    # Files paths
+    metallb_manifest_url: "https://raw.githubusercontent.com/metallb/metallb/v0.14.9/config/manifests/metallb-native.yaml"
+    local_pool_config: "files/metallb-pool.yaml"
+    remote_pool_config: "/home/vagrant/metallb-pool.yaml"
+
+  tasks:
+    # Step 20: Install MetalLB
+    # Enable strict ARP (Required for MetalLB L2 mode)
+    - name: Enable strict ARP in kube-proxy config
+      shell: |
+        kubectl get configmap kube-proxy -n kube-system -o yaml | \
+        sed -e "s/strictARP: false/strictARP: true/" | \
+        kubectl apply -f - -n kube-system
+      ignore_errors: true
+
+    # [DEPENDENCY - Member 4]
+    # Requires that the K8s API server is reachable via kubectl.
+    - name: Install MetalLB Manifests
+      shell: "kubectl apply -f {{ metallb_manifest_url }}"
+      register: install_metallb
+      changed_when: "'created' in install_metallb.stdout or 'configured' in install_metallb.stdout" #mark this task has no change or already stared when there is no such two 'words' be catched
+
+    # [DEPENDENCY - Member 5]
+    # MetalLB Speaker pods run on Worker nodes. If Member 5 hasn't joined 
+    # the workers (Step 18/19), the MetalLB pods might not become ready,
+    # causing this wait step to timeout.
+    - name: Wait for MetalLB Controller to be Ready
+      shell: >
+        kubectl wait --namespace metallb-system 
+        --for=condition=ready pod 
+        --selector=app=metallb,component=controller 
+        --timeout=90s
+      retries: 5
+      delay: 10
+      register: wait_result
+      until: wait_result.rc == 0
+
+    - name: Copy MetalLB Pool Config to VM
+      copy:
+        src: "{{ local_pool_config }}"
+        dest: "{{ remote_pool_config }}"
+        owner: vagrant
+        group: vagrant
+        mode: '0644'
+
+    - name: Apply MetalLB Pool Configuration #configure L2Advertisement and IPAddressPool
+      shell: "kubectl apply -f {{ remote_pool_config }}"
+
+    # Step 21: Install Nginx Ingress Controller
+
+    # [IMPORTANT DEPENDENCY - Member 4]
+    # Requires 'helm' to be installed on the Controller node (Step 16).
+    # If helm is missing, this task will fail.
+    - name: Add Helm repository
+      shell: helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+      register: repo_add
+      changed_when: repo_add.rc == 0
+
+    - name: Update Helm repositories
+      shell: helm repo update
+      changed_when: false
+
+    # [DEPENDENCY - Member 4 & 6]
+    # Installs the chart. We override the LoadBalancer IP inline to ensure
+    # it gets the static IP defined in our 'vars' section.
+    # --set controller.service.loadBalancerIP={{ nginx_ingress_ip }}: 
+    # specify the static IP for LoadBalancer service("192.168.56.91")
+
+    - name: Install Nginx Ingress Controller
+      shell: >
+        helm upgrade --install ingress-nginx ingress-nginx/ingress-nginx
+        --namespace ingress-nginx
+        --create-namespace
+        --set controller.service.loadBalancerIP={{ nginx_ingress_ip }} 
+      register: install_nginx
+      changed_when: "'rendered' in install_nginx.stdout or 'DEPLOYED' in install_nginx.stdout or 'UPGRADED' in install_nginx.stdout"
+
+    # [DEPENDENCY - Member 1 & 5]
+    # Verifies that MetalLB successfully assigned the IP.
+    # If this times out, check if Worker nodes (Member 5) are ready.
+    - name: Wait for Ingress Controller IP assignment
+      shell: >
+        kubectl wait --namespace ingress-nginx 
+        --for=jsonpath='{.status.loadBalancer.ingress[0].ip}'="{{ nginx_ingress_ip }}" 
+        service/ingress-nginx-controller 
+        --timeout=90s
+      retries: 5
+      delay: 10
+      register: wait_nginx_ip
+      until: wait_nginx_ip.rc == 0
+
+    # Step 22: Install Kubernetes Dashboard
+    - name: Add kubernets dashboard
+      shell: helm repo add kubernetes-dashboard https://kubernetes.github.io/dashboard/
+      register: add_dashboard_repo
+      changed_when: add_dashboard_repo.rc == 0
+
+    - name: Update Helm repositories
+      shell: helm repo update
+      changed_when: false
+
+    - name: Intsall Kubernetes Dashboard
+      shell: >
+        helm upgrade --install kubernetes-dashboard kubernetes-dashboard/kubernetes-dashboard 
+        --namespace kubernetes-dashboard 
+        --create-namespace
+      register: install_dashboard
+      changed_when: "'installed' in install_dashboard.stdout or 'upgraded' in install_dashboard.stdout"
+
+    # login to the dashboard with admin-user
+    # mode 0644: 6-> vagrant read & write; 4-> group only read; 4-> others read only
+    - name: Copy Dashboard Admin User Config to VM
+      copy:
+        src: "files/dashboard-admin-user.yaml"
+        dest: "/home/vagrant/dashboard-admin-user.yaml"
+        owner: vagrant
+        group: vagrant
+        mode: '0644'
+    - name: Apply Dashboard Admin User Configuration
+      shell: "kubectl apply -f /home/vagrant/dashboard-admin-user.yaml"
+
+    # Create an ingress to provide convenient access to the dashboard
+    - name: Copy Dashboard Ingress Config to VM
+      copy: 
+        src: "files/dashboard-ingress.yaml"
+        dest: "/home/vagrant/dashboard-ingress.yaml"
+        owner: vagrant
+        group: vagrant
+        mode: '0644'
+    - name: Apply Dashboard Ingress Configuration
+      shell: "kubectl apply -f /home/vagrant/dashboard-ingress.yaml"
+
+    # generate the login token for admin-user
+    - name: Generate and Print Admin User Token
+      shell: >
+        kubectl -n kubernetes-dashboard 
+        create token admin-user
+      register: admin_user_token
+      changed_when: false
+    - name: Display Admin User Token
+      debug:
+        msg: "Kubernetes Dashboard Admin User Token: {{ admin_user_token.stdout }}"
