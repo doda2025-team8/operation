@@ -1,15 +1,16 @@
 # playbooks/general.yaml
 - name: Prepare OS baseline
-  hosts: kubernetes
+  hosts: all
   become: true
   tasks:
-    
+    # Step 4
     - name: Set authorized key for user ubuntu copying it from current user
       ansible.posix.authorized_key:
         user: vagrant
         state: present
         key: "{{ lookup('file', lookup('env','HOME') + '/.ssh/id_ed25519.pub') }}"
 
+    # Step 5
     - name: Disable swap immediately
       command: swapoff -a
       changed_when: false
@@ -20,12 +21,16 @@
         regexp: '^([^#].*\s+swap\s+.*)$'
         replace: '# \1'
 
+    # Step 6
     - name: Load required kernel modules
       copy:
         dest: /etc/modules-load.d/k8s.conf
         content: |
           overlay
           br_netfilter
+    
+    - name: Load br_netfilter
+      command: modprobe br_netfilter
 
     # Step 9
     - name: Ensure APT can use HTTPS
