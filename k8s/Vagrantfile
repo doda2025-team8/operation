@@ -34,4 +34,12 @@ Vagrant.configure("2") do |config|
       end
     end
   end
+
+  #run ansible provision
+  config.vm.provision "ansible" do |ansible|
+    ansible.playbook = "playbooks/general.yaml"
+    ansible.inventory_path = "inventory/hosts.ini"
+    ansible.limit = "all"
+    ansible.become = true
+  end    
 end
