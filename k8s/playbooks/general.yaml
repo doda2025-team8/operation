@@ -155,6 +155,11 @@
         regexp: '^\s*SystemdCgroup\s*='
         line: '          SystemdCgroup = true'
 
+    - name: Restart containerd to apply configuration
+      service:
+        name: containerd
+        state: restarted
+
     # Step 12
     - name: Enable and start kubelet
       service:
