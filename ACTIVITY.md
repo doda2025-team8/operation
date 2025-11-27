@@ -57,4 +57,4 @@ No work done.
 
 - Andriana \ 
   https://github.com/doda2025-team8/operation/pull/4
-  For this week I worked on Step 1 and Step 2 concerning the setup of the VMs. I created a Vagrant file and set a host-only network. This is all done in the `operation` repository in the file `k8s/Vagrantfile'.
+  For this week I worked on Step 1 and Step 2 concerning the setup of the VMs. I created a Vagrant file and set a host-only network. This is all done in the `operation` repository in the file `k8s/Vagrantfile`.  
