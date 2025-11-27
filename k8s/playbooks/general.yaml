@@ -2,13 +2,18 @@
 - name: Prepare OS baseline
   hosts: all
   become: true
+
+  vars:
+    keys_folder: "{{ playbook_dir }}/pubkeys"
+
   tasks:
     # Step 4
-    - name: Set authorized key for user ubuntu copying it from current user
+    - name: Set authorized key
       ansible.posix.authorized_key:
         user: vagrant
         state: present
-        key: "{{ lookup('file', lookup('env','HOME') + '/.ssh/id_ed25519.pub') }}"
+        key: "{{ lookup('file', item) }}"
+      loop: "{{ lookup('fileglob', keys_folder ~ '/*.pub', wantlist=True) }}"
 
     # Step 5
     - name: Disable swap immediately
