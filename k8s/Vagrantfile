@@ -19,15 +19,11 @@ Vagrant.configure("2") do |config|
       v.memory = CTRL_MEMORY
       v.cpus = CTRL_CPU
     end
-
-    ctrl.vm.provision "ansible_local" do |ansible|
-      ansible.playbook = "playbooks/general.yaml"
-      ansible.become = true
-    end
-    ctrl.vm.provision "ansible_local" do |ansible|
-      ansible.playbook = "playbooks/ctrl.yaml"
-      ansible.become = true
-    end
+    #duplicate code
+    # ctrl.vm.provision "ansible_local" do |ansible|
+    #   ansible.playbook = "playbooks/general.yaml"
+    #   ansible.become = true
+    # end
   end
 
   # Worker nodes 
@@ -39,13 +35,20 @@ Vagrant.configure("2") do |config|
         v.memory = WORKER_MEMORY
         v.cpus = WORKER_CPU
       end
-
-      node.vm.provision "ansible_local" do |ansible|
-        ansible.playbook = "playbooks/general.yaml"
-        ansible.become = true
-      end
       # NOTE: node.yaml must be run separately after all VMs are up
       # See README for instructions
     end
   end
+
+  config.vm.provision "ansible_local" do |ansible|
+    ansible.playbook = "playbooks/general.yaml"
+    ansible.become = true
+    ansible.extra_vars = {"nodes" => N_WORKERS}
+  end
+
+  config.vm.provision "ansible_local" do |ansible|
+    ansible.playbook = "playbooks/ctrl.yaml"
+    ansible.become = true
+  end
+
 end
