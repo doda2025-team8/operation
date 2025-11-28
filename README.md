@@ -2,10 +2,6 @@
 
 This repository contains all information about running the SMS checker application.
 
-### K8s Cluster
-
-To set up the kubernetes cluster run k8s/script.sh
-
 ### Application
 The application consists of four components:
 

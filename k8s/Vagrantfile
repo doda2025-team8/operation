@@ -2,7 +2,7 @@
 # vi: set ft=ruby :
 
 CTRL_MEMORY = 4096
-CTRL_CPU = 2          #changed from 1 to 2, because kubeadm init fails with 1 CPU
+CTRL_CPU = 2
 WORKER_MEMORY = 6144
 WORKER_CPU = 2
 N_WORKERS = 2
