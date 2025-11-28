@@ -3,13 +3,13 @@
   hosts: all
   become: true
   tasks:
-    # Step 4
+    # Step 4 - Skip on ansible_local (no SSH keys available inside VM)
     - name: Set authorized key for user ubuntu copying it from current user
       ansible.posix.authorized_key:
         user: vagrant
         state: present
         key: "{{ lookup('file', lookup('env','HOME') + '/.ssh/id_ed25519.pub') }}"
-
+      when: lookup('env', 'USER') != 'vagrant'  # Skip when running inside VM
     # Step 5
     - name: Disable swap immediately
       command: swapoff -a
@@ -86,6 +86,12 @@
       apt:
         update_cache: yes
 
+    # Add sshpass for Windows ansible_local provisioning (needed for node joining)
+    - name: Install sshpass for cross-VM communication
+      apt:
+        name: sshpass
+        state: present
+        
     # Step 10
     - name: Get available version for containerd
       shell: apt-cache madison containerd | grep 1.7.24 | awk '{print $3}'
