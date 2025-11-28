@@ -65,3 +65,6 @@ No work done.
 - Yanzhi \ 
   https://github.com/doda2025-team8/operation/pull/18
   For this week I worked on steps 18-19, on setting up the worker nodes. Wrote the Ansible playbook that joins worker nodes to the Kubernetes cluster by getting the join command from ctrl and running it on each worker.
+- Yuchen \
+  https://github.com/doda2025-team8/operation/pull/20
+  For this week I worked on steps 20-22. I deployed MetalLB to provide bare-metal load balancing, the Nginx Ingress Controller to configure domain-based routing, and the K8s Dashboard to provide a convenient graphical interface for resource exploration .
