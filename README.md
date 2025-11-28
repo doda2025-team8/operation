@@ -80,3 +80,21 @@ ctrl     Ready    control-plane   XXm   v1.32.4
 node-1   Ready    <none>          XXm   v1.32.4
 node-2   Ready    <none>          XXm   v1.32.4
 ```
+
+### 4. Finalize Cluster Services
+```bash
+ansible-playbook -i k8s/inventory/hosts.ini k8s/playbooks/finalization.yml -u vagrant
+```
+### Access
+1. **Add the following lines to your host machine's /etc/hosts file:** 
+```bash
+# K8s Cluster Services
+192.168.56.91  dashboard.local
+192.168.56.91  app.local
+```
+2. **Access Kubernetes Dashboard**
+- Open your browser and navigate to: https://dashboard.local
+
+- Ignore the self-signed certificate warning (proceed to the site).
+
+- Use the Token displayed in the terminal output of the finalization.yml run (e.g., the output of the Display Admin User Token task) to log in.
