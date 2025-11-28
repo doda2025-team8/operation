@@ -1,9 +1,6 @@
 - hosts: ctrl
   become: true
   
-  # [IMPORTANT DEPENDENCY - Member 4]
-  # We assume the "vagrant" user has kubectl configured (Step 14).
-  # If Member 4 configured "root" or another user, change this username.
   become_user: vagrant
   
   vars:
@@ -18,7 +15,6 @@
 
   tasks:
     # Step 20: Install MetalLB
-    # Enable strict ARP (Required for MetalLB L2 mode)
     - name: Enable strict ARP in kube-proxy config
       shell: |
         kubectl get configmap kube-proxy -n kube-system -o yaml | \
@@ -26,17 +22,12 @@
         kubectl apply -f - -n kube-system
       ignore_errors: true
 
-    # [DEPENDENCY - Member 4]
-    # Requires that the K8s API server is reachable via kubectl.
+
     - name: Install MetalLB Manifests
       shell: "kubectl apply -f {{ metallb_manifest_url }}"
       register: install_metallb
       changed_when: "'created' in install_metallb.stdout or 'configured' in install_metallb.stdout" #mark this task has no change or already stared when there is no such two 'words' be catched
 
-    # [DEPENDENCY - Member 5]
-    # MetalLB Speaker pods run on Worker nodes. If Member 5 hasn't joined 
-    # the workers (Step 18/19), the MetalLB pods might not become ready,
-    # causing this wait step to timeout.
     - name: Wait for MetalLB Controller to be Ready
       shell: >
         kubectl wait --namespace metallb-system 
@@ -61,9 +52,6 @@
 
     # Step 21: Install Nginx Ingress Controller
 
-    # [IMPORTANT DEPENDENCY - Member 4]
-    # Requires 'helm' to be installed on the Controller node (Step 16).
-    # If helm is missing, this task will fail.
     - name: Add Helm repository
       shell: helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
       register: repo_add
@@ -73,9 +61,6 @@
       shell: helm repo update
       changed_when: false
 
-    # [DEPENDENCY - Member 4 & 6]
-    # Installs the chart. We override the LoadBalancer IP inline to ensure
-    # it gets the static IP defined in our 'vars' section.
     # --set controller.service.loadBalancerIP={{ nginx_ingress_ip }}: 
     # specify the static IP for LoadBalancer service("192.168.56.91")
 
@@ -88,9 +73,6 @@
       register: install_nginx
       changed_when: "'rendered' in install_nginx.stdout or 'DEPLOYED' in install_nginx.stdout or 'UPGRADED' in install_nginx.stdout"
 
-    # [DEPENDENCY - Member 1 & 5]
-    # Verifies that MetalLB successfully assigned the IP.
-    # If this times out, check if Worker nodes (Member 5) are ready.
     - name: Wait for Ingress Controller IP assignment
       shell: >
         kubectl wait --namespace ingress-nginx 
