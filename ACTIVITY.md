@@ -45,3 +45,23 @@ No work done.
   Implemented initial containerization for `model-service` \
   Initialized set up and created rulesets to protect default branches \
   Reviewed PRs and provided feedback
+
+### Week Q2.3 (24 Nov+)
+
+- Vincent \ 
+  https://github.com/doda2025-team8/operation/pull/11 \
+  https://github.com/doda2025-team8/operation/pull/14 \ 
+  I setup the steps 9 through 12 of the second assignment that covered the setting up of the Kubernetes repository, as well as installing the Kubernetes libraries, its dependencies and some extra libraries for future use. This is all done in the `operation` repository in the file `k8s/playbooks/general.yml`.
+
+### Week Q2.3 (24 Nov+)
+
+- Andriana \ 
+  https://github.com/doda2025-team8/operation/pull/4
+  For this week I worked on Step 1 and Step 2 concerning the setup of the VMs. I created a Vagrant file and set a host-only network. This is all done in the `operation` repository in the file `k8s/Vagrantfile`.  \
+- Horia \
+  https://github.com/doda2025-team8/operation/pull/13 \
+  https://github.com/doda2025-team8/operation/pull/19 \
+  For this week I worked on steps 3-8, concerning initial provisioning of the created VMs. I added the base steps for all VMs in the general playbook.
+- Yanzhi \ 
+  https://github.com/doda2025-team8/operation/pull/18
+  For this week I worked on steps 18-19, on setting up the worker nodes. Wrote the Ansible playbook that joins worker nodes to the Kubernetes cluster by getting the join command from ctrl and running it on each worker.
