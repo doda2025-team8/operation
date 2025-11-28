@@ -9,3 +9,8 @@ echo "Running Vagrant provision..."
 vagrant provision
 
 echo "Provisioning process complete."
+
+#Step 3: Join workers
+vagrant ssh ctrl
+cd /vagrant
+ansible-playbook playbooks/node.yaml

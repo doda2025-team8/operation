@@ -2,14 +2,19 @@
 - name: Prepare OS baseline
   hosts: all
   become: true
+
+  vars:
+    keys_folder: "{{ playbook_dir }}/pubkeys"
+
   tasks:
-    # Step 4 - Skip on ansible_local (no SSH keys available inside VM)
-    - name: Set authorized key for user ubuntu copying it from current user
+    # Step 4
+    - name: Set all public keys in repo as authorized
       ansible.posix.authorized_key:
         user: vagrant
         state: present
-        key: "{{ lookup('file', lookup('env','HOME') + '/.ssh/id_ed25519.pub') }}"
-      when: lookup('env', 'USER') != 'vagrant'  # Skip when running inside VM
+        key: "{{ lookup('file', item) }}"
+      loop: "{{ lookup('fileglob', keys_folder ~ '/*.pub', wantlist=True) }}"
+
     # Step 5
     - name: Disable swap immediately
       command: swapoff -a
@@ -56,6 +61,16 @@
         sysctl_set: yes
         state: present
         reload: yes
+    
+    # Step 8
+    - name: Copy hosts to VM
+      copy: 
+        dest: /etc/hosts
+        content: |
+          192.168.56.100 ctrl
+          {% for i in range (1, nodes) %}
+          192.168.56.10{{ i }} node - {{i}}
+          {% endfor %}
 
     # Step 9
     - name: Ensure APT can use HTTPS
