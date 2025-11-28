@@ -50,3 +50,33 @@ docker compose up -d
 - **`docker-compose.yml`**: Defines and orchestrates all services required to run the application
 - **`nginx.conf`**: Configuration file for the Nginx reverse proxy
 - **`.env`**: Environment-specific configuration 
+
+
+## Setup Instructions
+
+### 1. Create and provision VMs
+```bash
+vagrant up
+```
+
+### 2. Join worker nodes to cluster
+After all VMs are running, SSH into the controller and run the join playbook:
+```bash
+vagrant ssh ctrl
+cd /vagrant
+ansible-playbook playbooks/node.yaml --ask-pass
+```
+Password: `vagrant`
+
+### 3. Verify cluster
+```bash
+kubectl get nodes
+```
+
+Expected output:
+```
+NAME     STATUS   ROLES           AGE   VERSION
+ctrl     Ready    control-plane   XXm   v1.32.4
+node-1   Ready    <none>          XXm   v1.32.4
+node-2   Ready    <none>          XXm   v1.32.4
+```

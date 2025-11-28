@@ -1,16 +1,14 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-# Configuration variables
 CTRL_MEMORY = 4096
-CTRL_CPU = 2
+CTRL_CPU = 1
 WORKER_MEMORY = 6144
 WORKER_CPU = 2
 N_WORKERS = 2
 
 Vagrant.configure("2") do |config|
   config.vm.box = "bento/ubuntu-24.04"
-  # Add concrete box version for reproducability
   config.vm.box_version = "202510.26.0"
 
   # Control node
@@ -21,6 +19,15 @@ Vagrant.configure("2") do |config|
       v.memory = CTRL_MEMORY
       v.cpus = CTRL_CPU
     end
+
+    ctrl.vm.provision "ansible_local" do |ansible|
+      ansible.playbook = "playbooks/general.yaml"
+      ansible.become = true
+    end
+    ctrl.vm.provision "ansible_local" do |ansible|
+      ansible.playbook = "playbooks/ctrl.yaml"
+      ansible.become = true
+    end
   end
 
   # Worker nodes 
@@ -30,16 +37,15 @@ Vagrant.configure("2") do |config|
       node.vm.network "private_network", ip: "192.168.56.#{100 + i}"
       node.vm.provider "virtualbox" do |v|
         v.memory = WORKER_MEMORY
-        v.cpus = N_WORKERS
+        v.cpus = WORKER_CPU
       end
+
+      node.vm.provision "ansible_local" do |ansible|
+        ansible.playbook = "playbooks/general.yaml"
+        ansible.become = true
+      end
+      # NOTE: node.yaml must be run separately after all VMs are up
+      # See README for instructions
     end
   end
-
-  #run ansible provision
-  config.vm.provision "ansible" do |ansible|
-    ansible.playbook = "playbooks/general.yaml"
-    ansible.inventory_path = "inventory/hosts.ini"
-    ansible.limit = "all"
-    ansible.become = true
-  end    
 end
