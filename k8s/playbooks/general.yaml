@@ -32,6 +32,31 @@
     - name: Load br_netfilter
       command: modprobe br_netfilter
 
+    # Step 7
+    - name: Enable IPv4 forwarding
+      sysctl:
+        name: net.ipv4.ip_forward
+        value: '1'
+        sysctl_set: yes
+        state: present
+        reload: yes
+
+    - name: Enable bridge netfilter for iptables
+      sysctl:
+        name: net.bridge.bridge-nf-call-iptables
+        value: '1'
+        sysctl_set: yes
+        state: present
+        reload: yes
+
+    - name: Enable bridge netfilter for ip6tables
+      sysctl:
+        name: net.bridge.bridge-nf-call-ip6tables
+        value: '1'
+        sysctl_set: yes
+        state: present
+        reload: yes
+
     # Step 9
     - name: Ensure APT can use HTTPS
       apt:
@@ -130,12 +155,14 @@
         regexp: '^\s*SystemdCgroup\s*='
         line: '          SystemdCgroup = true'
 
+    - name: Restart containerd to apply configuration
+      service:
+        name: containerd
+        state: restarted
+
     # Step 12
     - name: Enable and start kubelet
       service:
         name: kubelet
         enabled: yes
         state: started
-
-
-

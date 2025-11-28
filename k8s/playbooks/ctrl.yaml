@@ -1,0 +1,113 @@
+# playbooks/ctrl.yaml
+- name: Configure Kubernetes Controller
+  hosts: ctrl
+  become: true
+  tasks:
+    # Step 13 (init)
+    - name: Check if Kubernetes is already initialized
+      stat:
+        path: /etc/kubernetes/admin.conf
+      register: k8s_admin_conf
+
+    - name: Initialize Kubernetes cluster with kubeadm
+      command: >
+        kubeadm init
+        --apiserver-advertise-address=192.168.56.100
+        --node-name ctrl
+        --pod-network-cidr=10.244.0.0/16
+      when: not k8s_admin_conf.stat.exists
+
+    # Step 14 (kubectl)
+    - name: Create .kube directory for vagrant user
+      file:
+        path: /home/vagrant/.kube
+        state: directory
+        owner: vagrant
+        group: vagrant
+        mode: "0755"
+
+    - name: Copy admin.conf to vagrant user's .kube config
+      copy:
+        src: /etc/kubernetes/admin.conf
+        dest: /home/vagrant/.kube/config
+        remote_src: yes
+        owner: vagrant
+        group: vagrant
+        mode: "0600"
+
+    - name: Copy admin.conf to host
+      copy:
+        src: /etc/kubernetes/admin.conf
+        dest: /vagrant/admin.conf
+        remote_src: yes
+        mode: "0600"
+
+    # Step 15 (Pod network)
+    - name: Download Flannel manifest
+      get_url:
+        url: https://github.com/flannel-io/flannel/releases/download/v0.26.7/kube-flannel.yml
+        dest: /tmp/kube-flannel.yml
+
+    - name: Add --iface=eth1 argument to Flannel DaemonSet
+      lineinfile:
+        path: /tmp/kube-flannel.yml
+        regexp: '^\s+- --iface=eth1$'
+        line: '        - --iface=eth1'
+        insertafter: '^\s+- --ip-masq$'
+
+    # Added because API server is not ready immediately after init
+    - name: Wait for API server to be ready
+      wait_for:
+        host: 192.168.56.100
+        port: 6443
+        timeout: 300
+        delay: 5
+
+    - name: Apply Flannel network
+      become: yes
+      become_user: vagrant
+      command: kubectl apply -f /tmp/kube-flannel.yml
+      environment:
+        KUBECONFIG: /home/vagrant/.kube/config
+
+    # Step 16 (helm)
+    # Followed the docs for apt: https://helm.sh/docs/intro/install/
+    - name: Download Helm GPG key
+      shell: curl -fsSL https://packages.buildkite.com/helm-linux/helm-debian/gpgkey | gpg --dearmor | tee /usr/share/keyrings/helm.gpg > /dev/null
+      args:
+        creates: /usr/share/keyrings/helm.gpg
+
+    - name: Add Helm APT repository
+      apt_repository:
+        repo: "deb [signed-by=/usr/share/keyrings/helm.gpg] https://packages.buildkite.com/helm-linux/helm-debian/any/ any main"
+        filename: helm-stable-debian
+        state: present
+
+    - name: Update APT cache after adding Helm repo
+      apt:
+        update_cache: yes
+
+    - name: Install Helm
+      apt:
+        name: helm
+        state: present
+
+    # Step 17 (helm diff plugin)
+    # https://github.com/databus23/helm-diff
+    - name: Check if helm diff plugin is installed
+      become: yes
+      become_user: vagrant
+      command: helm plugin list
+      register: helm_plugins
+      changed_when: false
+      failed_when: false
+      environment:
+        HOME: /home/vagrant
+
+    - name: Install helm diff plugin
+      become: yes
+      become_user: vagrant
+      command: helm plugin install https://github.com/databus23/helm-diff
+      when: "'diff' not in helm_plugins.stdout"
+      environment:
+        HOME: /home/vagrant
