@@ -13,8 +13,8 @@
 
     # Files paths
     metallb_manifest_url: "https://raw.githubusercontent.com/metallb/metallb/v0.14.9/config/manifests/metallb-native.yaml"
-    local_pool_config: "files/metallb-pool.yaml"
-    remote_pool_config: "/home/vagrant/metallb-pool.yaml"
+    local_pool_config: "files/metallb_adpool.yaml"
+    remote_pool_config: "/home/vagrant/metallb-adpool.yaml"
 
   tasks:
     # Step 20: Install MetalLB
@@ -101,6 +101,18 @@
       delay: 10
       register: wait_nginx_ip
       until: wait_nginx_ip.rc == 0
+
+    # we need to wait for the iginx pods to be ready. 
+    - name: Wait for Nginx Ingress Controller Pods to be Ready
+      shell: >
+        kubectl wait --namespace ingress-nginx 
+        --for=condition=ready pod 
+        --selector=app.kubernetes.io/component=controller 
+        --timeout=120s
+      retries: 5
+      delay: 10
+      register: wait_ingress_pods
+      until: wait_ingress_pods.rc == 0
 
     # Step 22: Install Kubernetes Dashboard
     - name: Add kubernets dashboard
