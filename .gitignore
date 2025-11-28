@@ -2,3 +2,10 @@ output/
 .vagrant/
 admin.conf
 *.tmp
+tmp*
+*.deb
+*.log
+*.retry
+__pycache__/
+*.pyc
+.DS_Store
