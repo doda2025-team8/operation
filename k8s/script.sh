@@ -11,6 +11,7 @@ vagrant provision
 echo "Provisioning process complete."
 
 #Step 3: Join workers
-vagrant ssh ctrl
-cd /vagrant
-ansible-playbook playbooks/node.yaml
+echo "Joining workers..."
+vagrant ssh ctrl -c "ansible-playbook /vagrant/playbooks/node.yaml"
+
+echo "Workers joined."
