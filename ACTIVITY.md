@@ -52,9 +52,6 @@ No work done.
   https://github.com/doda2025-team8/operation/pull/11 \
   https://github.com/doda2025-team8/operation/pull/14 \ 
   I setup the steps 9 through 12 of the second assignment that covered the setting up of the Kubernetes repository, as well as installing the Kubernetes libraries, its dependencies and some extra libraries for future use. This is all done in the `operation` repository in the file `k8s/playbooks/general.yml`.
-
-### Week Q2.3 (24 Nov+)
-
 - Andriana \ 
   https://github.com/doda2025-team8/operation/pull/4
   For this week I worked on Step 1 and Step 2 concerning the setup of the VMs. I created a Vagrant file and set a host-only network. This is all done in the `operation` repository in the file `k8s/Vagrantfile`.  \
@@ -65,3 +62,9 @@ No work done.
 - Yanzhi \ 
   https://github.com/doda2025-team8/operation/pull/18
   For this week I worked on steps 18-19, on setting up the worker nodes. Wrote the Ansible playbook that joins worker nodes to the Kubernetes cluster by getting the join command from ctrl and running it on each worker.
+
+  ### Week Q2.4 (1 Dec+)
+
+  - Vincent \
+    https://github.com/doda2025-team8/operation/pull/24
+    I setup the Helm Chart such that the app and its dependencies can be locally installed in a Kubernetes (e.g. minikube) install. I updated the README to also have the correct instructions for the installation of the app through Helm.
