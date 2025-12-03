@@ -1,0 +1,39 @@
+frontend:
+  replicaCount: 1
+  image: ghcr.io/doda2025-team8/app-frontend:latest
+  service:
+    port: 80
+    targetPort: 8080
+  labels:
+    app: app-frontend
+    component: frontend
+  hostname: "team8.local"
+
+backend:
+  replicaCount: 1
+  image: ghcr.io/doda2025-team8/app-service:latest
+  service:
+    port: 8080
+    targetPort: 8080
+  modelHost: "http://model-service:8081"
+  labels:
+    app: app-service
+    component: backend
+
+model:
+  replicaCount: 1
+  image: ghcr.io/doda2025-team8/model-service:latest
+
+  service:
+    port: 8081
+    targetPort: 8081
+
+  env:
+    MODEL_SERVICE_PORT: "8081"
+    MODEL_DIR: "/app/models"
+    MODEL_VERSION: "latest"
+    GITHUB_REPO: "doda2025-team8/model-service"
+
+  labels:
+    app: model-service
+    component: ml-model
