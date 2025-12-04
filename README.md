@@ -103,3 +103,31 @@ kubectl --kubeconfig=k8s/admin.conf apply -f k8s/manifests/
 - Ignore the self-signed certificate warning (proceed to the site).
 
 - Use the Token displayed in the terminal output of the finalization.yml run (e.g., the output of the Display Admin User Token task) to log in.
+
+# Install app with Helm
+
+## Prerequisites
+
+* Make sure you have your docker engine running
+* Start minikube `minikube start --driver=docker`
+* Enable minikube ingress `minikube addons enable ingress`
+
+## Helm install
+
+* `cd` into `operation` (this repository)
+* Execute `helm install team8-app ./team8-app`
+* Container creation takes appprox. 20 sec
+
+## Validate
+
+* `kubectl get pods` should give you three `Running` pods:
+   * `model-service`
+   * `app-frontend`
+   * `app-service`
+* `kubectl get ingress` should show an `app-ingress` is running. By navigating to its IP address in your browser, you should see the running app and use it.
+
+## Configuring the hostname
+
+* By default, the frontend will run on a hostname `team8.local`, you should map this to your minikube IP by running `echo "$(minikube ip)  team8.local" | sudo tee -a /etc/hosts`.
+* This should allow you to navigate to https://team8.local and use the app from there
+

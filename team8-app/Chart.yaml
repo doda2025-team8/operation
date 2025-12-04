@@ -1,0 +1,5 @@
+apiVersion: v2
+name: team8-app
+description: Helm chart for DODA Team 8 SMS Checker
+type: application
+version: 0.1.0

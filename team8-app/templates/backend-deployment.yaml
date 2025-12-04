@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-service
+  labels:
+    app: app-service
+    component: backend
+spec:
+  replicas: {{ .Values.backend.replicaCount }}
+  selector:
+    matchLabels:
+      app: app-service
+  template:
+    metadata:
+      labels:
+        app: app-service
+        component: backend
+    spec:
+      containers:
+        - name: app-service
+          image: {{ .Values.backend.image }}
+          ports:
+            - containerPort: {{ .Values.backend.service.targetPort }}
+              name: http
+          env:
+            - name: MODEL_HOST
+              value: "{{ .Values.backend.modelHost }}"
