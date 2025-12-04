@@ -115,7 +115,7 @@ ansible-playbook -i k8s/inventory/hosts.ini k8s/playbooks/finalization.yml -u va
    * `model-service`
    * `app-frontend`
    * `app-service`
-* `kubectl get ingrses` should show an `app-ingress` is running. By navigating to its IP address in your browser, you should see the running app and use it.
+* `kubectl get ingress` should show an `app-ingress` is running. By navigating to its IP address in your browser, you should see the running app and use it.
 
 ## Configuring the hostname
 
