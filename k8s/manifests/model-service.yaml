@@ -1,0 +1,80 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: model-service
+  labels:
+    app: model-service
+    component: ml-model
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: model-service
+  template:
+    metadata:
+      labels:
+        app: model-service
+        component: ml-model
+    spec:
+      containers:
+        - name: model-service
+          image: ghcr.io/doda2025-team8/model-service:0.1.1
+          ports:
+            - containerPort: 8081
+              name: http
+          env:
+            - name: MODEL_SERVICE_PORT
+              value: "8081"
+            - name: MODEL_DIR
+              value: "/app/models"
+            - name: MODEL_VERSION
+              value: "latest"
+            - name: GITHUB_REPO
+              value: "doda2025-team8/model-service"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8081
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8081
+            initialDelaySeconds: 15
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 2
+          volumeMounts:
+            - name: model-storage
+              mountPath: /app/models
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+      volumes:
+        - name: model-storage
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: model-service
+  labels:
+    app: model-service
+    component: ml-model
+spec:
+  type: ClusterIP
+  selector:
+    app: model-service
+  ports:
+    - port: 8081
+      targetPort: 8081
+      protocol: TCP
+      name: http
