@@ -10,7 +10,7 @@ spec:
       rules:
         - alert: HighRequestRate
           expr: rate(app_sms_requests_total[1m]) > 15
-          for: 2
+          for: 2m
           labels:
             severity: warning
           annotations:

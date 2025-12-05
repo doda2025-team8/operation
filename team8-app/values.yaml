@@ -37,3 +37,6 @@ model:
   labels:
     app: model-service
     component: ml-model
+
+grafana:
+    namespace: default
