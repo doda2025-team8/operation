@@ -1,0 +1,18 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: sms-app-alert
+  labels: 
+    release: myprom 
+spec:
+  groups:
+    - name: sms-app-rules
+      rules:
+        - alert: HighRequestRate
+          expr: rate(app_sms_requests_total[1m]) > 15
+          for: 2m
+          labels:
+            severity: warning
+          annotations:
+            summary: "High request rate detected"
+            description: "The app is receiving more than 15 requests per minute."

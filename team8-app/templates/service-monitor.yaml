@@ -9,6 +9,6 @@ spec:
     matchLabels: 
       app: app-service
   endpoints: 
-    - name: http
+    - port: http
       interval: 15s
       path: /actuator/prometheus
