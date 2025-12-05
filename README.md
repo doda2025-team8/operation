@@ -131,3 +131,21 @@ kubectl --kubeconfig=k8s/admin.conf apply -f k8s/manifests/
 * By default, the frontend will run on a hostname `team8.local`, you should map this to your minikube IP by running `echo "$(minikube ip)  team8.local" | sudo tee -a /etc/hosts`.
 * This should allow you to navigate to https://team8.local and use the app from there
 
+## Grafana Dashboards
+
+### Automatic Installation
+
+Dashboards are automatically installed via ConfigMap when deploying with Helm. The ConfigMap is labeled with `grafana_dashboard: "1"` for automatic discovery by Grafana's sidecar.
+
+### Manual Import (if needed)
+
+If dashboards don't appear automatically:
+
+1. Access Grafana UI (default: http://localhost:3000)
+2. Go to **Dashboards** → **New** → **Import**
+3. Click **Upload JSON file**
+4. Upload JSON files from `team8-app/dashboards/`:
+   - `app-metrics.json` - SMS App monitoring metrics
+   - `experiment-dashboard.json` - Canary release comparison (A4)
+5. Select the Prometheus datasource when prompted
+6. Click **Import**
