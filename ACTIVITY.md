@@ -81,3 +81,8 @@ No work done.
 - Andriana \
     https://github.com/doda2025-team8/operation/pull/32
     I enabled monitoring though Prometheus by installing a Prometheus instance through Helm and introducing a ServiceMonitor to bind the app-service to this instance. Moreover, I enabled alerting. An email alert is sent when the service receives more than 15 requests per minute for two minutes straight.
+
+- Yanzhi \
+    https://github.com/doda2025-team8/operation/pull/33
+    Created two Grafana dashboards: one for app metrics (request rate, active requests gauge, latency histogram) and one for A4 canary experiment comparison. Dashboards auto-install via ConfigMap and include multiple visualization types with PromQL functions like rate() and histogram_quantile().
+  
