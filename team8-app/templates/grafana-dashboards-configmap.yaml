@@ -52,7 +52,7 @@ data:
           "type": "histogram",
           "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8},
           "datasource": {"type": "prometheus", "uid": "${datasource}"},
-          "targets": [{"expr": "rate(app_sms_latency_seconds_bucket[$__rate_interval])", "legendFormat": "{{le}}", "refId": "A", "format": "heatmap"}],
+          "targets": [{"expr": "rate(app_sms_latency_seconds_bucket[$__rate_interval])", "legendFormat": "{{ "{{le}}" }}", "refId": "A", "format": "heatmap"}],
           "fieldConfig": {"defaults": {"color": {"mode": "palette-classic"}, "unit": "s"}, "overrides": []},
           "options": {"bucketSize": 10, "combine": false, "legend": {"displayMode": "list", "placement": "bottom"}}
         },

@@ -134,11 +134,18 @@ kubectl --kubeconfig=k8s/admin.conf apply -f k8s/manifests/
 ## Grafana Dashboards
 
 ### Automatic Installation
-Dashboards are automatically installed via ConfigMap when deploying with Helm.
+
+Dashboards are automatically installed via ConfigMap when deploying with Helm. The ConfigMap is labeled with `grafana_dashboard: "1"` for automatic discovery by Grafana's sidecar.
 
 ### Manual Import (if needed)
-1. Access Grafana UI
-2. Go to Dashboards → Import
-3. Upload JSON files from `team8-app/dashboards/`:
+
+If dashboards don't appear automatically:
+
+1. Access Grafana UI (default: http://localhost:3000)
+2. Go to **Dashboards** → **New** → **Import**
+3. Click **Upload JSON file**
+4. Upload JSON files from `team8-app/dashboards/`:
    - `app-metrics.json` - SMS App monitoring metrics
    - `experiment-dashboard.json` - Canary release comparison (A4)
+5. Select the Prometheus datasource when prompted
+6. Click **Import**
