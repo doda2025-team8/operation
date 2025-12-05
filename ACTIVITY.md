@@ -85,4 +85,10 @@ No work done.
 - Yanzhi \
     https://github.com/doda2025-team8/operation/pull/33
     Created two Grafana dashboards: one for app metrics (request rate, active requests gauge, latency histogram) and one for A4 canary experiment comparison. Dashboards auto-install via ConfigMap and include multiple visualization types with PromQL functions like rate() and histogram_quantile().
-  
+
+- Yuchen Sun\
+[doda2025-team8/app-service#9](https://github.com/doda2025-team8/app-service/pull/9) For this week, I worked on Enable Monitroing. I successfully instrumented the app-service backend to produce custom business metrics (Counter, Gauge, and Histogram) and exposed them via the /actuator/prometheus endpoint, overcoming several local dependency and environment configuration issues.eam8/app-service#9 For this week, I worked on Enable Monitroing. I successfully instrumented the app-service backend to produce custom business metrics (Counter, Gauge, and Histogram) and exposed them via the /actuator/prometheus endpoint, overcoming several local dependency and environment configuration issues.
+
+- Horia \
+  https://github.com/doda2025-team8/operation/pull/35
+  For this week I implemented some (minor) fixes with the helm install. Updated documentation. Fixed an open item from last week.
