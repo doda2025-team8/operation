@@ -68,3 +68,7 @@ No work done.
   - Vincent \
     https://github.com/doda2025-team8/operation/pull/24
     I setup the Helm Chart such that the app and its dependencies can be locally installed in a Kubernetes (e.g. minikube) install. I updated the README to also have the correct instructions for the installation of the app through Helm.
+
+  - Andriana \
+    https://github.com/doda2025-team8/operation/pull/32
+    I enabled monitoring though Prometheus by installing a Prometheus instance through Helm and introducing a ServiceMonitor to bind the app-service to this instance.
