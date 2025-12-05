@@ -37,25 +37,3 @@ model:
   labels:
     app: model-service
     component: ml-model
-
-alertmanager:
-  alertmanagerSpec:
-    secrets:
-    - my-secret
-  
-  config:
-    global:
-      smtp_from: 'team8doda@gmail.com'
-      smtp_smarthost: 'smtp.gmail.com:587'
-      smtp_auth_username: 'team8doda@gmail.com'
-      smtp_auth_password_file: '/etc/alertmanager/secrets/my-secret/SMTP_PASSWORD'
-      smtp_require_tls: true
-    
-    route:
-      receiver: 'email-alert'
-    
-    receivers:
-    - name: 'email-alert'
-      email_configs:
-      - to: 'team8doda@gmail.com'
-        send_resolved: true

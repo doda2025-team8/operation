@@ -1,0 +1,20 @@
+apiVersion: monitoring.coreos.com/v1alpha1
+kind: AlertmanagerConfig
+metadata:
+  name: email-config
+  labels: 
+    release: myprom 
+spec:
+  route:
+    receiver: 'email-alerts'
+  receivers:
+  - name: 'email-alerts'
+    emailConfigs:
+    - to: "team8doda@gmail.com"
+      from: "team8doda@gmail.com"
+      smarthost: "smtp.gmail.com:587"
+      authUsername: "team8doda@gmail.com"
+      authPassword:
+        name: alertmanager-smtp-secret
+        key: SMTP_PASSWORD
+      requireTLS: true
