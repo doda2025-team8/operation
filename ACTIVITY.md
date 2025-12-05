@@ -68,3 +68,8 @@ No work done.
 - Yuchen \
   https://github.com/doda2025-team8/operation/pull/20
   For this week I worked on steps 20-22. I deployed MetalLB to provide bare-metal load balancing, the Nginx Ingress Controller to configure domain-based routing, and the K8s Dashboard to provide a convenient graphical interface for resource exploration .
+
+  ### Week Q2.4 (1 Dec+)
+  -Yuchen Sun \
+  https://github.com/doda2025-team8/app-service/pull/9
+  For this week, I worked on Enable Monitroing. I successfully instrumented the app-service backend to produce custom business metrics (Counter, Gauge, and Histogram) and exposed them via the /actuator/prometheus endpoint, overcoming several local dependency and environment configuration issues.
