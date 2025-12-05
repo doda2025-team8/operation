@@ -156,3 +156,21 @@ $ kubectl port-forward svc/myprom-kube-prometheus-sta-prometheus 9090:9090
  * `app_sms_requests_total`: a count to count the total number of SMS prediction requests received
  * `app_sms_active_requests`: a gauge that shows how many SMS requests are currently being processed
  * `app_sms_latency_seconds`: a timer that measures how long it takes to process an SMS prediction request
+## Grafana Dashboards
+
+### Automatic Installation
+
+Dashboards are automatically installed via ConfigMap when deploying with Helm. The ConfigMap is labeled with `grafana_dashboard: "1"` for automatic discovery by Grafana's sidecar.
+
+### Manual Import (if needed)
+
+If dashboards don't appear automatically:
+
+1. Access Grafana UI (default: http://localhost:3000)
+2. Go to **Dashboards** → **New** → **Import**
+3. Click **Upload JSON file**
+4. Upload JSON files from `team8-app/dashboards/`:
+   - `app-metrics.json` - SMS App monitoring metrics
+   - `experiment-dashboard.json` - Canary release comparison (A4)
+5. Select the Prometheus datasource when prompted
+6. Click **Import**
