@@ -63,12 +63,21 @@ No work done.
   https://github.com/doda2025-team8/operation/pull/18
   For this week I worked on steps 18-19, on setting up the worker nodes. Wrote the Ansible playbook that joins worker nodes to the Kubernetes cluster by getting the join command from ctrl and running it on each worker.
 
-  ### Week Q2.4 (1 Dec+)
+- Hendrik\
+  This week I worked on implementing step 13-17 (controller provisioning) \
+  https://github.com/doda2025-team8/operation/pull/16
 
-  - Vincent \
+### Week Q2.4 (1 Dec+)
+
+- Hendrik\
+  This week I worked on migrating the docker compose setup to kubernetes files, this can be seen in https://github.com/doda2025-team8/operation/pull/23 \
+  Furthermore, I added health endpoints in the app-service and app-frontend\
+  https://github.com/doda2025-team8/app-frontend/pull/7 \
+  https://github.com/doda2025-team8/app-service/pull/11
+- Vincent \
     https://github.com/doda2025-team8/operation/pull/24
     I setup the Helm Chart such that the app and its dependencies can be locally installed in a Kubernetes (e.g. minikube) install. I updated the README to also have the correct instructions for the installation of the app through Helm.
 
-  - Andriana \
+- Andriana \
     https://github.com/doda2025-team8/operation/pull/32
     I enabled monitoring though Prometheus by installing a Prometheus instance through Helm and introducing a ServiceMonitor to bind the app-service to this instance. Moreover, I enabled alerting. An email alert is sent when the service receives more than 15 requests per minute for two minutes straight.
