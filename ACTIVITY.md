@@ -52,9 +52,6 @@ No work done.
   https://github.com/doda2025-team8/operation/pull/11 \
   https://github.com/doda2025-team8/operation/pull/14 \ 
   I setup the steps 9 through 12 of the second assignment that covered the setting up of the Kubernetes repository, as well as installing the Kubernetes libraries, its dependencies and some extra libraries for future use. This is all done in the `operation` repository in the file `k8s/playbooks/general.yml`.
-
-### Week Q2.3 (24 Nov+)
-
 - Andriana \ 
   https://github.com/doda2025-team8/operation/pull/4
   For this week I worked on Step 1 and Step 2 concerning the setup of the VMs. I created a Vagrant file and set a host-only network. This is all done in the `operation` repository in the file `k8s/Vagrantfile`.  \
@@ -65,11 +62,34 @@ No work done.
 - Yanzhi \ 
   https://github.com/doda2025-team8/operation/pull/18
   For this week I worked on steps 18-19, on setting up the worker nodes. Wrote the Ansible playbook that joins worker nodes to the Kubernetes cluster by getting the join command from ctrl and running it on each worker.
-- Yuchen \
-  https://github.com/doda2025-team8/operation/pull/20
-  For this week I worked on steps 20-22. I deployed MetalLB to provide bare-metal load balancing, the Nginx Ingress Controller to configure domain-based routing, and the K8s Dashboard to provide a convenient graphical interface for resource exploration .
 
-  ### Week Q2.4 (1 Dec+)
-  -Yuchen Sun \
-  https://github.com/doda2025-team8/app-service/pull/9
-  For this week, I worked on Enable Monitroing. I successfully instrumented the app-service backend to produce custom business metrics (Counter, Gauge, and Histogram) and exposed them via the /actuator/prometheus endpoint, overcoming several local dependency and environment configuration issues.
+- Hendrik\
+  This week I worked on implementing step 13-17 (controller provisioning) \
+  https://github.com/doda2025-team8/operation/pull/16
+
+### Week Q2.4 (1 Dec+)
+
+- Hendrik\
+    This week I worked on migrating the docker compose setup to kubernetes files, this can be seen in https://github.com/doda2025-team8/operation/pull/23 \
+    Furthermore, I added health endpoints in the app-service and app-frontend\
+    https://github.com/doda2025-team8/app-frontend/pull/7 \
+    https://github.com/doda2025-team8/app-service/pull/11
+
+- Vincent \
+    https://github.com/doda2025-team8/operation/pull/24
+    I setup the Helm Chart such that the app and its dependencies can be locally installed in a Kubernetes (e.g. minikube) install. I updated the README to also have the correct instructions for the installation of the app through Helm.
+
+- Andriana \
+    https://github.com/doda2025-team8/operation/pull/32
+    I enabled monitoring though Prometheus by installing a Prometheus instance through Helm and introducing a ServiceMonitor to bind the app-service to this instance. Moreover, I enabled alerting. An email alert is sent when the service receives more than 15 requests per minute for two minutes straight.
+
+- Yanzhi \
+    https://github.com/doda2025-team8/operation/pull/33
+    Created two Grafana dashboards: one for app metrics (request rate, active requests gauge, latency histogram) and one for A4 canary experiment comparison. Dashboards auto-install via ConfigMap and include multiple visualization types with PromQL functions like rate() and histogram_quantile().
+
+- Yuchen Sun\
+    [doda2025-team8/app-service#9](https://github.com/doda2025-team8/app-service/pull/9) For this week, I worked on Enable Monitroing. I successfully instrumented the app-service backend to produce custom business metrics (Counter, Gauge, and Histogram) and exposed them via the /actuator/prometheus endpoint, overcoming several local dependency and environment configuration issues.
+
+- Horia \
+    https://github.com/doda2025-team8/operation/pull/35
+    For this week I implemented some (minor) fixes with the helm install. Updated documentation. Fixed an open item from last week.
