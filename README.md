@@ -131,3 +131,28 @@ kubectl --kubeconfig=k8s/admin.conf apply -f k8s/manifests/
 * By default, the frontend will run on a hostname `team8.local`, you should map this to your minikube IP by running `echo "$(minikube ip)  team8.local" | sudo tee -a /etc/hosts`.
 * This should allow you to navigate to https://team8.local and use the app from there
 
+# How to access Prometheus 
+
+### 1. Add the Prometheus repository
+
+```
+$ helm repo add prom-repo https://prometheus-community.github.io/helm-charts
+$ helm repo update
+```
+
+### 2. Install Prometheus Stack
+
+```
+$ helm install myprom prom-repo/kube-prometheus-stack
+```
+
+### 3. Port forward to access Prometheus website
+
+```
+$ kubectl port-forward svc/myprom-kube-prometheus-sta-prometheus 9090:9090
+```
+ The app exposes the following 3 metrics at **/actuator/prometheus**:
+
+ * `app_sms_requests_total`: a count to count the total number of SMS prediction requests received
+ * `app_sms_active_requests`: a gauge that shows how many SMS requests are currently being processed
+ * `app_sms_latency_seconds`: a timer that measures how long it takes to process an SMS prediction request
