@@ -67,6 +67,10 @@ No work done.
   This week I worked on implementing step 13-17 (controller provisioning) \
   https://github.com/doda2025-team8/operation/pull/16
 
+- Yuchen
+  For this week I worked on steps 20-22. I deployed MetalLB to provide bare-metal load balancing, the Nginx Ingress Controller to configure domain-based routing, and the K8s Dashboard to provide a convenient graphical interface for resource exploration. \
+  https://github.com/doda2025-team8/operation/pull/20
+
 ### Week Q2.4 (1 Dec+)
 
 - Hendrik\
