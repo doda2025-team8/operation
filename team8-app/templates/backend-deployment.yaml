@@ -5,16 +5,54 @@ metadata:
   labels:
     app: app-service
     component: backend
+    version: v1
 spec:
   replicas: {{ .Values.backend.replicaCount }}
   selector:
     matchLabels:
       app: app-service
+      version: v1
   template:
     metadata:
       labels:
         app: app-service
         component: backend
+        version: v1
+      annotations:
+        sidecar.istio.io/inject: "true"
+    spec:
+      containers:
+        - name: app-service
+          image: {{ .Values.backend.image }}
+          ports:
+            - containerPort: {{ .Values.backend.service.targetPort }}
+              name: http
+          env:
+            - name: MODEL_HOST
+              value: "{{ .Values.backend.modelHost }}"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-service-v2
+  labels:
+    app: app-service
+    component: backend
+    version: v2
+spec:
+  replicas: {{ .Values.backend.replicaCount }}
+  selector:
+    matchLabels:
+      app: app-service
+      version: v2
+  template:
+    metadata:
+      labels:
+        app: app-service
+        component: backend
+        version: v2
+      annotations:
+        sidecar.istio.io/inject: "true"
     spec:
       containers:
         - name: app-service

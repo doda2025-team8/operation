@@ -17,6 +17,8 @@ spec:
       labels:
         app: app-frontend
         version: v1
+      annotations:
+        sidecar.istio.io/inject: "true"
     spec:
       containers:
         - name: app-frontend
@@ -47,6 +49,8 @@ spec:
         app: app-frontend
         version: v2
         component: frontend
+      annotations:
+        sidecar.istio.io/inject: "true"
     spec:
       containers:
         - name: app-frontend
