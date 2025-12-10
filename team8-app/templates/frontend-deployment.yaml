@@ -1,24 +1,57 @@
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: app-frontend
+  name: app-frontend-v1
   labels:
     app: app-frontend
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app-frontend
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: app-frontend
+        version: v1
+    spec:
+      containers:
+        - name: app-frontend
+          image: {{ .Values.frontend.image }}
+          ports:
+            - containerPort: 80
+              name: http
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-frontend-v2
+  labels:
+    app: app-frontend
+    version: v2
     component: frontend
 spec:
   replicas: {{ .Values.frontend.replicaCount }}
   selector:
     matchLabels:
       app: app-frontend
+      version: v2
   template:
     metadata:
       labels:
         app: app-frontend
+        version: v2
         component: frontend
     spec:
       containers:
         - name: app-frontend
           image: {{ .Values.frontend.image }}
           ports:
-            - containerPort: {{ .Values.frontend.service.targetPort }}
+            - containerPort: 80
               name: http
+
