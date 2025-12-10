@@ -148,11 +148,22 @@ vagrant ssh ctrl -c "kubectl get secret myprom-grafana -o jsonpath='{.data.admin
 
 # Install app with Helm
 
+## Clear previous installs
+* `minikube delete`
+
 ## Prerequisites
 
-* Make sure you have your docker engine running
-* Start minikube `minikube start --driver=docker`
+* Make sure you have your docker engine running, also make sure you have `istioctl` installed and you have the folder `istio-1.28.1/` somewhere you can `cd` to(e.g. `Downloads/`).
+* Start minikube `minikube start --memory=4096 --cpus=4 --driver=docker`
 * Enable minikube ingress `minikube addons enable ingress`
+* Install istio `istioctl install`
+* `cd` to the directory that contains `istio-1.28.1/` and run
+   * `kubectl apply -f istio-1.28.1/samples/addons/prometheus.yaml`
+   * `kubectl apply -f istio-1.28.1/samples/addons/jaeger.yaml`
+   * `kubectl apply -f istio-1.28.1/samples/addons/kiali.yaml`
+* Add the Prometheus Repos
+   * `helm repo add prom-repo https://prometheus-community.github.io/helm-charts && helm repo update`
+* Install Prometheus `helm install myprom prom-repo/kube-prometheus-stack`
 
 ## Helm install
 
@@ -164,9 +175,12 @@ vagrant ssh ctrl -c "kubectl get secret myprom-grafana -o jsonpath='{.data.admin
 
 * `kubectl get pods` should give you three `Running` pods:
    * `model-service`
-   * `app-frontend`
+   * `app-frontend-v1`
+   * `app-frontend-v2`
    * `app-service`
 * `kubectl get ingress` should show an `app-ingress` is running. By navigating to its IP address in your browser, you should see the running app and use it.
+* `kubectl get pods -n istio-system` should show you that Istio is running.
+* Run `istioctl dashboard kiali` to see the details of Istio and how its running.
 
 ## Configuring the hostname
 

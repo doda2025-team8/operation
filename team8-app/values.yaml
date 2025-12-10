@@ -40,3 +40,14 @@ model:
 
 grafana:
     namespace: default
+
+istio:
+  enabled: true
+
+  ingressGatewaySelector:
+    istio: ingressgateway
+
+  gateway:
+    hosts:
+      - "*"
+    port: 80
