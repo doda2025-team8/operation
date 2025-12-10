@@ -92,3 +92,10 @@ No work done.
 - Horia \
   https://github.com/doda2025-team8/operation/pull/35
   For this week I implemented some (minor) fixes with the helm install. Updated documentation. Fixed an open item from last week.
+
+
+### Week Q2.5 (8 Dec+)
+
+- Vincent \ 
+  https://github.com/doda2025-team8/operation/pull/40
+  I setup Istio for the Helm app such that we can use it with a Gateway, VirtualService, and Destination Rule. I set it up to work with a tunnel, another team member will make it work with custom routing.
