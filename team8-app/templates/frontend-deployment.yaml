@@ -24,8 +24,20 @@ spec:
         - name: app-frontend
           image: {{ .Values.frontend.image }}
           ports:
-            - containerPort: 8080
+            - containerPort: {{ .Values.frontend.service.targetPort }}
               name: http
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: {{ .Values.frontend.service.targetPort }}
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: {{ .Values.frontend.service.targetPort }}
+            initialDelaySeconds: 5
+            periodSeconds: 5
 
 ---
 
@@ -56,6 +68,18 @@ spec:
         - name: app-frontend
           image: {{ .Values.frontend.image }}
           ports:
-            - containerPort: 8080
+            - containerPort: {{ .Values.frontend.service.targetPort }}
               name: http
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: {{ .Values.frontend.service.targetPort }}
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: {{ .Values.frontend.service.targetPort }}
+            initialDelaySeconds: 5
+            periodSeconds: 5
 

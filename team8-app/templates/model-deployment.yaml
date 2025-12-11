@@ -36,6 +36,18 @@ spec:
               value: "{{ .Values.model.env.MODEL_VERSION }}"
             - name: GITHUB_REPO
               value: "{{ .Values.model.env.GITHUB_REPO }}"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: {{ .Values.model.service.targetPort }}
+            initialDelaySeconds: 20
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: {{ .Values.model.service.targetPort }}
+            initialDelaySeconds: 15
+            periodSeconds: 5
           volumeMounts:
             - name: model-storage
               mountPath: /app/models
@@ -81,6 +93,18 @@ spec:
               value: "{{ .Values.model.env.MODEL_VERSION }}"
             - name: GITHUB_REPO
               value: "{{ .Values.model.env.GITHUB_REPO }}"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: {{ .Values.model.service.targetPort }}
+            initialDelaySeconds: 20
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: {{ .Values.model.service.targetPort }}
+            initialDelaySeconds: 15
+            periodSeconds: 5
           volumeMounts:
             - name: model-storage
               mountPath: /app/models

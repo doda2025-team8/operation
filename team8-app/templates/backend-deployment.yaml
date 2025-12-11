@@ -30,6 +30,18 @@ spec:
           env:
             - name: MODEL_HOST
               value: "{{ .Values.backend.modelHost }}"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: {{ .Values.backend.service.targetPort }}
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: {{ .Values.backend.service.targetPort }}
+            initialDelaySeconds: 10
+            periodSeconds: 5
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -63,3 +75,15 @@ spec:
           env:
             - name: MODEL_HOST
               value: "{{ .Values.backend.modelHost }}"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: {{ .Values.backend.service.targetPort }}
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: {{ .Values.backend.service.targetPort }}
+            initialDelaySeconds: 10
+            periodSeconds: 5
