@@ -17,7 +17,41 @@ spec:
         {{- range .Values.istio.gateway.hosts }}
         - {{ . | quote }}
         {{- end }}
+        - "grafana.team8.local"
+        - "prometheus.team8.local"
 
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: grafana-vs
+spec:
+  hosts:
+    - "grafana.team8.local"
+  gateways:
+    - my-gateway
+  http:
+    - route:
+      - destination:
+          host: myprom-grafana.default.svc.cluster.local
+          port:
+            number: 80
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: prometheus-vs
+spec:
+  hosts:
+    - "prometheus.team8.local"
+  gateways:
+    - my-gateway
+  http:
+    - route:
+      - destination:
+          host: myprom-kube-prometheus-sta-prometheus.default.svc.cluster.local
+          port:
+            number: 9090
 ---
 apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
@@ -25,7 +59,7 @@ metadata:
   name: my-vs
 spec:
   hosts:
-    - "*"
+    - "team8.local"
   gateways:
     - my-gateway
   http:
