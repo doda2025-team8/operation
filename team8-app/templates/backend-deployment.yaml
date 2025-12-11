@@ -30,6 +30,8 @@ spec:
           env:
             - name: MODEL_HOST
               value: "{{ .Values.backend.modelHost }}"
+            - name: ENABLE_CACHE
+              value: "{{ .Values.backend.v1.enableCache }}"
           livenessProbe:
             httpGet:
               path: /health
@@ -75,6 +77,8 @@ spec:
           env:
             - name: MODEL_HOST
               value: "{{ .Values.backend.modelHost }}"
+            - name: ENABLE_CACHE
+              value: "{{ .Values.backend.v2.enableCache }}"
           livenessProbe:
             httpGet:
               path: /health
