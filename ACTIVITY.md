@@ -102,4 +102,5 @@ No work done.
 ### Week Q2.5 (8 Dec+)
 
 - Yuchen \
+    https://github.com/doda2025-team8/operation/pull/47
     Implement DestinationRules for 90/10 traffic split between old/new versions. Ensure consistent routing between app-service and model-service versions (old-old, new-new only). Implement Sticky Sessions for stable user routing. Test canary release with curl/Postman requests. Document routing behavior and testing approach
