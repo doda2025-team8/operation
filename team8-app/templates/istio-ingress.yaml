@@ -64,12 +64,35 @@ spec:
     - my-gateway
   http:
     - match:
+        - uri:
+            prefix: "/sms"
+          headers: 
+            cookie:
+              regex: "^(.*?;)?(canary-user=)(.*)?$"
+      route:
+        - destination:
+            host: app-service
+            subset: v2
+    - match:
+        - uri:
+            prefix: "/sms"
+      route:
+        - destination:
+            host: app-service
+            subset: v1
+          weight: 90
+        - destination:
+            host: app-service
+            subset: v2
+          weight: 10
+    - match:
         - headers: 
             cookie:
               regex: "^(.*?;)?(canary-user=)(.*)?$"
       route:
         - destination:
             host: app-frontend
+            subset: v2
     - route:
       - destination:
           host: app-frontend
@@ -104,6 +127,12 @@ metadata:
   name: app-service-dr
 spec:
   host: app-service
+  trafficPolicy:
+    loadBalancer:
+      consistentHash:
+        httpCookie:
+          name: "canary-user"
+          ttl: 600s
   subsets:
     - name: v1
       labels: { version: v1 }
@@ -116,6 +145,12 @@ metadata:
   name: model-service-dr
 spec:
   host: model-service
+  trafficPolicy:
+    loadBalancer:
+      consistentHash:
+        httpCookie:
+          name: "canary-user"
+          ttl: 600s
   subsets:
     - name: v1
       labels: { version: v1 }

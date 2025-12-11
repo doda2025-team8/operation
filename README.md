@@ -221,6 +221,7 @@ kubectl get configmap | grep grafana
 Login credentials:
 
 Username: admin
+
 Password: run in another terminal:
 
 For vagrant:
