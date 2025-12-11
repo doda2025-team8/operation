@@ -5,16 +5,66 @@ metadata:
   labels:
     app: model-service
     component: ml-model
+    version: v1
 spec:
   replicas: {{ .Values.model.replicaCount }}
   selector:
     matchLabels:
       app: model-service
+      version: v1
   template:
     metadata:
       labels:
         app: model-service
         component: ml-model
+        version: v1
+      annotations:
+        sidecar.istio.io/inject: "true"
+    spec:
+      containers:
+        - name: model-service
+          image: {{ .Values.model.image }}
+          ports:
+            - containerPort: {{ .Values.model.service.targetPort }}
+              name: http
+          env:
+            - name: MODEL_SERVICE_PORT
+              value: "{{ .Values.model.env.MODEL_SERVICE_PORT }}"
+            - name: MODEL_DIR
+              value: "{{ .Values.model.env.MODEL_DIR }}"
+            - name: MODEL_VERSION
+              value: "{{ .Values.model.env.MODEL_VERSION }}"
+            - name: GITHUB_REPO
+              value: "{{ .Values.model.env.GITHUB_REPO }}"
+          volumeMounts:
+            - name: model-storage
+              mountPath: /app/models
+      volumes:
+        - name: model-storage
+          emptyDir: {}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: model-service-v2
+  labels:
+    app: model-service
+    component: ml-model
+    version: v2
+spec:
+  replicas: {{ .Values.model.replicaCount }}
+  selector:
+    matchLabels:
+      app: model-service
+      version: v2
+  template:
+    metadata:
+      labels:
+        app: model-service
+        component: ml-model
+        version: v2
+      annotations:
+        sidecar.istio.io/inject: "true"
     spec:
       containers:
         - name: model-service

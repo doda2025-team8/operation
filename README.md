@@ -230,3 +230,30 @@ If dashboards don't appear automatically:
    - `experiment-dashboard.json` - Canary release comparison (A4)
 5. Select the Prometheus datasource when prompted
 6. Click **Import**
+
+# Traffic Management & Testing
+We have implemented a Canary Release strategy using Istio. The deployment features a 90/10 traffic split (90% stable, 10% canary) with Sticky Sessions for user stability and Strict Consistency to ensure version alignment across microservices (app-front v1 → app-service v1 → model-service v1).
+
+## Testing Approach
+### Verify Traffic Split (90/10): Check the number of v1 and v2
+```
+for i in {1..20}; do
+  echo "Request $i:"
+  curl -s -X POST http://localhost/sms \
+    -H "Content-Type: application/json" \
+    -d '{"sms": "traffic split test"}'
+done
+```
+### Verify Consistent Routing
+Steps:
+1. Open two terminals to tail logs for v1 and v2 separately:
+
+   ```
+   # Terminal A
+   kubectl logs -f -l version=v1 --all-containers=true
+
+   # Terminal B
+   kubectl logs -f -l version=v2 --all-containers=true
+   ```
+2. Send a request using the command from Step 2.
+Logs should scroll in only one terminal (either all v1 or all v2), proving that the full call chain (Frontend → Backend → Model) is version-consistent.
