@@ -40,14 +40,16 @@ spec:
             httpGet:
               path: /health
               port: {{ .Values.model.service.targetPort }}
-            initialDelaySeconds: 20
+            initialDelaySeconds: 60
             periodSeconds: 10
+            failureThreshold: 3
           readinessProbe:
             httpGet:
               path: /health
               port: {{ .Values.model.service.targetPort }}
-            initialDelaySeconds: 15
+            initialDelaySeconds: 30
             periodSeconds: 5
+            failureThreshold: 6
           volumeMounts:
             - name: model-storage
               mountPath: /app/models
@@ -97,14 +99,16 @@ spec:
             httpGet:
               path: /health
               port: {{ .Values.model.service.targetPort }}
-            initialDelaySeconds: 20
+            initialDelaySeconds: 60
             periodSeconds: 10
+            failureThreshold: 3
           readinessProbe:
             httpGet:
               path: /health
               port: {{ .Values.model.service.targetPort }}
-            initialDelaySeconds: 15
+            initialDelaySeconds: 30
             periodSeconds: 5
+            failureThreshold: 6
           volumeMounts:
             - name: model-storage
               mountPath: /app/models
