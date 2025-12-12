@@ -67,17 +67,17 @@ No work done.
   This week I worked on implementing step 13-17 (controller provisioning) \
   https://github.com/doda2025-team8/operation/pull/16
 
-- Yuchen
+- Yuchen\
   For this week I worked on steps 20-22. I deployed MetalLB to provide bare-metal load balancing, the Nginx Ingress Controller to configure domain-based routing, and the K8s Dashboard to provide a convenient graphical interface for resource exploration. \
   https://github.com/doda2025-team8/operation/pull/20
 
 ### Week Q2.4 (1 Dec+)
 
 - Hendrik\
-    This week I worked on migrating the docker compose setup to kubernetes files, this can be seen in https://github.com/doda2025-team8/operation/pull/23 \
-    Furthermore, I added health endpoints in the app-service and app-frontend\
-    https://github.com/doda2025-team8/app-frontend/pull/7 \
-    https://github.com/doda2025-team8/app-service/pull/11
+  This week I worked on migrating the docker compose setup to kubernetes files, this can be seen in https://github.com/doda2025-team8/operation/pull/23 \
+  Furthermore, I added health endpoints in the app-service and app-frontend\
+  https://github.com/doda2025-team8/app-frontend/pull/7 \
+  https://github.com/doda2025-team8/app-service/pull/11
 
 - Vincent \
     https://github.com/doda2025-team8/operation/pull/24
@@ -98,7 +98,6 @@ No work done.
     https://github.com/doda2025-team8/operation/pull/35
     For this week I implemented some (minor) fixes with the helm install. Updated documentation. Fixed an open item from last week.
 
-
 ### Week Q2.5 (8 Dec+)
 
 - Yuchen \
@@ -110,3 +109,19 @@ No work done.
   https://github.com/doda2025-team8/app-service/pull/12
   On the operations side, I fixed some issues with sticky sessions and implemented that the two app-service containers actually did something different. I also enabled added routes for grafana and prometheus and re-wrote parts of the documentation.
   https://github.com/doda2025-team8/operation/pull/48
+
+- Yanzhi \
+  Created the docs/continuous-experimentation.md documentation that describes the caching experiment (v1 no-cache vs v2 with-cache), including the hypothesis, metrics, and decision process.
+  https://github.com/doda2025-team8/operation/pull/49
+  Fixed the missing version labels in the app-service metrics by adding .tag("version", version) to all metrics in FrontendController.java and adding APP_VERSION environment variable to backend-deployment.yaml.
+  https://github.com/doda2025-team8/app-service/pull/13
+  Configured the Grafana dashboard, generated test traffic, and captured screenshots showing the experiment results.
+
+- Vincent \
+  https://github.com/doda2025-team8/operation/pull/40
+  I setup Istio for the Helm app such that we can use it with a Gateway, VirtualService, and Destination Rule. I set it up to work with a tunnel, another team member will make it work with custom routing.
+
+- Andriana \ 
+  https://github.com/doda2025-team8/model-service/pull/23  
+  https://github.com/doda2025-team8/operation/pull/50  
+  This week I implemented an additional use case. The additional use is Shadow Launch. Additionally, I added some metrics with Prometheus in the model service to evaluate the new model version.
