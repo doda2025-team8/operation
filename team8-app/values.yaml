@@ -39,6 +39,10 @@ model:
     MODEL_VERSION: "latest"
     GITHUB_REPO: "doda2025-team8/model-service"
 
+model_shadow:
+  env:
+    MODEL_VERSION: "v1.0.2"
+
   labels:
     app: model-service
     component: ml-model
