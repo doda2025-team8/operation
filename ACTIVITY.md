@@ -110,3 +110,10 @@ No work done.
   https://github.com/doda2025-team8/app-service/pull/12
   On the operations side, I fixed some issues with sticky sessions and implemented that the two app-service containers actually did something different. I also enabled added routes for grafana and prometheus and re-wrote parts of the documentation.
   https://github.com/doda2025-team8/operation/pull/48
+
+- Yanzhi \
+  Created the docs/continuous-experimentation.md documentation that describes the caching experiment (v1 no-cache vs v2 with-cache), including the hypothesis, metrics, and decision process.
+  https://github.com/doda2025-team8/operation/pull/49
+  Fixed the missing version labels in the app-service metrics by adding .tag("version", version) to all metrics in FrontendController.java and adding APP_VERSION environment variable to backend-deployment.yaml.
+  https://github.com/doda2025-team8/app-service/pull/13
+  Configured the Grafana dashboard, generated test traffic, and captured screenshots showing the experiment results.
