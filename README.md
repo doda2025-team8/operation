@@ -22,6 +22,8 @@ Links to repositories:
 
 An NGINX reverse proxy was configured to serve the frontend and safely forward API calls to the backend from the same origin to avoid CORS issues.
 
+## Run With Docker Compose
+
 ### How to run the application
 
 #### Prerequisites
@@ -48,14 +50,18 @@ docker compose up -d
 - **`.env`**: Environment-specific configuration 
 
 
-## Setup Instructions
+## Setup Instructions Kubernetes
 
-### 1. Create and provision VMs
+There are two ways to run the applications on kubernetes. The first one is to run the application on cluster provisioned with Vagrant and the second way is to use minikube.
+
+### Vagrant
+
+#### 1. Create and provision VMs
 ```bash
 vagrant up
 ```
 
-### 2. Join worker nodes to cluster
+#### 2. Join worker nodes to cluster
 After all VMs are running, SSH into the controller and run the join playbook:
 ```bash
 vagrant ssh ctrl
@@ -64,7 +70,7 @@ ansible-playbook playbooks/node.yaml --ask-pass
 ```
 Password: `vagrant`
 
-### 3. Verify cluster
+#### 3. Verify cluster
 ```bash
 kubectl get nodes
 ```
@@ -77,101 +83,72 @@ node-1   Ready    <none>          XXm   v1.32.4
 node-2   Ready    <none>          XXm   v1.32.4
 ```
 
-### 4. Finalize Cluster Services
+#### 4. Finalize Cluster Services
 ```bash
 ansible-playbook -i k8s/inventory/hosts.ini k8s/playbooks/finalization.yml -u vagrant
 ```
 
-### 4. Add Prometheus + Grafana dependencies
-```bash
-vagrant ssh ctrl
-helm repo add prom-repo https://prometheus-community.github.io/helm-charts
-helm repo update
-helm install myprom prom-repo/kube-prometheus-stack --timeout 10m
+#### 5.
 
-```
+Install istioctl
 
-### 5. Install Applications
-
-Deploy application chart (app-frontend, app-service, model-service, and ingress) to the Kubernetes cluster using Helm:
-
-```bash
-   vagrant ssh ctrl
-   helm install team8-app /home/vagrant/team8-app
-```
-
-### 6. Access Prometheus website
-
-```
-$ kubectl port-forward svc/myprom-kube-prometheus-sta-prometheus 9090:9090
-```
- The app exposes the following 3 metrics at **/actuator/prometheus**:
-
- * `app_sms_requests_total`: a count to count the total number of SMS prediction requests received
- * `app_sms_active_requests`: a gauge that shows how many SMS requests are currently being processed
- * `app_sms_latency_seconds`: a timer that measures how long it takes to process an SMS prediction request
-
-### 6. Access Grafana Dasboards
-
-Verify dashboard ConfigMap was created
-```bash
-kubectl get configmap | grep grafana
-```
-
-Port forward Grafana
-```bash
-kubectl port-forward svc/myprom-grafana 3000:80 --address 0.0.0.0
-```
-
-Open browser: http://localhost:3000
-Login credentials:
-
-Username: admin
-Password: run in another terminal:
-```bash
-vagrant ssh ctrl -c "kubectl get secret myprom-grafana -o jsonpath='{.data.admin-password}' | base64 --decode"
-```
-
-### Access
+#### 6. Setup hosts file
 1. **Add the following lines to your host machine's /etc/hosts file:** 
 ```bash
 # K8s Cluster Services
-192.168.56.91  dashboard.local
-192.168.56.91  app.local
+192.168.56.91  team8.local
+192.168.56.91  grafana.team8.local
+192.168.56.91  prometheus.team8.local
 ```
-2. **Access Kubernetes Dashboard**
-- Open your browser and navigate to: https://dashboard.local
 
-- Ignore the self-signed certificate warning (proceed to the site).
+### Minikube
 
-- Use the Token displayed in the terminal output of the finalization.yml run (e.g., the output of the Display Admin User Token task) to log in.
-
-# Install app with Helm
-
-## Clear previous installs
+#### 1. Clear previous installs
 * `minikube delete`
 
-## Prerequisites
+#### 2. Install
 
 * Make sure you have your docker engine running, also make sure you have `istioctl` installed and you have the folder `istio-1.28.1/` somewhere you can `cd` to(e.g. `Downloads/`).
 * Start minikube `minikube start --memory=4096 --cpus=4 --driver=docker`
 * Enable minikube ingress `minikube addons enable ingress`
+
+#### 3. Install istioctl
 * Install istio `istioctl install`
 * `cd` to the directory that contains `istio-1.28.1/` and run
    * `kubectl apply -f istio-1.28.1/samples/addons/prometheus.yaml`
    * `kubectl apply -f istio-1.28.1/samples/addons/jaeger.yaml`
    * `kubectl apply -f istio-1.28.1/samples/addons/kiali.yaml`
-* Add the Prometheus Repos
-   * `helm repo add prom-repo https://prometheus-community.github.io/helm-charts && helm repo update`
-* Install Prometheus `helm install myprom prom-repo/kube-prometheus-stack`
 
-## Helm install
+#### 4. Setup hosts file
 
-* `cd` into `operation` (this repository)
-* Execute `helm install team8-app ./team8-app`
-* Container creation takes appprox. 20 sec
+1. **Add the following lines to your host machine's /etc/hosts file:** 
+```bash
+# Minikube Services
+127.0.0.1  team8.local
+127.0.0.1  grafana.team8.local
+127.0.0.1  prometheus.team8.local
+```
 
-## Validate
+## Install applications on Kubernetes cluster
+
+### 1. Install Applications
+
+Deploy application chart (app-frontend, app-service, model-service, and ingress) to the Kubernetes cluster using Helm:
+
+On Vagrant:
+```bash
+vagrant ssh ctrl # Only with vagrant
+helm install team8-app /home/vagrant/team8-app
+```
+
+On Minikube:
+```bash
+cd operations
+helm install team8-app ./team8-app
+```
+Container creation takes appprox. 20 sec
+
+#### Validate install
 
 * `kubectl get pods` should give you three `Running` pods:
    * `model-service`
@@ -182,47 +159,24 @@ vagrant ssh ctrl -c "kubectl get secret myprom-grafana -o jsonpath='{.data.admin
 * `kubectl get pods -n istio-system` should show you that Istio is running.
 * Run `istioctl dashboard kiali` to see the details of Istio and how its running.
 
-## Configuring the hostname
+### 2. Add Prometheus + Grafana dependencies
 
-* By default, the frontend will run on a hostname `team8.local`, you should map this to your minikube IP by running `echo "$(minikube ip)  team8.local" | sudo tee -a /etc/hosts`.
-* This should allow you to navigate to https://team8.local and use the app from there
-
-# How to access Prometheus 
-
-### 1. Add the Prometheus repository
-
-```
-$ helm repo add prom-repo https://prometheus-community.github.io/helm-charts
-$ helm repo update
-```
-
-### 2. Install Prometheus Stack
+```bash
+vagrant ssh ctrl # Only on vagrant
+helm repo add prom-repo https://prometheus-community.github.io/helm-charts
+helm repo update
+helm install myprom prom-repo/kube-prometheus-stack --timeout 10m
 
 ```
-$ helm install myprom prom-repo/kube-prometheus-stack
-```
-
-### 3. Port forward to access Prometheus website
-
-```
-$ kubectl port-forward svc/myprom-kube-prometheus-sta-prometheus 9090:9090
-```
- The app exposes the following 3 metrics at **/actuator/prometheus**:
-
- * `app_sms_requests_total`: a count to count the total number of SMS prediction requests received
- * `app_sms_active_requests`: a gauge that shows how many SMS requests are currently being processed
- * `app_sms_latency_seconds`: a timer that measures how long it takes to process an SMS prediction request
-## Grafana Dashboards
-
-### Automatic Installation
+#### Automatic Installation
 
 Dashboards are automatically installed via ConfigMap when deploying with Helm. The ConfigMap is labeled with `grafana_dashboard: "1"` for automatic discovery by Grafana's sidecar.
 
-### Manual Import (if needed)
+#### Manual Import (if needed)
 
 If dashboards don't appear automatically:
 
-1. Access Grafana UI (default: http://localhost:3000)
+1. Access Grafana UI (see below)
 2. Go to **Dashboards** → **New** → **Import**
 3. Click **Upload JSON file**
 4. Upload JSON files from `team8-app/dashboards/`:
@@ -230,6 +184,62 @@ If dashboards don't appear automatically:
    - `experiment-dashboard.json` - Canary release comparison (A4)
 5. Select the Prometheus datasource when prompted
 6. Click **Import**
+
+## Access applications
+
+To access the applications, you need to be able to access the ingress
+
+### 1a. Port forward for Minikube
+```bash
+kubectl port-forward -n istio-system svc/istio-ingressgateway 8080:80 
+```
+- The application can now be accessed on `http://team8.local:8080`
+- Grafana on `http://grafana.team8.local:8080`
+- Prometheus on `http://prometheus.team8.local:8080`
+
+### 1b Vagrant cluster
+TODO
+
+### 2. Access Prometheus website
+`http://prometheus.team8.local:8080`
+
+The app exposes the following 3 metrics at **/actuator/prometheus**:
+
+* `app_sms_requests_total`: a count to count the total number of SMS prediction requests received
+* `app_sms_active_requests`: a gauge that shows how many SMS requests are currently being processed
+* `app_sms_latency_seconds`: a timer that measures how long it takes to process an SMS prediction request
+
+### 3. Access Grafana Dasboards
+
+Verify dashboard ConfigMap was created
+```bash
+kubectl get configmap | grep grafana
+```
+
+`http://grafana.team8.local:8080`
+
+Login credentials:
+
+Username: admin
+
+Password: run in another terminal:
+
+For vagrant:
+```bash
+vagrant ssh ctrl -c "kubectl get secret myprom-grafana -o jsonpath='{.data.admin-password}' | base64 --decode"
+```
+
+For minikube:
+```bash
+kubectl get secret myprom-grafana -o jsonpath='{.data.admin-password}' | base64 --decode
+```
+
+### 4. Access Kubernetes Dashboard (only on Vagrant)
+- Open your browser and navigate to: https://dashboard.local
+
+- Ignore the self-signed certificate warning (proceed to the site).
+
+- Use the Token displayed in the terminal output of the finalization.yml run (e.g., the output of the Display Admin User Token task) to log in.
 
 # Traffic Management & Testing
 We have implemented a Canary Release strategy using Istio. The deployment features a 90/10 traffic split (90% stable, 10% canary) with Sticky Sessions for user stability and Strict Consistency to ensure version alignment across microservices (app-front v1 → app-service v1 → model-service v1).

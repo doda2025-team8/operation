@@ -17,7 +17,41 @@ spec:
         {{- range .Values.istio.gateway.hosts }}
         - {{ . | quote }}
         {{- end }}
+        - "grafana.team8.local"
+        - "prometheus.team8.local"
 
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: grafana-vs
+spec:
+  hosts:
+    - "grafana.team8.local"
+  gateways:
+    - my-gateway
+  http:
+    - route:
+      - destination:
+          host: myprom-grafana.default.svc.cluster.local
+          port:
+            number: 80
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: prometheus-vs
+spec:
+  hosts:
+    - "prometheus.team8.local"
+  gateways:
+    - my-gateway
+  http:
+    - route:
+      - destination:
+          host: myprom-kube-prometheus-sta-prometheus.default.svc.cluster.local
+          port:
+            number: 9090
 ---
 apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
@@ -25,10 +59,32 @@ metadata:
   name: my-vs
 spec:
   hosts:
-    - "*"
+    - "team8.local"
   gateways:
     - my-gateway
   http:
+    - match:
+        - uri:
+            prefix: "/sms"
+          headers: 
+            cookie:
+              regex: "^(.*?;)?(canary-user=)(.*)?$"
+      route:
+        - destination:
+            host: app-service
+            subset: v2
+    - match:
+        - uri:
+            prefix: "/sms"
+      route:
+        - destination:
+            host: app-service
+            subset: v1
+          weight: 90
+        - destination:
+            host: app-service
+            subset: v2
+          weight: 10
     - match:
         - headers: 
             cookie:
@@ -36,6 +92,7 @@ spec:
       route:
         - destination:
             host: app-frontend
+            subset: v2
     - route:
       - destination:
           host: app-frontend
@@ -70,6 +127,12 @@ metadata:
   name: app-service-dr
 spec:
   host: app-service
+  trafficPolicy:
+    loadBalancer:
+      consistentHash:
+        httpCookie:
+          name: "canary-user"
+          ttl: 600s
   subsets:
     - name: v1
       labels: { version: v1 }
@@ -82,6 +145,12 @@ metadata:
   name: model-service-dr
 spec:
   host: model-service
+  trafficPolicy:
+    loadBalancer:
+      consistentHash:
+        httpCookie:
+          name: "canary-user"
+          ttl: 600s
   subsets:
     - name: v1
       labels: { version: v1 }
