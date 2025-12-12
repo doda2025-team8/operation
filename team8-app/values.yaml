@@ -11,8 +11,7 @@ frontend:
 
 backend:
   replicaCount: 1
-  # TODO update image to latest after branch has been merged
-  image: ghcr.io/doda2025-team8/app-service:0.1.2-20251212044607-m4
+  image: ghcr.io/doda2025-team8/app-service:latest
   service:
     port: 8080
     targetPort: 8080
@@ -27,7 +26,7 @@ backend:
 
 model:
   replicaCount: 1
-  image: model-service:local # change this once model service PR is merged
+  image: model-service:latest
 
   service:
     port: 8081
