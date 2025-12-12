@@ -125,3 +125,7 @@ No work done.
   https://github.com/doda2025-team8/model-service/pull/23  
   https://github.com/doda2025-team8/operation/pull/50  
   This week I implemented an additional use case. The additional use is Shadow Launch. Additionally, I added some metrics with Prometheus in the model service to evaluate the new model version.
+
+- Horia \ 
+  https://github.com/doda2025-team8/operation/pull/52
+  This week I analysed a short coming into the current release process and proposed an extension. The extension proposed is a vulnerability scanning for all docker images built, before pushing them to the registry, and also blocking kubernetes from running unscanned images.
