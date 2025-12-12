@@ -102,11 +102,32 @@ No work done.
 ### Week Q2.5 (8 Dec+)
 
 - Yuchen \
-    https://github.com/doda2025-team8/operation/pull/47
-    Implement DestinationRules for 90/10 traffic split between old/new versions. Ensure consistent routing between app-service and model-service versions (old-old, new-new only). Implement Sticky Sessions for stable user routing. Test canary release with curl/Postman requests. Document routing behavior and testing approach
+  https://github.com/doda2025-team8/operation/pull/47
+  Implement DestinationRules for 90/10 traffic split between old/new versions. Ensure consistent routing between app-service and model-service versions (old-old, new-new only). Implement Sticky Sessions for stable user routing. Test canary release with curl/Postman requests. Document routing behavior and testing approach
 
 - Hendrik \
   On the app-servie I added caching of the model responses with prometheus metrics that get exported. It can be enabled with an environment variable.
   https://github.com/doda2025-team8/app-service/pull/12
   On the operations side, I fixed some issues with sticky sessions and implemented that the two app-service containers actually did something different. I also enabled added routes for grafana and prometheus and re-wrote parts of the documentation.
   https://github.com/doda2025-team8/operation/pull/48
+
+
+- Vincent \   
+  https://github.com/doda2025-team8/operation/pull/40
+  I setup Istio for the Helm app such that we can use it with a Gateway, VirtualService, and Destination Rule. I set it up to work with a tunnel, another team member will make it work with custom routing.
+
+- Andriana \ 
+  https://github.com/doda2025-team8/model-service/pull/23  
+  https://github.com/doda2025-team8/operation/pull/50  
+  This week I implemented an additional use case. The additional use is Shadow Launch. Additionally, I added some metrics with Prometheus in the model service to evaluate the new model version.
+
+- Yanzhi \
+  Created the docs/continuous-experimentation.md documentation that describes the caching experiment (v1 no-cache vs v2 with-cache), including the hypothesis, metrics, and decision process.
+  https://github.com/doda2025-team8/operation/pull/49
+  Fixed the missing version labels in the app-service metrics by adding .tag("version", version) to all metrics in FrontendController.java and adding APP_VERSION environment variable to backend-deployment.yaml.
+  https://github.com/doda2025-team8/app-service/pull/13
+  Configured the Grafana dashboard, generated test traffic, and captured screenshots showing the experiment results.
+
+
+
+
