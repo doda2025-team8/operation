@@ -74,10 +74,10 @@ No work done.
 ### Week Q2.4 (1 Dec+)
 
 - Hendrik\
-    This week I worked on migrating the docker compose setup to kubernetes files, this can be seen in https://github.com/doda2025-team8/operation/pull/23 \
-    Furthermore, I added health endpoints in the app-service and app-frontend\
-    https://github.com/doda2025-team8/app-frontend/pull/7 \
-    https://github.com/doda2025-team8/app-service/pull/11
+  This week I worked on migrating the docker compose setup to kubernetes files, this can be seen in https://github.com/doda2025-team8/operation/pull/23 \
+  Furthermore, I added health endpoints in the app-service and app-frontend\
+  https://github.com/doda2025-team8/app-frontend/pull/7 \
+  https://github.com/doda2025-team8/app-service/pull/11
 
 - Vincent \
     https://github.com/doda2025-team8/operation/pull/24
@@ -98,7 +98,6 @@ No work done.
     https://github.com/doda2025-team8/operation/pull/35
     For this week I implemented some (minor) fixes with the helm install. Updated documentation. Fixed an open item from last week.
 
-
 ### Week Q2.5 (8 Dec+)
 
 - Yuchen \
@@ -117,3 +116,12 @@ No work done.
   Fixed the missing version labels in the app-service metrics by adding .tag("version", version) to all metrics in FrontendController.java and adding APP_VERSION environment variable to backend-deployment.yaml.
   https://github.com/doda2025-team8/app-service/pull/13
   Configured the Grafana dashboard, generated test traffic, and captured screenshots showing the experiment results.
+  
+- Vincent   
+  https://github.com/doda2025-team8/operation/pull/40
+  I setup Istio for the Helm app such that we can use it with a Gateway, VirtualService, and Destination Rule. I set it up to work with a tunnel, another team member will make it work with custom routing.
+
+- Andriana  
+  https://github.com/doda2025-team8/model-service/pull/23  
+  https://github.com/doda2025-team8/operation/pull/50  
+  This week I implemented an additional use case. The additional use is Shadow Launch. Additionally, I added some metrics with Prometheus in the model service to evaluate the new model version.
