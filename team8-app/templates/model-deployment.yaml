@@ -139,6 +139,9 @@ spec:
         version: v3
       annotations:
         sidecar.istio.io/inject: "true"
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "{{.Values.model.service.targetPort}}"
+        prometheus.io/path: "/metrics"
     spec:
       containers:
         - name: model-service

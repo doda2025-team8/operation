@@ -27,7 +27,7 @@ backend:
 
 model:
   replicaCount: 1
-  image: ghcr.io/doda2025-team8/model-service:latest
+  image: model-service:local # change this once model service PR is merged
 
   service:
     port: 8081
@@ -44,7 +44,7 @@ model_shadow:
     MODEL_VERSION: "v1.0.2"
 
   labels:
-    app: model-service
+    app: model-service 
     component: ml-model
 
 grafana:
