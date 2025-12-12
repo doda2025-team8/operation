@@ -74,6 +74,7 @@ No work done.
   Furthermore, I added health endpoints in the app-service and app-frontend\
   https://github.com/doda2025-team8/app-frontend/pull/7 \
   https://github.com/doda2025-team8/app-service/pull/11
+
 - Vincent \
     https://github.com/doda2025-team8/operation/pull/24
     I setup the Helm Chart such that the app and its dependencies can be locally installed in a Kubernetes (e.g. minikube) install. I updated the README to also have the correct instructions for the installation of the app through Helm.
@@ -96,6 +97,11 @@ No work done.
 
 ### Week Q2.5 (8 Dec+)
 
-- Vincent \ 
+- Vincent   
   https://github.com/doda2025-team8/operation/pull/40
   I setup Istio for the Helm app such that we can use it with a Gateway, VirtualService, and Destination Rule. I set it up to work with a tunnel, another team member will make it work with custom routing.
+
+- Andriana  
+  https://github.com/doda2025-team8/model-service/pull/23  
+  https://github.com/doda2025-team8/operation/pull/50  
+  This week I implemented an additional use case. The additional use is Shadow Launch. Additionally, I added some metrics with Prometheus in the model service to evaluate the new model version.
