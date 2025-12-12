@@ -67,7 +67,7 @@ No work done.
   This week I worked on implementing step 13-17 (controller provisioning) \
   https://github.com/doda2025-team8/operation/pull/16
 
-- Yuchen
+- Yuchen\
   For this week I worked on steps 20-22. I deployed MetalLB to provide bare-metal load balancing, the Nginx Ingress Controller to configure domain-based routing, and the K8s Dashboard to provide a convenient graphical interface for resource exploration. \
   https://github.com/doda2025-team8/operation/pull/20
 
@@ -116,12 +116,12 @@ No work done.
   Fixed the missing version labels in the app-service metrics by adding .tag("version", version) to all metrics in FrontendController.java and adding APP_VERSION environment variable to backend-deployment.yaml.
   https://github.com/doda2025-team8/app-service/pull/13
   Configured the Grafana dashboard, generated test traffic, and captured screenshots showing the experiment results.
-  
-- Vincent   
+
+- Vincent \
   https://github.com/doda2025-team8/operation/pull/40
   I setup Istio for the Helm app such that we can use it with a Gateway, VirtualService, and Destination Rule. I set it up to work with a tunnel, another team member will make it work with custom routing.
 
-- Andriana  
+- Andriana \ 
   https://github.com/doda2025-team8/model-service/pull/23  
   https://github.com/doda2025-team8/operation/pull/50  
   This week I implemented an additional use case. The additional use is Shadow Launch. Additionally, I added some metrics with Prometheus in the model service to evaluate the new model version.
