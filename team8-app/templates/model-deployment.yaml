@@ -115,3 +115,66 @@ spec:
       volumes:
         - name: model-storage
           emptyDir: {}
+---
+# Shadow launch
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: model-service-v3
+  labels:
+    app: model-service
+    component: ml-model
+    version: v3
+spec:
+  replicas: {{ .Values.model.replicaCount }}
+  selector:
+    matchLabels:
+      app: model-service
+      version: v3
+  template:
+    metadata:
+      labels:
+        app: model-service
+        component: ml-model
+        version: v3
+      annotations:
+        sidecar.istio.io/inject: "true"
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "{{.Values.model.service.targetPort}}"
+        prometheus.io/path: "/metrics"
+    spec:
+      containers:
+        - name: model-service
+          image: {{ .Values.model.image }}
+          ports:
+            - containerPort: {{ .Values.model.service.targetPort }}
+              name: http
+          env:
+            - name: MODEL_SERVICE_PORT
+              value: "{{ .Values.model.env.MODEL_SERVICE_PORT }}"
+            - name: MODEL_DIR
+              value: "{{ .Values.model.env.MODEL_DIR }}"
+            - name: MODEL_VERSION
+              value: "{{ .Values.model_shadow.env.MODEL_VERSION }}"
+            - name: GITHUB_REPO
+              value: "{{ .Values.model.env.GITHUB_REPO }}"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: {{ .Values.model.service.targetPort }}
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: {{ .Values.model.service.targetPort }}
+            initialDelaySeconds: 30
+            periodSeconds: 5
+            failureThreshold: 6
+          volumeMounts:
+            - name: model-storage
+              mountPath: /app/models
+      volumes:
+        - name: model-storage
+          emptyDir: {}

@@ -114,10 +114,6 @@ Install istioctl
 
 #### 3. Install istioctl
 * Install istio `istioctl install`
-* `cd` to the directory that contains `istio-1.28.1/` and run
-   * `kubectl apply -f istio-1.28.1/samples/addons/prometheus.yaml`
-   * `kubectl apply -f istio-1.28.1/samples/addons/jaeger.yaml`
-   * `kubectl apply -f istio-1.28.1/samples/addons/kiali.yaml`
 
 #### 4. Setup hosts file
 
@@ -158,7 +154,6 @@ Container creation takes appprox. 20 sec
 * `kubectl get ingress` should show an `app-ingress` is running. By navigating to its IP address in your browser, you should see the running app and use it.
 * `kubectl get pods -n istio-system` should show you that Istio is running.
 * Run `istioctl dashboard kiali` to see the details of Istio and how its running.
-
 ### 2. Add Prometheus + Grafana dependencies
 
 ```bash
@@ -267,3 +262,36 @@ Steps:
    ```
 2. Send a request using the command from Step 2.
 Logs should scroll in only one terminal (either all v1 or all v2), proving that the full call chain (Frontend → Backend → Model) is version-consistent.
+
+# Aditional Use Case - Shadow launch
+A second instance of the model-service (v3) is deployed which uses a new version of the model (v1.0.2) and is used to mirror existing traffic to the other two instanses v1 and v2.
+
+## Testing Approach
+Steps:
+1. Open two terminals to tail logs for v1 and v3 separately:
+
+   ```
+   # Terminal A
+   kubectl logs -f -l version=v1 --all-containers=true
+
+   # Terminal B
+   kubectl logs -f -l version=v2 --all-containers=true
+   ```
+2. Send a request in a new terminal:
+   ```
+   curl -v -X POST http://localhost:8080/sms   -H "Host: team8.local"   -H "Content-Type: application/json"   -d '{"sms": "test shadow launch"}'
+   ```
+3. Inspoect the logs. 
+   * You will see that v1 processes the request and returns an output.
+   * v3 receives the mirrored request internally but does not output anything.
+4. Metrics are exposed in model-service to evaluate the new model version. 
+   * `model_predictions_total`
+   * `model_prediction_latency_seconds`
+
+   To acess the metrics run:
+   ```
+   kubectl port-forward $(kubectl get pods | grep model-service-v3 | awk '{print $1}') 8082:8081
+   ```
+   Navigate to `http://localhost:8082/metrics`
+
+
