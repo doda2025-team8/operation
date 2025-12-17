@@ -275,7 +275,7 @@ Steps:
    kubectl logs -f -l version=v1 --all-containers=true
 
    # Terminal B
-   kubectl logs -f -l version=v2 --all-containers=true
+   kubectl logs -f -l version=v3 --all-containers=true
    ```
 2. Send a request in a new terminal:
    ```
