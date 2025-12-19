@@ -129,3 +129,8 @@ No work done.
 - Horia \ 
   https://github.com/doda2025-team8/operation/pull/52
   This week I analysed a short coming into the current release process and proposed an extension. The extension proposed is a vulnerability scanning for all docker images built, before pushing them to the registry, and also blocking kubernetes from running unscanned images.
+
+### Week Q2.6 (15 Dec+)
+- Yuchen \
+    https://github.com/doda2025-team8/lib-version/pull/6
+    Fix problem in A1 Peer Review: F11 is implemented for lib-version repo now. The version is determined automatically. Used single source of truth for versioning for lib-version now. Also the pre-release for the branch commit also be added.
