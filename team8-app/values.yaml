@@ -26,7 +26,7 @@ backend:
 
 model:
   replicaCount: 1
-  image: model-service:latest
+  image: ghcr.io/doda2025-team8/model-service:latest
 
   service:
     port: 8081
