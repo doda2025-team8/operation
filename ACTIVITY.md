@@ -129,3 +129,11 @@ No work done.
 - Horia \ 
   https://github.com/doda2025-team8/operation/pull/52
   This week I analysed a short coming into the current release process and proposed an extension. The extension proposed is a vulnerability scanning for all docker images built, before pushing them to the registry, and also blocking kubernetes from running unscanned images.
+
+### Week Q2.6 (15 Dec+)
+
+- Andriana \
+  https://github.com/doda2025-team8/operation/pull/64
+  https://github.com/doda2025-team8/operation/pull/63
+  https://github.com/doda2025-team8/model-service/pull/25
+  This week I worked on refining some parts of the project. Specifically, I updated alert manager to not contain sensitive information. The chart now provides an illustrative placeholder in values.yaml and allows for exchange during installation. Lastly, I fixed an error in model service that was causing the backend to crash due to wrong variable name reference.
