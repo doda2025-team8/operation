@@ -58,6 +58,7 @@ There are two ways to run the applications on kubernetes. The first one is to ru
 
 #### 1. Create and provision VMs
 ```bash
+cd k8s/
 vagrant up
 ```
 
@@ -66,8 +67,10 @@ After all VMs are running, SSH into the controller and run the join playbook:
 ```bash
 vagrant ssh ctrl
 cd /vagrant
-ansible-playbook playbooks/node.yaml --ask-pass
+ansible-playbook playbooks/node.yaml -i inventory/hosts.ini --ask-pass
 ```
+Might need to run: 
+`ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook playbooks/node.yaml -i inventory/hosts.ini --ask-pass`
 Password: `vagrant`
 
 #### 3. Verify cluster

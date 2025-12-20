@@ -129,3 +129,9 @@ No work done.
 - Horia \ 
   https://github.com/doda2025-team8/operation/pull/52
   This week I analysed a short coming into the current release process and proposed an extension. The extension proposed is a vulnerability scanning for all docker images built, before pushing them to the registry, and also blocking kubernetes from running unscanned images.
+
+### Week Q2.6 (15 Dec+)
+
+-Yanzhi \
+
+  This week, focused on processing the feedbacks for A1 and A2, adjusted readme for model-service repository, fixed some vagrant setup for operation repository, removing unneccessary commands and optimize.
