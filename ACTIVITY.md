@@ -133,5 +133,6 @@ No work done.
 ### Week Q2.6 (15 Dec+)
 
 -Yanzhi \
-
+  https://github.com/doda2025-team8/model-service/pull/27
+  https://github.com/doda2025-team8/operation/pull/68
   This week, focused on processing the feedbacks for A1 and A2, adjusted readme for model-service repository, fixed some vagrant setup for operation repository, removing unneccessary commands and optimize.
