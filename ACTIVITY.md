@@ -129,3 +129,16 @@ No work done.
 - Horia \ 
   https://github.com/doda2025-team8/operation/pull/52
   This week I analysed a short coming into the current release process and proposed an extension. The extension proposed is a vulnerability scanning for all docker images built, before pushing them to the registry, and also blocking kubernetes from running unscanned images.
+
+### Week Q2.6 (15 Dec+)
+
+- Vincwent \
+  https://github.com/doda2025-team8/model-service/pull/26 \
+  https://github.com/doda2025-team8/lib-version/pull/7 \ 
+  https://github.com/doda2025-team8/app-service/pull/16 \
+  This Week I processed some feedback from A1, wherein we should organise the repo a bit better such that it no longer needs the Maven wrappers etc. that were commited, those are not in the gitignore. Also I removed many redundant cmments as that was mentionted many times in all the feedback.
+
+- Hendrik \
+  https://github.com/doda2025-team8/app-service/pull/17\
+  https://github.com/doda2025-team8/model-service/pull/28\
+  This week I worked on feedback we received for A1. I tried to figure out a way to use the use the library without Github tokens, but that is not possible. The PR is still waiting for a merge in lib-version. I also worked on a small fix for the nodel-service release action.
