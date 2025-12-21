@@ -134,3 +134,19 @@ No work done.
 - Yuchen \
     https://github.com/doda2025-team8/lib-version/pull/6
     Fix problem in A1 Peer Review: F11 is implemented for lib-version repo now. The version is determined automatically. Used single source of truth for versioning for lib-version now. Also the pre-release for the branch commit also be added.
+
+- Andriana \
+  https://github.com/doda2025-team8/operation/pull/64
+  https://github.com/doda2025-team8/operation/pull/63
+  https://github.com/doda2025-team8/model-service/pull/25
+  This week I worked on refining some parts of the project. Specifically, I updated alert manager to not contain sensitive information. The chart now provides an illustrative placeholder in values.yaml and allows for exchange during installation. Lastly, I fixed an error in model service that was causing the backend to crash due to wrong variable name reference.
+- Vincwent \
+  https://github.com/doda2025-team8/model-service/pull/26 \
+  https://github.com/doda2025-team8/lib-version/pull/7 \ 
+  https://github.com/doda2025-team8/app-service/pull/16 \
+  This Week I processed some feedback from A1, wherein we should organise the repo a bit better such that it no longer needs the Maven wrappers etc. that were commited, those are not in the gitignore. Also I removed many redundant cmments as that was mentionted many times in all the feedback.
+
+- Hendrik \
+  https://github.com/doda2025-team8/app-service/pull/17\
+  https://github.com/doda2025-team8/model-service/pull/28\
+  This week I worked on feedback we received for A1. I tried to figure out a way to use the use the library without Github tokens, but that is not possible. The PR is still waiting for a merge in lib-version. I also worked on a small fix for the nodel-service release action.
