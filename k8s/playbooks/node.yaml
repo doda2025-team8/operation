@@ -1,6 +1,6 @@
 # playbooks/node.yaml
 - name: Join worker nodes to Kubernetes cluster
-  hosts: workers
+  hosts: node-*
   become: true
   tasks:
     # Step 18: Generate join command from controller
@@ -15,12 +15,7 @@
       register: join_command
       changed_when: false
       when: not kubelet_conf.stat.exists
-
-    # Step 19: Run join command on worker
-    - name: Join the Kubernetes cluster
-      command: "{{ join_command.stdout }}"
-      when: not kubelet_conf.stat.exists
-
+    
     - name: Wait for node to be ready
       become: yes
       become_user: vagrant
@@ -33,3 +28,10 @@
       register: node_ready
       until: node_ready.rc == 0
       when: not kubelet_conf.stat.exists
+
+    # Step 19: Run join command on worker
+    - name: Join the Kubernetes cluster
+      command: "{{ join_command.stdout }}"
+      when: not kubelet_conf.stat.exists
+
+    
