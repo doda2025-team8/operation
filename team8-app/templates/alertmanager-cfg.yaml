@@ -3,18 +3,18 @@ kind: AlertmanagerConfig
 metadata:
   name: email-config
   labels: 
-    release: myprom 
+    alertmanagerConfig: alertmanagercfg
 spec:
   route:
     receiver: 'email-alerts'
   receivers:
-  - name: 'email-alerts'
-    emailConfigs:
-    - to: "team8doda@gmail.com"
-      from: "team8doda@gmail.com"
-      smarthost: "smtp.gmail.com:587"
-      authUsername: "team8doda@gmail.com"
-      authPassword:
-        name: alertmanager-smtp-secret
-        key: SMTP_PASSWORD
-      requireTLS: true
+    - name: 'email-alerts'
+      emailConfigs:
+      - to: {{ .Values.alertmanager.email.to}}
+        from: {{ .Values.alertmanager.email.from }}
+        smarthost: {{ .Values.alertmanager.email.smarthost }}
+        authUsername: {{ .Values.alertmanager.email.authUsername }}
+        authPassword:
+          name: alertmanager-smtp-secret
+          key: SMTP_PASSWORD
+        requireTLS: true
