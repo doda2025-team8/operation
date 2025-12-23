@@ -46,6 +46,16 @@ model_shadow:
     app: model-service 
     component: ml-model
 
+alertmanager:
+  email:
+    to: "recieveremail@example.com" # here replace with the receiver's email adress
+    from: "email@example.com" # here replace with the sender's email
+    smarthost: "smtp.gmail.com:587" # SMTP server address and port (for our testing we used gmail)
+    authUsername: "email@example.com" # SMTP username (usually your email password)
+    authPassword: "password" # SMTP password (your email password base64 encoded)
+                             # you may need to generate an app password depending on your provider
+    requireTLS: true
+
 grafana:
     namespace: default
 

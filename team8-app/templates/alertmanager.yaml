@@ -2,10 +2,10 @@ apiVersion: monitoring.coreos.com/v1
 kind: Alertmanager
 metadata:
   name: email-alert
-  labels: 
+  labels:
     release: myprom
 spec:
   replicas: 1
   alertmanagerConfigSelector:
     matchLabels:
-      release: myprom
+      alertmanagerConfig: alertmanagercfg
