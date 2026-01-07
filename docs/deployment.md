@@ -17,8 +17,7 @@ Horia Zaharia
 
 
 ## Introduction 
-The goal of this document is to describe the deployment structure  and deployment data flow of the SMS Checker app. The app is deployed in Kubernetes with Istio service mesh. Additionally, it implements a canary release to a small fraction of its users (90/10 traffic split) with sticky sessions and an additional usecase, a Shadow Launch, which mirrors traffic to a new model version. An experiement is run to evaluate a canary release of the app to a small fraction of its users which enables caching model responses to improve latency. 
-
+The goal of this document is to describe the deployment structure  and deployment data flow of the SMS Checker app. The app is deployed in Kubernetes with Istio service mesh. Additionally, it implements a canary release to a small fraction of its users (90/10 traffic split) with sticky sessions and an additional use case, a Shadow Launch, which mirrors traffic to a new model version. An experiment is run to evaluate a canary release of the app to a small fraction of its users which enables caching model responses to improve latency. This document presents an overview of the deployment architecture, provides information on all deployed components and their relationships, a description of the request flow through the deployed cluster and a quick reference guide on how to access the application.
 
 ## Architecture Overview 
 <!--Add a high level diagram of the architecture and a general description. (Idea: Add kiali diagram)-->
