@@ -6,6 +6,10 @@ services:
       - "${EXPOSED_PORT}:${NGINX_PORT}"
     volumes:
       - /nginx.conf.template:/etc/nginx/templates/nginx.conf.template:ro
+    environment:
+      - NGINX_PORT=${NGINX_PORT}
+      - APP_SERVICE_PORT=${APP_SERVICE_PORT}
+      - APP_FRONTEND_PORT=${APP_FRONTEND_PORT}
     depends_on:
       - app-service
       - app-frontend
@@ -28,6 +32,7 @@ services:
     container_name: app-service
     environment:
       - MODEL_HOST=${MODEL_HOST}
+      - APP_SERVICE_PORT=${APP_SERVICE_PORT}
     depends_on:
       - model-service
     restart: unless-stopped
