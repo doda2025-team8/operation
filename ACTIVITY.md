@@ -159,3 +159,7 @@ No work done.
 - Horia
   https://github.com/doda2025-team8/operation/pull/69
   Worked on speeding up the vagrant provision. Also tried to automatically join nodes to the cluster but not successful.
+
+  ### Week Q2.8 (5 Jan+)
+- Yuchen
+  
