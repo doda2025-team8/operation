@@ -1,0 +1,60 @@
+{{- if .Values.istio.enabled}}
+
+---
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: app-frontend-dr
+spec:
+  host: app-frontend
+  trafficPolicy:
+    loadBalancer:
+      consistentHash:
+        httpCookie:
+          name: "canary-user"
+          ttl: 600s         
+  subsets:
+    - name: v1
+      labels: { version: v1 }
+    - name: v2
+      labels: { version: v2 }
+---
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: app-service-dr
+spec:
+  host: app-service
+  trafficPolicy:
+    loadBalancer:
+      consistentHash:
+        httpCookie:
+          name: "canary-user"
+          ttl: 600s
+  subsets:
+    - name: v1
+      labels: { version: v1 }
+    - name: v2
+      labels: { version: v2 }
+---
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: model-service-dr
+spec:
+  host: model-service
+  trafficPolicy:
+    loadBalancer:
+      consistentHash:
+        httpCookie:
+          name: "canary-user"
+          ttl: 600s
+  subsets:
+    - name: v1
+      labels: { version: v1 }
+    - name: v2
+      labels: { version: v2 }
+    - name: v3
+      labels: { version: v3 }
+
+{{- end }}
