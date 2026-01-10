@@ -3,13 +3,13 @@ services:
     image: nginx:alpine
     container_name: nginx-proxy
     ports:
-      - "${EXPOSED_PORT}:${NGINX_PORT}"
+      - "${EXPOSED_PORT:-8083}:${NGINX_PORT:-8083}"
     volumes:
       - ./nginx.conf.template:/etc/nginx/templates/nginx.conf.template:ro
     environment:
-      - NGINX_PORT=${NGINX_PORT}
-      - APP_SERVICE_PORT=${APP_SERVICE_PORT}
-      - APP_FRONTEND_PORT=${APP_FRONTEND_PORT}
+      - NGINX_PORT=${NGINX_PORT:-8083}
+      - APP_SERVICE_PORT=${APP_SERVICE_PORT:-8080}
+      - APP_FRONTEND_PORT=${APP_FRONTEND_PORT:-8082}
     depends_on:
       - app-service
       - app-frontend
@@ -19,7 +19,7 @@ services:
     image: ghcr.io/doda2025-team8/model-service:${MODEL_SERVICE_VERSION}
     container_name: model-service
     environment:
-      - MODEL_SERVICE_PORT=${MODEL_SERVICE_PORT}
+      - MODEL_SERVICE_PORT=${MODEL_SERVICE_PORT:-8081}
       - MODEL_DIR=${MODEL_DIR}
       - MODEL_VERSION=${MODEL_VERSION}
       - GITHUB_REPO=${GITHUB_REPO}
@@ -32,7 +32,7 @@ services:
     container_name: app-service
     environment:
       - MODEL_HOST=${MODEL_HOST}
-      - PORT=${APP_SERVICE_PORT}
+      - PORT=${APP_SERVICE_PORT:-8080}
     depends_on:
       - model-service
     restart: unless-stopped
@@ -41,7 +41,7 @@ services:
     image: ghcr.io/doda2025-team8/app-frontend:${APP_FRONTEND_VERSION}
     container_name: app-frontend
     environment:
-      - PORT=${APP_FRONTEND_PORT}
+      - PORT=${APP_FRONTEND_PORT:-8082}
     restart: unless-stopped
 
 

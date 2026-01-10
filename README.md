@@ -1,4 +1,4 @@
-# SMS Checker - Operation Repository
+# SMS Checker - Team 8
 
 This repository contains all information about running the SMS checker application.
 
@@ -15,40 +15,56 @@ functionality.  |
 
 Links to repositories:
 
-``lib-version``: https://github.com/doda2025-team8/lib-version/releases/tag/a1 \
-``app-service``:  https://github.com/doda2025-team8/app-service/releases/tag/a1 \
-``app-frontend``: https://github.com/doda2025-team8/app-frontend/releases/tag/a1 \
-``model-service``: https://github.com/doda2025-team8/model-service/releases/tag/a1 
+``lib-version``: https://github.com/doda2025-team8/lib-version \
+``app-service``:  https://github.com/doda2025-team8/app-service \
+``app-frontend``: https://github.com/doda2025-team8/app-frontend \
+``model-service``: https://github.com/doda2025-team8/model-service 
 
-An NGINX reverse proxy was configured to serve the frontend and safely forward API calls to the backend from the same origin to avoid CORS issues.
+An NGINX reverse proxy is configured to serve the frontend and safely forward API calls to the backend from the same origin to avoid CORS issues.
 
-## Run With Docker Compose
-
-### How to run the application
+## Running the Application with Docker Compose
 
 #### Prerequisites
 - Docker Engine
 
 ### Starting the application
 1. **Create an .env file**   
-An example .env file is provided, containing the environment variables required to run the application. You can modify it as needed.
+An example .env file is provided, containing the environment variables required to run the application. You can modify it as needed.  
+
+   #### Supporting Arguments:
+
+   #### Image versions
+   - `MODEL_SERVICE_VERSION` - version tag of model-service image
+   - `APP_SERVICE_VERSION` - version tag of app-service image 
+   - `APP_FRONTEND_VERSION` - version tag of app-frontend image
+
+   #### Internal service ports
+   - `APP_SERVICE_PORT` - internal port on which app-service listens
+   - `APP_FRONTEND_PORT` - internal port on which app-frontend listens
+
+   #### NGINX_PORT
+   - `NGINX_PORT` - internal port used by NGINX to route traffic
+
+   #### Exposed port on localhost
+   - `EXPOSED_PORT` - port exposed on localhost tor accessing the application
+
+   #### MODEL SERVICE location
+   - `MODEL_HOST` - hostname on where the model service is reachable
+   - `MODEL_SERVICE_PORT` - service port
+   - `MODEL_DIR` - model directory
+   - `MODEL_VERSION` - released model version
+   - `GITHUB_REPO`- repository for downloading the model
+
 2. **Start the application**
-```
-docker compose up -d
-```
+   ```
+   docker compose up -d
+   ```
 4. **Access the application**
    
    Open your browser and navigate to:
-```
-   http://localhost:8080
-```
-
-### Files in this repository:
-
-- **`docker-compose.yml`**: Defines and orchestrates all services required to run the application
-- **`nginx.conf`**: Configuration file for the Nginx reverse proxy
-- **`.env`**: Environment-specific configuration 
-
+   ```
+      http://localhost:8080
+   ```
 
 ## Setup Instructions Kubernetes
 
