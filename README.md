@@ -10,8 +10,7 @@ The application consists of four components:
 | app-frontend  | The UI (HTML/JS) of the application served through nginx.                              |
 | app-service   | An API gateway for forwarding requests to the model-service via REST. |
 | model-service | It serves the ML model for spam detection prediction.  |
-| lib-version | A version-aware package that is used by the app-service with no specific
-functionality.  |
+| lib-version | A version-aware package that is used by the app-service with no specific functionality.
 
 Links to repositories:
 
