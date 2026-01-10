@@ -167,3 +167,8 @@ No work done.
 - Vincent \
   https://github.com/doda2025-team8/operation/pull/81 \ 
   This week I process some feedback from A2 and on and we had a meeting on how to split the work on processing the feedback with the view of the final submission approaching. I split some templates into seperate files, as that was pointed to in the feedback and redid the structure of the README such that it is a bit simpler to use.
+
+- Andriana \  
+  https://github.com/doda2025-team8/operation/pull/83
+  https://github.com/doda2025-team8/operation/pull/84
+  This week I worked on feedback from A1, I updated the envs used in the docker compose as well as the readme. I also worked on the deployment documentation. Lastly, I attended the meeting we had on processing the feedback from a4.
