@@ -132,10 +132,11 @@ No work done.
 
 ### Week Q2.6 (15 Dec+)
 
--Yanzhi \
+- Yanzhi \
   https://github.com/doda2025-team8/model-service/pull/27
   https://github.com/doda2025-team8/operation/pull/68
   This week, focused on processing the feedbacks for A1 and A2, adjusted readme for model-service repository, fixed some vagrant setup for operation repository, removing unneccessary commands and optimize.
+
 - Yuchen \
     https://github.com/doda2025-team8/lib-version/pull/6
     Fix problem in A1 Peer Review: F11 is implemented for lib-version repo now. The version is determined automatically. Used single source of truth for versioning for lib-version now. Also the pre-release for the branch commit also be added.
@@ -145,7 +146,8 @@ No work done.
   https://github.com/doda2025-team8/operation/pull/63
   https://github.com/doda2025-team8/model-service/pull/25
   This week I worked on refining some parts of the project. Specifically, I updated alert manager to not contain sensitive information. The chart now provides an illustrative placeholder in values.yaml and allows for exchange during installation. Lastly, I fixed an error in model service that was causing the backend to crash due to wrong variable name reference.
-- Vincwent \
+
+- Vincent \
   https://github.com/doda2025-team8/model-service/pull/26 \
   https://github.com/doda2025-team8/lib-version/pull/7 \ 
   https://github.com/doda2025-team8/app-service/pull/16 \
@@ -157,5 +159,16 @@ No work done.
   This week I worked on feedback we received for A1. I tried to figure out a way to use the use the library without Github tokens, but that is not possible. The PR is still waiting for a merge in lib-version. I also worked on a small fix for the nodel-service release action.
 
 - Horia
-  https://github.com/doda2025-team8/operation/pull/69
+  https://github.com/doda2025-team8/operation/pull/69 \
   Worked on speeding up the vagrant provision. Also tried to automatically join nodes to the cluster but not successful.
+
+### Week Q2.7 (Jan 5+)
+
+- Vincent \
+  https://github.com/doda2025-team8/operation/pull/81 \ 
+  This week I process some feedback from A2 and on and we had a meeting on how to split the work on processing the feedback with the view of the final submission approaching. I split some templates into seperate files, as that was pointed to in the feedback and redid the structure of the README such that it is a bit simpler to use.
+
+- Andriana \  
+  https://github.com/doda2025-team8/operation/pull/83
+  https://github.com/doda2025-team8/operation/pull/84
+  This week I worked on feedback from A1, I updated the envs used in the docker compose as well as the readme. I also worked on the deployment documentation. Lastly, I attended the meeting we had on processing the feedback from a4.
