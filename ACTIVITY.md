@@ -172,3 +172,11 @@ No work done.
   https://github.com/doda2025-team8/operation/pull/83
   https://github.com/doda2025-team8/operation/pull/84
   This week I worked on feedback from A1, I updated the envs used in the docker compose as well as the readme. I also worked on the deployment documentation. Lastly, I attended the meeting we had on processing the feedback from a4.
+
+- Yanzhi
+  https://github.com/doda2025-team8/app-service/pull/19
+  This week I worked on feedback from A3, I fixed the no Histogram and the metrics are not broken down with labels issue for app monitoring in the app-service.
+
+- Yuchen
+  https://github.com/doda2025-team8/operation/pull/79
+  Added Assignment2 step23 -- Install Istio. The Istio Pods are running, and a fixed IP has assigned to the Istio: istio-ingressgateway   LoadBalancer ... 192.168.56.92
