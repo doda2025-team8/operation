@@ -17,6 +17,8 @@ spec:
         {{- range .Values.istio.gateway.hosts }}
         - {{ . | quote }}
         {{- end }}
+        - {{ .Values.frontend.hostname | quote }}
+        - {{ .Values.frontend.canaryHostname | quote }}
         - "grafana.team8.local"
         - "prometheus.team8.local"
 
@@ -52,6 +54,7 @@ spec:
           host: myprom-kube-prometheus-sta-prometheus.default.svc.cluster.local
           port:
             number: 9090
+
 ---
 apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
@@ -59,7 +62,7 @@ metadata:
   name: my-vs
 spec:
   hosts:
-    - "team8.local"
+    - {{ .Values.frontend.hostname | quote }}
   gateways:
     - my-gateway
   http:
@@ -102,6 +105,31 @@ spec:
           host: app-frontend
           subset: v2
         weight: 10
+
+---
+# VirtualService for direct canary/pre-release access
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: canary-vs
+spec:
+  hosts:
+    - {{ .Values.frontend.canaryHostname | quote }}
+  gateways:
+    - my-gateway
+  http:
+    - match:
+        - uri:
+            prefix: "/sms"
+      route:
+        - destination:
+            host: app-service
+            subset: v2
+    - route:
+        - destination:
+            host: app-frontend
+            subset: v2
+
 ---
 apiVersion: networking.istio.io/v1beta1
 kind: DestinationRule
