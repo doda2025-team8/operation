@@ -62,18 +62,7 @@ cd k8s/
 vagrant up
 ```
 
-#### 2. Join worker nodes to cluster
-After all VMs are running, SSH into the controller and run the join playbook:
-```bash
-vagrant ssh ctrl
-cd /vagrant
-ansible-playbook playbooks/node.yaml -i inventory/hosts.ini --ask-pass
-```
-Might need to run: 
-`ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook playbooks/node.yaml -i inventory/hosts.ini --ask-pass`
-Password: `vagrant`
-
-#### 3. Verify cluster from host
+#### 2. Verify cluster from host
 ```bash
 KUBECONFIG=./admin.conf  kubectl get nodes -o wide
 ```
@@ -86,16 +75,16 @@ node-1   Ready    <none>          XXm   v1.32.4
 node-2   Ready    <none>          XXm   v1.32.4
 ```
 
-#### 4. Finalize Cluster Services
+#### 3. Finalize Cluster Services
 ```bash
 ansible-playbook -i k8s/inventory/hosts.ini k8s/playbooks/finalization.yml -u vagrant
 ```
 
-#### 5.
+#### 4.
 
 Install istioctl
 
-#### 6. Setup hosts file
+#### 5. Setup hosts file
 1. **Add the following lines to your host machine's /etc/hosts file:** 
 ```bash
 # K8s Cluster Services
