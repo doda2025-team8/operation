@@ -73,9 +73,9 @@ Might need to run:
 `ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook playbooks/node.yaml -i inventory/hosts.ini --ask-pass`
 Password: `vagrant`
 
-#### 3. Verify cluster
+#### 3. Verify cluster from host
 ```bash
-kubectl get nodes
+KUBECONFIG=./admin.conf  kubectl get nodes -o wide
 ```
 
 Expected output:
