@@ -159,8 +159,3 @@ No work done.
 - Horia
   https://github.com/doda2025-team8/operation/pull/69
   Worked on speeding up the vagrant provision. Also tried to automatically join nodes to the cluster but not successful.
-
-  ### Week Q2.8 (5 Jan+)
-- Yuchen
-  https://github.com/doda2025-team8/operation/pull/79
-  Added Assignment2 step23 -- Install Istio. The Istio Pods are running, and a fixed IP has assigned to the Istio: istio-ingressgateway   LoadBalancer ... 192.168.56.92
