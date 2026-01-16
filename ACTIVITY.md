@@ -159,6 +159,8 @@ No work done.
   This week I worked on feedback we received for A1. I tried to figure out a way to use the use the library without Github tokens, but that is not possible. The PR is still waiting for a merge in lib-version. I also worked on a small fix for the nodel-service release action.
 
 - Horia
+  https://github.com/doda2025-team8/operation/pull/69
+  Worked on speeding up the vagrant provision. Also tried to automatically join nodes to the cluster but not successful.
   https://github.com/doda2025-team8/operation/pull/69 \
   Worked on speeding up the vagrant provision. Also tried to automatically join nodes to the cluster but not successful.
 
