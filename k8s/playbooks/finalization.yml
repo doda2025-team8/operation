@@ -182,6 +182,10 @@
       become: yes
       become_user: vagrant
 
+    - name: Enable Istio sidecar injection for default namespace
+      shell: kubectl label namespace default istio-injection=enabled --overwrite
+      register: istio_label
+      changed_when: "'labeled' in istio_label.stdout"
 
     - name: Install Kubernetes Dashboard
       shell: >
