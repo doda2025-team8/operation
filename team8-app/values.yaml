@@ -1,6 +1,6 @@
 frontend:
   replicaCount: 1
-  image: ghcr.io/doda2025-team8/app-frontend:latest
+  image: ghcr.io/doda2025-team8/app-frontend:0.1.5-260117-153434-feat-include-conf
   service:
     port: 80
     targetPort: 8080
@@ -8,7 +8,7 @@ frontend:
     app: app-frontend
     component: frontend
   hostname: "team8.local"
-  canaryHostname: "canary.team8.local" 
+  canaryHostname: "canary.team8.local"
 
 backend:
   replicaCount: 1
@@ -71,3 +71,7 @@ istio:
     hosts:
       - "*"
     port: 80
+  
+  canary:
+    stableWeight: 90
+    canaryWeight: 10
