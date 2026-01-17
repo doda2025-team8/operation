@@ -8,6 +8,7 @@ frontend:
     app: app-frontend
     component: frontend
   hostname: "team8.local"
+  canaryHostname: "canary.team8.local" 
 
 backend:
   replicaCount: 1
@@ -16,6 +17,9 @@ backend:
     port: 8080
     targetPort: 8080
   modelHost: "http://model-service:8081"
+  # Cache configuration for continuous experimentation
+  # v1 (stable): cache disabled - every request calls model-service
+  # v2 (canary): cache enabled - repeated SMS messages return cached predictions
   v1:
     enableCache: "false"
   v2:
