@@ -7,6 +7,27 @@ WORKER_MEMORY = 6144
 WORKER_CPU = 2
 N_WORKERS = 2
 
+# Generate dynamic inventory file
+inventory_content = <<~INV
+[control_plane]
+ctrl ansible_host=192.168.56.100 ansible_user=vagrant ansible_ssh_private_key_file=.vagrant/machines/ctrl/virtualbox/private_key ansible_python_interpreter=/usr/bin/python3
+
+[workers]
+INV
+
+(1..N_WORKERS).each do |i|
+  inventory_content += "node-#{i} ansible_host=192.168.56.#{100 + i} ansible_user=vagrant ansible_ssh_private_key_file=.vagrant/machines/node-#{i}/virtualbox/private_key ansible_python_interpreter=/usr/bin/python3\n"
+end
+
+inventory_content += <<~INV
+
+[kubernetes:children]
+control_plane
+workers
+INV
+
+File.write("inventory/hosts.ini", inventory_content)
+
 Vagrant.configure("2") do |config|
   config.vm.box = "bento/ubuntu-24.04"
   config.vm.box_version = "202510.26.0"
@@ -20,11 +41,6 @@ Vagrant.configure("2") do |config|
       v.memory = CTRL_MEMORY
       v.cpus = CTRL_CPU
     end
-
-    ctrl.vm.provision :ansible do |ansible|
-      ansible.playbook = "playbooks/ctrl.yaml"
-      ansible.become = true
-    end
   end
 
   # Worker nodes 
@@ -36,14 +52,32 @@ Vagrant.configure("2") do |config|
         v.memory = WORKER_MEMORY
         v.cpus = WORKER_CPU
       end
-    end
-  end
 
-  # General setup runs on ALL VMs
-  config.vm.provision :ansible do |ansible|
-    ansible.playbook = "playbooks/general.yaml"
-    ansible.become = true
-    ansible.extra_vars = { "nodes" => N_WORKERS }
+      # Only trigger provisioning after all VMs are up
+      if i == N_WORKERS
+        node.vm.provision :ansible do |ansible|
+          ansible.limit = "all"
+          ansible.playbook = "playbooks/general.yaml"
+          # ansible.inventory_path = "inventory/hosts.ini"
+          ansible.become = true
+          ansible.extra_vars = { "nodes" => N_WORKERS }
+        end
+
+        node.vm.provision :ansible do |ansible|
+          ansible.limit = "control_plane"
+          ansible.playbook = "playbooks/ctrl.yaml"
+          # ansible.inventory_path = "inventory/hosts.ini"
+          ansible.become = true
+        end
+
+        node.vm.provision :ansible do |ansible|
+          ansible.limit = "workers"
+          ansible.playbook = "playbooks/node.yaml"
+          # ansible.inventory_path = "inventory/hosts.ini"
+          ansible.become = true
+        end
+      end
+    end
   end
 
 end
