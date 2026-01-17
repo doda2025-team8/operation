@@ -1,6 +1,6 @@
 frontend:
   replicaCount: 1
-  image: ghcr.io/doda2025-team8/app-frontend:0.1.5-260117-153434-feat-include-conf
+  image: ghcr.io/doda2025-team8/app-frontend:latest
   service:
     port: 80
     targetPort: 8080
