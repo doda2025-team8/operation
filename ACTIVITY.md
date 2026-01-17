@@ -182,3 +182,8 @@ No work done.
 - Yuchen
   https://github.com/doda2025-team8/operation/pull/79
   Added Assignment2 step23 -- Install Istio. The Istio Pods are running, and a fixed IP has assigned to the Istio: istio-ingressgateway   LoadBalancer ... 192.168.56.92
+
+- Hendrik
+  https://github.com/doda2025-team8/model-service/pull/29
+  Fixed CI pipeline build authentication
+  
