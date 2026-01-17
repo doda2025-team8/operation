@@ -151,9 +151,28 @@ minikube addons enable ingress # enable ingress
 
 Make sure you have [Kubernetes](https://kubernetes.io/) and [helm](https://helm.sh/) installed.
 
-## 1. Install Applications
+## 1. Add Prometheus + Grafana dependencies
 
-Deploy application chart (app-frontend, app-service, model-service, and ingress) to the Kubernetes cluster using Helm:
+```bash
+vagrant ssh ctrl # Only on vagrant
+helm repo add prom-repo https://prometheus-community.github.io/helm-charts
+helm repo update
+helm install myprom prom-repo/kube-prometheus-stack --timeout 10m
+```
+
+## 1.1 Add Istio (Only on Minikube)
+Download Istio from the official website
+
+```bash
+istioctl install
+kubectl label namespace default istio-injection=enabled
+```
+
+## 2. Install Applications
+
+Deploy application chart (app-frontend, app-service, model-service, and ingress) to the Kubernetes cluster using Helm.
+
+In `values.yaml`, istio can be enabled or disabled.
 
 On Vagrant:
 ```bash
@@ -167,7 +186,7 @@ helm install team8-app ./team8-app
 ```
 Container creation takes appprox. 20 sec
 
-## 2.  Validate install
+## 3.  Validate install
 
 * `kubectl get pods` should give you three `Running` pods:
    * `model-service`
@@ -177,15 +196,6 @@ Container creation takes appprox. 20 sec
 * `kubectl get ingress` should show an `app-ingress` is running. By navigating to its IP address in your browser, you should see the running app and use it.
 * `kubectl get pods -n istio-system` should show you that Istio is running.
 * Run `istioctl dashboard kiali` to see the details of Istio and how its running.
-
-## 3. Add Prometheus + Grafana dependencies
-
-```bash
-vagrant ssh ctrl # Only on vagrant
-helm repo add prom-repo https://prometheus-community.github.io/helm-charts
-helm repo update
-helm install myprom prom-repo/kube-prometheus-stack --timeout 10m
-```
 
 ### Automatic Installation
 
@@ -209,9 +219,17 @@ If dashboards don't appear automatically:
 To access the applications, you need to be able to access the ingress
 
 ### 1a. Port forward for Minikube
+
 ```bash
 kubectl port-forward -n istio-system svc/istio-ingressgateway 8080:80 
 ```
+
+Or without Istio
+
+```bash
+kubectl port-forward -n ingress-nginx svc/ingress-nginx-controller 8080:80
+```
+
 - The application can now be accessed on `http://team8.local:8080`
 - Grafana on `http://grafana.team8.local:8080`
 - Prometheus on `http://prometheus.team8.local:8080`
