@@ -6,6 +6,7 @@ metadata:
   labels:
     app: app-frontend
     version: v1
+    component: frontend
 spec:
   replicas: 1
   selector:
@@ -17,6 +18,7 @@ spec:
       labels:
         app: app-frontend
         version: v1
+        component: frontend
       annotations:
         sidecar.istio.io/inject: "true"
     spec:
@@ -50,9 +52,8 @@ spec:
           configMap:
             name: frontend-v1-cookie-config
       {{- end }}
-
+{{- if .Values.istio.enabled}}
 ---
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -106,3 +107,4 @@ spec:
           configMap:
             name: frontend-v2-cookie-config
       {{- end }}
+{{- end }}

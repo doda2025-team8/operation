@@ -7,7 +7,7 @@ metadata:
   name: grafana-vs
 spec:
   hosts:
-    - "grafana.team8.local"
+    - {{ .Values.rechability.grafanaHostname | quote }}
   gateways:
     - my-gateway
   http:
@@ -23,7 +23,7 @@ metadata:
   name: prometheus-vs
 spec:
   hosts:
-    - "prometheus.team8.local"
+    - {{ .Values.rechability.prometheusHostname | quote }}
   gateways:
     - my-gateway
   http:
@@ -41,7 +41,7 @@ metadata:
   name: my-vs
 spec:
   hosts:
-    - {{ .Values.frontend.hostname | quote }}
+    - {{ .Values.rechability.hostname | quote }}
   gateways:
     - my-gateway
   http:
@@ -100,7 +100,7 @@ metadata:
   name: canary-vs
 spec:
   hosts:
-    - {{ .Values.frontend.canaryHostname | quote }}
+    - {{ .Values.rechability.canaryHostname | quote }}
   gateways:
     - my-gateway
   http:

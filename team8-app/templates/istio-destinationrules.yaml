@@ -6,7 +6,7 @@ kind: DestinationRule
 metadata:
   name: app-frontend-dr
 spec:
-  host: app-frontend
+  host: {{ .Values.frontend.labels.app }}
   trafficPolicy:
     loadBalancer:
       consistentHash:
@@ -24,7 +24,7 @@ kind: DestinationRule
 metadata:
   name: app-service-dr
 spec:
-  host: app-service
+  host: {{ .Values.backend.labels.app }}
   trafficPolicy:
     loadBalancer:
       consistentHash:
@@ -42,7 +42,7 @@ kind: DestinationRule
 metadata:
   name: model-service-dr
 spec:
-  host: model-service
+  host: {{ .Values.model_shadow.labels.app }}
   trafficPolicy:
     loadBalancer:
       consistentHash:

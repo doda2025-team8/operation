@@ -7,8 +7,6 @@ frontend:
   labels:
     app: app-frontend
     component: frontend
-  hostname: "team8.local"
-  canaryHostname: "canary.team8.local"
 
 backend:
   replicaCount: 1
@@ -25,6 +23,12 @@ backend:
   labels:
     app: app-service
     component: backend
+
+rechability:
+  hostname: "team8.local"
+  canaryHostname: "canary.team8.local"
+  grafanaHostname: "grafana.team8.local"
+  prometheusHostname: "prometheus.team8.local"
 
 model:
   replicaCount: 1
