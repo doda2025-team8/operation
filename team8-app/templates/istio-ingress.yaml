@@ -17,6 +17,8 @@ spec:
         {{- range .Values.istio.gateway.hosts }}
         - {{ . | quote }}
         {{- end }}
+        - {{ .Values.frontend.hostname | quote }}
+        - {{ .Values.frontend.canaryHostname | quote }}
         - "grafana.team8.local"
         - "prometheus.team8.local"
 
