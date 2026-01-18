@@ -24,6 +24,7 @@ Vagrant.configure("2") do |config|
     ctrl.vm.provision :ansible do |ansible|
       ansible.playbook = "playbooks/ctrl.yaml"
       ansible.become = true
+      ansible.compatibility_mode = "2.0"
     end
   end
 
@@ -36,6 +37,15 @@ Vagrant.configure("2") do |config|
         v.memory = WORKER_MEMORY
         v.cpus = WORKER_CPU
       end
+
+      node.vm.provision :ansible do |ansible|
+        ansible.playbook = "playbooks/node.yaml"
+        ansible.become = true
+        ansible.groups = {
+          "nodes" => ["node-#{i}"]
+        }
+        ansible.compatibility_mode = "2.0"
+      end
     end
   end
 
@@ -44,6 +54,6 @@ Vagrant.configure("2") do |config|
     ansible.playbook = "playbooks/general.yaml"
     ansible.become = true
     ansible.extra_vars = { "nodes" => N_WORKERS }
+    ansible.compatibility_mode = "2.0"
   end
-
 end
