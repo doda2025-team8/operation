@@ -199,4 +199,3 @@ No work done.
 - Vincent \
   https://github.com/doda2025-team8/operation/pull/94 \
   Autogenerate the inventory files such that a differnet number of worker nodes is supported in the Ansible playobok
-
