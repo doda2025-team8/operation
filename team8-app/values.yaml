@@ -12,18 +12,16 @@ frontend:
 
 backend:
   replicaCount: 1
-  image: ghcr.io/doda2025-team8/app-service:latest
   service:
     port: 8080
     targetPort: 8080
   modelHost: "http://model-service:8081"
-  # Cache configuration for continuous experimentation
-  # v1 (stable): cache disabled - every request calls model-service
-  # v2 (canary): cache enabled - repeated SMS messages return cached predictions
   v1:
-    enableCache: "false"
+    image: ghcr.io/doda2025-team8/app-service:latest
   v2:
-    enableCache: "true"
+    image: ghcr.io/doda2025-team8/app-service:0.1.7-20260116194934-continuous-experimentation
+    env:
+      ENABLE_CACHE: "true"
   labels:
     app: app-service
     component: backend

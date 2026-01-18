@@ -23,15 +23,17 @@ spec:
     spec:
       containers:
         - name: app-service
-          image: {{ .Values.backend.image }}
+          image: {{ .Values.backend.v1.image }}
           ports:
             - containerPort: {{ .Values.backend.service.targetPort }}
               name: http
           env:
             - name: MODEL_HOST
               value: "{{ .Values.backend.modelHost }}"
-            - name: ENABLE_CACHE
-              value: "{{ .Values.backend.v1.enableCache }}"
+            {{- range $key, $value := .Values.backend.v1.env }}
+            - name: {{ $key }}
+              value: "{{ $value }}"
+            {{- end }}
             - name: APP_VERSION
               value: "stable"
           livenessProbe:
@@ -72,15 +74,17 @@ spec:
     spec:
       containers:
         - name: app-service
-          image: {{ .Values.backend.image }}
+          image: {{ .Values.backend.v2.image }}
           ports:
             - containerPort: {{ .Values.backend.service.targetPort }}
               name: http
           env:
             - name: MODEL_HOST
               value: "{{ .Values.backend.modelHost }}"
-            - name: ENABLE_CACHE
-              value: "{{ .Values.backend.v2.enableCache }}"
+            {{- range $key, $value := .Values.backend.v2.env }}
+            - name: {{ $key }}
+              value: "{{ $value }}"
+            {{- end }}
             - name: APP_VERSION
               value: "canary"
           livenessProbe:
