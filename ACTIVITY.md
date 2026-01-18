@@ -199,3 +199,10 @@ No work done.
 - Vincent \
   https://github.com/doda2025-team8/operation/pull/94 \
   Autogenerate the inventory files such that a differnet number of worker nodes is supported in the Ansible playobok
+
+- Hendrik
+  https://github.com/doda2025-team8/operation/pull/91
+  https://github.com/doda2025-team8/operation/pull/92
+  https://github.com/doda2025-team8/app-frontend/pull/11
+  https://github.com/doda2025-team8/app-service/pull/23
+  This week I made the Istio sessions sticky by letting the frontend set the canary cookie. Istio itself cannot set the cookie correctly, but the frontend is the first point that is hit by a new client, so this works. I also moved the moved the experiment into its own branch and performed some bug fixes in general and wrote some documentation.
