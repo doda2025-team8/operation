@@ -206,3 +206,8 @@ No work done.
   https://github.com/doda2025-team8/app-frontend/pull/11
   https://github.com/doda2025-team8/app-service/pull/23
   This week I made the Istio sessions sticky by letting the frontend set the canary cookie. Istio itself cannot set the cookie correctly, but the frontend is the first point that is hit by a new client, so this works. I also moved the moved the experiment into its own branch and performed some bug fixes in general and wrote some documentation.
+
+- Yuchen
+  https://github.com/doda2025-team8/app-frontend/pull/10
+  http://github.com/doda2025-team8/app-service/pull/22
+  This week I removed all metric endpoints which was based on the Micrometer Lib. I rewrote these endpoints with the same function. And I aslo added one UI-related metric endpoint. It tracks the changes from the frontend of the app.
