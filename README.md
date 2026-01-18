@@ -78,14 +78,31 @@ docker compose up -d
 
 If you want, you can change the variables as defined in the [`.env`](https://github.com/doda2025-team8/operation/blob/main/.env) file.
 
-### Files in this repository:
+   #### Supporting Arguments:
 
-- **`docker-compose.yml`**: Defines and orchestrates all services required to run the application
-- **`nginx.conf`**: Configuration file for the Nginx reverse proxy
-- **`.env`**: Environment-specific configuration 
+   #### Image versions
+   - `MODEL_SERVICE_VERSION` - version tag of model-service image
+   - `APP_SERVICE_VERSION` - version tag of app-service image 
+   - `APP_FRONTEND_VERSION` - version tag of app-frontend image
 
+   #### Internal service ports
+   - `APP_SERVICE_PORT` - internal port on which app-service listens
+   - `APP_FRONTEND_PORT` - internal port on which app-frontend listens
 
-## Kubernetes
+   #### NGINX_PORT
+   - `NGINX_PORT` - internal port used by NGINX to route traffic
+
+   #### Exposed port on localhost
+   - `EXPOSED_PORT` - port exposed on localhost tor accessing the application
+
+   #### MODEL SERVICE location
+   - `MODEL_HOST` - hostname on where the model service is reachable
+   - `MODEL_SERVICE_PORT` - service port
+   - `MODEL_DIR` - model directory
+   - `MODEL_VERSION` - released model version
+   - `GITHUB_REPO`- repository for downloading the model
+
+## Setup Instructions Kubernetes
 
 There are two ways to run the applications on kubernetes. The first one is to run the application on cluster provisioned with Vagrant and the second way is to use minikube.
 
