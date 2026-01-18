@@ -191,3 +191,7 @@ No work done.
 - Yanzhi
   https://github.com/doda2025-team8/operation/pull/88
   This week I worker on fixing the feedback from A4 continuous experimentation, added configurable canaryHostname, canary-vs VirtualService and updated continuous-experimentation.md with experiment design and config references.
+
+- Vincent \
+  https://github.com/doda2025-team8/operation/pull/94 \
+  Autogenerate the inventory files such that a differnet number of worker nodes is supported in the Ansible playobok
