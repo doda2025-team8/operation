@@ -187,3 +187,7 @@ No work done.
   https://github.com/doda2025-team8/operation/pull/90
   https://github.com/doda2025-team8/operation/pull/89  
   This week I worked on implementing feedback from A2 regarding the provisioning of the cluster. Moreover, I created a high level diagram of our system deployment to add to the documentation. 
+
+- Yanzhi
+  https://github.com/doda2025-team8/operation/pull/88
+  This week I worker on fixing the feedback from A4 continuous experimentation, added configurable canaryHostname, canary-vs VirtualService and updated continuous-experimentation.md with experiment design and config references.
