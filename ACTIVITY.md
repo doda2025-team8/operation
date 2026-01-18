@@ -48,22 +48,22 @@ No work done.
 
 ### Week Q2.3 (24 Nov+)
 
-- Vincent \ 
+- Vincent \
   https://github.com/doda2025-team8/operation/pull/11 \
   https://github.com/doda2025-team8/operation/pull/14 \ 
   I setup the steps 9 through 12 of the second assignment that covered the setting up of the Kubernetes repository, as well as installing the Kubernetes libraries, its dependencies and some extra libraries for future use. This is all done in the `operation` repository in the file `k8s/playbooks/general.yml`.
-- Andriana \ 
+- Andriana \
   https://github.com/doda2025-team8/operation/pull/4
   For this week I worked on Step 1 and Step 2 concerning the setup of the VMs. I created a Vagrant file and set a host-only network. This is all done in the `operation` repository in the file `k8s/Vagrantfile`.  \
 - Horia \
   https://github.com/doda2025-team8/operation/pull/13 \
   https://github.com/doda2025-team8/operation/pull/19 \
   For this week I worked on steps 3-8, concerning initial provisioning of the created VMs. I added the base steps for all VMs in the general playbook.
-- Yanzhi \ 
+- Yanzhi \
   https://github.com/doda2025-team8/operation/pull/18
   For this week I worked on steps 18-19, on setting up the worker nodes. Wrote the Ansible playbook that joins worker nodes to the Kubernetes cluster by getting the join command from ctrl and running it on each worker.
 
-- Hendrik\
+- Hendrik \
   This week I worked on implementing step 13-17 (controller provisioning) \
   https://github.com/doda2025-team8/operation/pull/16
 
@@ -121,12 +121,12 @@ No work done.
   https://github.com/doda2025-team8/operation/pull/40
   I setup Istio for the Helm app such that we can use it with a Gateway, VirtualService, and Destination Rule. I set it up to work with a tunnel, another team member will make it work with custom routing.
 
-- Andriana \ 
+- Andriana \
   https://github.com/doda2025-team8/model-service/pull/23  
   https://github.com/doda2025-team8/operation/pull/50  
   This week I implemented an additional use case. The additional use is Shadow Launch. Additionally, I added some metrics with Prometheus in the model service to evaluate the new model version.
 
-- Horia \ 
+- Horia \
   https://github.com/doda2025-team8/operation/pull/52
   This week I analysed a short coming into the current release process and proposed an extension. The extension proposed is a vulnerability scanning for all docker images built, before pushing them to the registry, and also blocking kubernetes from running unscanned images.
 
@@ -158,9 +158,7 @@ No work done.
   https://github.com/doda2025-team8/model-service/pull/28\
   This week I worked on feedback we received for A1. I tried to figure out a way to use the use the library without Github tokens, but that is not possible. The PR is still waiting for a merge in lib-version. I also worked on a small fix for the nodel-service release action.
 
-- Horia
-  https://github.com/doda2025-team8/operation/pull/69
-  Worked on speeding up the vagrant provision. Also tried to automatically join nodes to the cluster but not successful.
+- Horia  
   https://github.com/doda2025-team8/operation/pull/69 \
   Worked on speeding up the vagrant provision. Also tried to automatically join nodes to the cluster but not successful.
 
@@ -170,7 +168,7 @@ No work done.
   https://github.com/doda2025-team8/operation/pull/81 \ 
   This week I process some feedback from A2 and on and we had a meeting on how to split the work on processing the feedback with the view of the final submission approaching. I split some templates into seperate files, as that was pointed to in the feedback and redid the structure of the README such that it is a bit simpler to use.
 
-- Andriana \  
+- Andriana   
   https://github.com/doda2025-team8/operation/pull/83
   https://github.com/doda2025-team8/operation/pull/84
   This week I worked on feedback from A1, I updated the envs used in the docker compose as well as the readme. I also worked on the deployment documentation. Lastly, I attended the meeting we had on processing the feedback from a4.
@@ -187,3 +185,17 @@ No work done.
   https://github.com/doda2025-team8/model-service/pull/29
   Fixed CI pipeline build authentication
   
+### Week Q2.8 (Jan 12+)
+
+- Andriana  
+  https://github.com/doda2025-team8/operation/pull/90
+  https://github.com/doda2025-team8/operation/pull/89  
+  This week I worked on implementing feedback from A2 regarding the provisioning of the cluster. Moreover, I created a high level diagram of our system deployment to add to the documentation. 
+
+- Yanzhi
+  https://github.com/doda2025-team8/operation/pull/88
+  This week I worker on fixing the feedback from A4 continuous experimentation, added configurable canaryHostname, canary-vs VirtualService and updated continuous-experimentation.md with experiment design and config references.
+
+- Vincent \
+  https://github.com/doda2025-team8/operation/pull/94 \
+  Autogenerate the inventory files such that a differnet number of worker nodes is supported in the Ansible playobok
