@@ -149,13 +149,13 @@ No work done.
 
 - Vincent \
   https://github.com/doda2025-team8/model-service/pull/26 \
-  https://github.com/doda2025-team8/lib-version/pull/7 \ 
+  https://github.com/doda2025-team8/lib-version/pull/7 \
   https://github.com/doda2025-team8/app-service/pull/16 \
   This Week I processed some feedback from A1, wherein we should organise the repo a bit better such that it no longer needs the Maven wrappers etc. that were commited, those are not in the gitignore. Also I removed many redundant cmments as that was mentionted many times in all the feedback.
 
-- Hendrik \
-  https://github.com/doda2025-team8/app-service/pull/17\
-  https://github.com/doda2025-team8/model-service/pull/28\
+- Hendrik  
+  https://github.com/doda2025-team8/app-service/pull/17  
+  https://github.com/doda2025-team8/model-service/pull/28  
   This week I worked on feedback we received for A1. I tried to figure out a way to use the use the library without Github tokens, but that is not possible. The PR is still waiting for a merge in lib-version. I also worked on a small fix for the nodel-service release action.
 
 - Horia  
@@ -173,15 +173,15 @@ No work done.
   https://github.com/doda2025-team8/operation/pull/84
   This week I worked on feedback from A1, I updated the envs used in the docker compose as well as the readme. I also worked on the deployment documentation. Lastly, I attended the meeting we had on processing the feedback from a4.
 
-- Yanzhi
+- Yanzhi  
   https://github.com/doda2025-team8/app-service/pull/19
   This week I worked on feedback from A3, I fixed the no Histogram and the metrics are not broken down with labels issue for app monitoring in the app-service.
 
-- Yuchen
+- Yuchen  
   https://github.com/doda2025-team8/operation/pull/79
   Added Assignment2 step23 -- Install Istio. The Istio Pods are running, and a fixed IP has assigned to the Istio: istio-ingressgateway   LoadBalancer ... 192.168.56.92
 
-- Hendrik
+- Hendrik  
   https://github.com/doda2025-team8/model-service/pull/29
   Fixed CI pipeline build authentication
   
@@ -192,7 +192,7 @@ No work done.
   https://github.com/doda2025-team8/operation/pull/89  
   This week I worked on implementing feedback from A2 regarding the provisioning of the cluster. Moreover, I created a high level diagram of our system deployment to add to the documentation. 
 
-- Yanzhi
+- Yanzhi  
   https://github.com/doda2025-team8/operation/pull/88
   This week I worker on fixing the feedback from A4 continuous experimentation, added configurable canaryHostname, canary-vs VirtualService and updated continuous-experimentation.md with experiment design and config references.
 
@@ -200,9 +200,14 @@ No work done.
   https://github.com/doda2025-team8/operation/pull/94 \
   Autogenerate the inventory files such that a differnet number of worker nodes is supported in the Ansible playobok
 
-- Hendrik
-  https://github.com/doda2025-team8/operation/pull/91
-  https://github.com/doda2025-team8/operation/pull/92
-  https://github.com/doda2025-team8/app-frontend/pull/11
-  https://github.com/doda2025-team8/app-service/pull/23
+- Hendrik  
+  https://github.com/doda2025-team8/operation/pull/91  
+  https://github.com/doda2025-team8/operation/pull/92  
+  https://github.com/doda2025-team8/app-frontend/pull/11  
+  https://github.com/doda2025-team8/app-service/pull/23  
   This week I made the Istio sessions sticky by letting the frontend set the canary cookie. Istio itself cannot set the cookie correctly, but the frontend is the first point that is hit by a new client, so this works. I also moved the moved the experiment into its own branch and performed some bug fixes in general and wrote some documentation.
+
+- Yuchen  
+  https://github.com/doda2025-team8/app-frontend/pull/10
+  http://github.com/doda2025-team8/app-service/pull/22
+  This week I removed all metric endpoints which was based on the Micrometer Lib. I rewrote these endpoints with the same function. And I aslo added one UI-related metric endpoint. It tracks the changes from the frontend of the app.
