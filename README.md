@@ -64,15 +64,15 @@ Make sure your Docker instance is running.
 ### Starting the application
 
 1. Start the application
-```
-docker compose up -d
-```
+   ```
+   docker compose up -d
+   ```
 2. Access the application
    
    Open your browser and navigate to:
-```
-   http://localhost:8080
-```
+   ```
+      http://localhost:8080
+   ```
 
 ### Adjust the environment variables
 
@@ -117,52 +117,48 @@ Add the following lines to your host machine's `/etc/hosts` file if you want the
 ### Vagrant
 
 1. Create and provision VMs
-```bash
-cd k8s/
-vagrant up
-```
+   ```bash
+   cd k8s/
+   vagrant up
+   ```
 
-2. Join worker nodes to cluster
-After all VMs are running, SSH into the controller and run the join playbook:
-```bash
-vagrant ssh ctrl
-cd /vagrant
-ansible-playbook playbooks/node.yaml -i inventory/hosts.ini --ask-pass
-```
-Might need to run: 
-`ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook playbooks/node.yaml -i inventory/hosts.ini --ask-pass`
-Password: `vagrant`
+2. Verify cluster   
+   2.1 SSH into the controller  
+   ```bash
+   vagrant ssh ctrl
+   kubectl get nodes -o wide
+   ```
 
-3. Verify cluster
-```bash
-kubectl get nodes
-```
+   2.2 From host
+   ```bash
+   KUBECONFIG=./admin.conf  kubectl get nodes -o wide
+   ```
 
-Expected output:
-```
-NAME     STATUS   ROLES           AGE   VERSION
-ctrl     Ready    control-plane   XXm   v1.32.4
-node-1   Ready    <none>          XXm   v1.32.4
-node-2   Ready    <none>          XXm   v1.32.4
-```
+   Expected output:
+   ```
+   NAME     STATUS   ROLES           AGE   VERSION
+   ctrl     Ready    control-plane   XXm   v1.32.4
+   node-1   Ready    <none>          XXm   v1.32.4
+   node-2   Ready    <none>          XXm   v1.32.4
+   ```
 
-4. Finalize Cluster Services
-```bash
-ansible-playbook -i k8s/inventory/hosts.ini k8s/playbooks/finalization.yml -u vagrant
-```
+3. Finalize Cluster Services
+   ```bash
+   ansible-playbook -i k8s/inventory/hosts.ini k8s/playbooks/finalization.yml -u vagrant
+   ```
 
 ### Minikube
 
 1. Clear previous installs
-```bash
-minikube delete
-```
+   ```bash
+   minikube delete
+   ```
 
 2. Install. Make sure you have your docker engine running.
-```bash
-minikube start --memory=4096 --cpus=4 --driver=docker # start minikube
-minikube addons enable ingress # enable ingress
-```
+   ```bash
+   minikube start --memory=4096 --cpus=4 --driver=docker # start minikube
+   minikube addons enable ingress # enable ingress
+   ```
 
 # How to install with helm
 
