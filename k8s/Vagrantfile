@@ -26,6 +26,8 @@ control_plane
 workers
 INV
 
+
+Dir.mkdir("inventory") unless Dir.exist?("inventory")
 File.write("inventory/hosts.ini", inventory_content)
 
 Vagrant.configure("2") do |config|
@@ -58,23 +60,26 @@ Vagrant.configure("2") do |config|
         node.vm.provision :ansible do |ansible|
           ansible.limit = "all"
           ansible.playbook = "playbooks/general.yaml"
-          # ansible.inventory_path = "inventory/hosts.ini"
+          ansible.inventory_path = "inventory/hosts.ini"
           ansible.become = true
           ansible.extra_vars = { "nodes" => N_WORKERS }
+          ansible.compatibility_mode = "2.0"
         end
 
         node.vm.provision :ansible do |ansible|
           ansible.limit = "control_plane"
           ansible.playbook = "playbooks/ctrl.yaml"
-          # ansible.inventory_path = "inventory/hosts.ini"
+          ansible.inventory_path = "inventory/hosts.ini"
           ansible.become = true
+          ansible.compatibility_mode = "2.0"
         end
 
         node.vm.provision :ansible do |ansible|
           ansible.limit = "workers"
           ansible.playbook = "playbooks/node.yaml"
-          # ansible.inventory_path = "inventory/hosts.ini"
+          ansible.inventory_path = "inventory/hosts.ini"
           ansible.become = true
+          ansible.compatibility_mode = "2.0"
         end
       end
     end

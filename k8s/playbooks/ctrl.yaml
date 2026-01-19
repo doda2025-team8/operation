@@ -40,7 +40,7 @@
         src: /etc/kubernetes/admin.conf
         dest: /vagrant/admin.conf
         remote_src: yes
-        mode: "0600"
+        mode: "0644"
 
     # Step 15 (Pod network)
     - name: Download Flannel manifest
