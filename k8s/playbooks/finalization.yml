@@ -7,6 +7,7 @@
     metallb_ip_range: "192.168.56.90-192.168.56.99"
     
     nginx_ingress_ip: "192.168.56.91"
+    istio_gateway_ip: "192.168.56.92"
 
     # Files paths
     metallb_manifest_url: "https://raw.githubusercontent.com/metallb/metallb/v0.14.9/config/manifests/metallb-native.yaml"
@@ -106,7 +107,87 @@
       shell: helm repo update
       changed_when: false
 
-    - name: Intsall Kubernetes Dashboard
+    # step 23: Install Istio
+    - name: Determine CPU Architecture
+      set_fact:
+        istio_arch: "{{ 'arm64' if ansible_facts['architecture'] == 'aarch64' else 'amd64' }}"
+
+    - name: Create temporary directory for download
+      ansible.builtin.file:
+        path: "tmp/istio-download"
+        state: directory
+        mode: '0755'
+
+    - name: Download Istio
+      get_url:
+        url: "https://github.com/istio/istio/releases/download/1.25.2/istio-1.25.2-linux-{{ istio_arch }}.tar.gz"
+        dest: "tmp/istio-1.25.2-linux-{{ istio_arch }}.tar.gz"
+        mode: '0644'
+        force: yes
+
+    # - name: Remove existing Istio directory
+    #   file:
+    #     path: "/opt/istio-1.25.2"
+    #     state: absent
+    #   become_user: root
+
+    - name: Extract Istio to /opt
+      unarchive:
+        src: "tmp/istio-1.25.2-linux-{{ istio_arch }}.tar.gz"
+        dest: "/opt"
+        remote_src: yes
+      become_user: root
+
+    - name: Change ownership of Istio directory to vagrant
+      file:
+        path: "/opt/istio-1.25.2"
+        owner: vagrant
+        group: vagrant
+        recurse: yes
+      become_user: root
+
+    - name: Link istioctl to system path
+      file:
+        src: "/opt/istio-1.25.2/bin/istioctl"
+        dest: "/usr/local/bin/istioctl"
+        state: link
+      become_user: root
+
+    - name: Create IstioOperator
+      copy:
+        dest: "/home/vagrant/istio-config.yaml"
+        owner: vagrant
+        group: vagrant
+        mode: '0644'
+        content: |
+          apiVersion: install.istio.io/v1alpha1
+          kind: IstioOperator
+          spec:
+            profile: demo
+            components:
+              ingressGateways:
+                - name: istio-ingressgateway
+                  enabled: true
+                  k8s:
+                    service:
+                      loadBalancerIP: {{ istio_gateway_ip }}
+
+    - name: Install Istio with IstioOperator
+      shell: >
+        /usr/local/bin/istioctl install -y -f /home/vagrant/istio-config.yaml
+      register: istio_install
+      changed_when: "'Installation complete' in istio_install.stdout"
+      environment:
+        KUBECONFIG: /home/vagrant/.kube/config
+      become: yes
+      become_user: vagrant
+
+    - name: Enable Istio sidecar injection for default namespace
+      shell: kubectl label namespace default istio-injection=enabled --overwrite
+      register: istio_label
+      changed_when: "'labeled' in istio_label.stdout"
+
+    - name: Install Kubernetes Dashboard
       shell: >
         helm upgrade --install kubernetes-dashboard kubernetes-dashboard/kubernetes-dashboard 
         --namespace kubernetes-dashboard 

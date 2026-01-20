@@ -1,0 +1,60 @@
+{{- if .Values.istio.enabled}}
+
+---
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: app-frontend-dr
+spec:
+  host: {{ .Values.frontend.labels.app }}
+  trafficPolicy:
+    loadBalancer:
+      consistentHash:
+        httpCookie:
+          name: "session-id"
+          ttl: 600s
+  subsets:
+    - name: v1
+      labels: { version: v1 }
+    - name: v2
+      labels: { version: v2 }
+---
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: app-service-dr
+spec:
+  host: {{ .Values.backend.labels.app }}
+  trafficPolicy:
+    loadBalancer:
+      consistentHash:
+        httpCookie:
+          name: "session-id"
+          ttl: 600s
+  subsets:
+    - name: v1
+      labels: { version: v1 }
+    - name: v2
+      labels: { version: v2 }
+---
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: model-service-dr
+spec:
+  host: {{ .Values.model_shadow.labels.app }}
+  trafficPolicy:
+    loadBalancer:
+      consistentHash:
+        httpCookie:
+          name: "session-id"
+          ttl: 600s
+  subsets:
+    - name: v1
+      labels: { version: v1 }
+    - name: v2
+      labels: { version: v2 }
+    - name: v3
+      labels: { version: v3 }
+
+{{- end }}

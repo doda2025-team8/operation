@@ -48,22 +48,22 @@ No work done.
 
 ### Week Q2.3 (24 Nov+)
 
-- Vincent \ 
+- Vincent \
   https://github.com/doda2025-team8/operation/pull/11 \
   https://github.com/doda2025-team8/operation/pull/14 \ 
   I setup the steps 9 through 12 of the second assignment that covered the setting up of the Kubernetes repository, as well as installing the Kubernetes libraries, its dependencies and some extra libraries for future use. This is all done in the `operation` repository in the file `k8s/playbooks/general.yml`.
-- Andriana \ 
+- Andriana \
   https://github.com/doda2025-team8/operation/pull/4
   For this week I worked on Step 1 and Step 2 concerning the setup of the VMs. I created a Vagrant file and set a host-only network. This is all done in the `operation` repository in the file `k8s/Vagrantfile`.  \
 - Horia \
   https://github.com/doda2025-team8/operation/pull/13 \
   https://github.com/doda2025-team8/operation/pull/19 \
   For this week I worked on steps 3-8, concerning initial provisioning of the created VMs. I added the base steps for all VMs in the general playbook.
-- Yanzhi \ 
+- Yanzhi \
   https://github.com/doda2025-team8/operation/pull/18
   For this week I worked on steps 18-19, on setting up the worker nodes. Wrote the Ansible playbook that joins worker nodes to the Kubernetes cluster by getting the join command from ctrl and running it on each worker.
 
-- Hendrik\
+- Hendrik \
   This week I worked on implementing step 13-17 (controller provisioning) \
   https://github.com/doda2025-team8/operation/pull/16
 
@@ -121,21 +121,22 @@ No work done.
   https://github.com/doda2025-team8/operation/pull/40
   I setup Istio for the Helm app such that we can use it with a Gateway, VirtualService, and Destination Rule. I set it up to work with a tunnel, another team member will make it work with custom routing.
 
-- Andriana \ 
+- Andriana \
   https://github.com/doda2025-team8/model-service/pull/23  
   https://github.com/doda2025-team8/operation/pull/50  
   This week I implemented an additional use case. The additional use is Shadow Launch. Additionally, I added some metrics with Prometheus in the model service to evaluate the new model version.
 
-- Horia \ 
+- Horia \
   https://github.com/doda2025-team8/operation/pull/52
   This week I analysed a short coming into the current release process and proposed an extension. The extension proposed is a vulnerability scanning for all docker images built, before pushing them to the registry, and also blocking kubernetes from running unscanned images.
 
 ### Week Q2.6 (15 Dec+)
 
--Yanzhi \
+- Yanzhi \
   https://github.com/doda2025-team8/model-service/pull/27
   https://github.com/doda2025-team8/operation/pull/68
   This week, focused on processing the feedbacks for A1 and A2, adjusted readme for model-service repository, fixed some vagrant setup for operation repository, removing unneccessary commands and optimize.
+
 - Yuchen \
     https://github.com/doda2025-team8/lib-version/pull/6
     Fix problem in A1 Peer Review: F11 is implemented for lib-version repo now. The version is determined automatically. Used single source of truth for versioning for lib-version now. Also the pre-release for the branch commit also be added.
@@ -145,13 +146,68 @@ No work done.
   https://github.com/doda2025-team8/operation/pull/63
   https://github.com/doda2025-team8/model-service/pull/25
   This week I worked on refining some parts of the project. Specifically, I updated alert manager to not contain sensitive information. The chart now provides an illustrative placeholder in values.yaml and allows for exchange during installation. Lastly, I fixed an error in model service that was causing the backend to crash due to wrong variable name reference.
-- Vincwent \
+
+- Vincent \
   https://github.com/doda2025-team8/model-service/pull/26 \
-  https://github.com/doda2025-team8/lib-version/pull/7 \ 
+  https://github.com/doda2025-team8/lib-version/pull/7 \
   https://github.com/doda2025-team8/app-service/pull/16 \
   This Week I processed some feedback from A1, wherein we should organise the repo a bit better such that it no longer needs the Maven wrappers etc. that were commited, those are not in the gitignore. Also I removed many redundant cmments as that was mentionted many times in all the feedback.
 
-- Hendrik \
-  https://github.com/doda2025-team8/app-service/pull/17\
-  https://github.com/doda2025-team8/model-service/pull/28\
+- Hendrik  
+  https://github.com/doda2025-team8/app-service/pull/17  
+  https://github.com/doda2025-team8/model-service/pull/28  
   This week I worked on feedback we received for A1. I tried to figure out a way to use the use the library without Github tokens, but that is not possible. The PR is still waiting for a merge in lib-version. I also worked on a small fix for the nodel-service release action.
+
+- Horia  
+  https://github.com/doda2025-team8/operation/pull/69 \
+  Worked on speeding up the vagrant provision. Also tried to automatically join nodes to the cluster but not successful.
+
+### Week Q2.7 (Jan 5+)
+
+- Vincent \
+  https://github.com/doda2025-team8/operation/pull/81 \ 
+  This week I process some feedback from A2 and on and we had a meeting on how to split the work on processing the feedback with the view of the final submission approaching. I split some templates into seperate files, as that was pointed to in the feedback and redid the structure of the README such that it is a bit simpler to use.
+
+- Andriana   
+  https://github.com/doda2025-team8/operation/pull/83
+  https://github.com/doda2025-team8/operation/pull/84
+  This week I worked on feedback from A1, I updated the envs used in the docker compose as well as the readme. I also worked on the deployment documentation. Lastly, I attended the meeting we had on processing the feedback from a4.
+
+- Yanzhi  
+  https://github.com/doda2025-team8/app-service/pull/19
+  This week I worked on feedback from A3, I fixed the no Histogram and the metrics are not broken down with labels issue for app monitoring in the app-service.
+
+- Yuchen  
+  https://github.com/doda2025-team8/operation/pull/79
+  Added Assignment2 step23 -- Install Istio. The Istio Pods are running, and a fixed IP has assigned to the Istio: istio-ingressgateway   LoadBalancer ... 192.168.56.92
+
+- Hendrik  
+  https://github.com/doda2025-team8/model-service/pull/29
+  Fixed CI pipeline build authentication
+  
+### Week Q2.8 (Jan 12+)
+
+- Andriana  
+  https://github.com/doda2025-team8/operation/pull/90
+  https://github.com/doda2025-team8/operation/pull/89  
+  This week I worked on implementing feedback from A2 regarding the provisioning of the cluster. Moreover, I created a high level diagram of our system deployment to add to the documentation. 
+
+- Yanzhi  
+  https://github.com/doda2025-team8/operation/pull/88
+  This week I worker on fixing the feedback from A4 continuous experimentation, added configurable canaryHostname, canary-vs VirtualService and updated continuous-experimentation.md with experiment design and config references.
+
+- Vincent \
+  https://github.com/doda2025-team8/operation/pull/94 \
+  Autogenerate the inventory files such that a differnet number of worker nodes is supported in the Ansible playobok
+
+- Hendrik  
+  https://github.com/doda2025-team8/operation/pull/91  
+  https://github.com/doda2025-team8/operation/pull/92  
+  https://github.com/doda2025-team8/app-frontend/pull/11  
+  https://github.com/doda2025-team8/app-service/pull/23  
+  This week I made the Istio sessions sticky by letting the frontend set the canary cookie. Istio itself cannot set the cookie correctly, but the frontend is the first point that is hit by a new client, so this works. I also moved the moved the experiment into its own branch and performed some bug fixes in general and wrote some documentation.
+
+- Yuchen  
+  https://github.com/doda2025-team8/app-frontend/pull/10
+  http://github.com/doda2025-team8/app-service/pull/22
+  This week I removed all metric endpoints which was based on the Micrometer Lib. I rewrote these endpoints with the same function. And I aslo added one UI-related metric endpoint. It tracks the changes from the frontend of the app.

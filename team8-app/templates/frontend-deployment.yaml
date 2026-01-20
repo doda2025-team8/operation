@@ -6,6 +6,7 @@ metadata:
   labels:
     app: app-frontend
     version: v1
+    component: frontend
 spec:
   replicas: 1
   selector:
@@ -17,6 +18,7 @@ spec:
       labels:
         app: app-frontend
         version: v1
+        component: frontend
       annotations:
         sidecar.istio.io/inject: "true"
     spec:
@@ -26,6 +28,12 @@ spec:
           ports:
             - containerPort: {{ .Values.frontend.service.targetPort }}
               name: http
+          {{- if .Values.istio.enabled }}
+          volumeMounts:
+            - name: cookie-config
+              mountPath: /etc/nginx/extra-conf
+              readOnly: true
+          {{- end }}
           livenessProbe:
             httpGet:
               path: /health
@@ -38,9 +46,14 @@ spec:
               port: {{ .Values.frontend.service.targetPort }}
             initialDelaySeconds: 5
             periodSeconds: 5
-
+      {{- if .Values.istio.enabled }}
+      volumes:
+        - name: cookie-config
+          configMap:
+            name: frontend-v1-cookie-config
+      {{- end }}
+{{- if .Values.istio.enabled}}
 ---
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -70,6 +83,12 @@ spec:
           ports:
             - containerPort: {{ .Values.frontend.service.targetPort }}
               name: http
+          {{- if .Values.istio.enabled }}
+          volumeMounts:
+            - name: cookie-config
+              mountPath: /etc/nginx/extra-conf
+              readOnly: true
+          {{- end }}
           livenessProbe:
             httpGet:
               path: /health
@@ -82,4 +101,10 @@ spec:
               port: {{ .Values.frontend.service.targetPort }}
             initialDelaySeconds: 5
             periodSeconds: 5
-
+      {{- if .Values.istio.enabled }}
+      volumes:
+        - name: cookie-config
+          configMap:
+            name: frontend-v2-cookie-config
+      {{- end }}
+{{- end }}

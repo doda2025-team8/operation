@@ -1,0 +1,28 @@
+{{- if .Values.istio.enabled}}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: frontend-v1-cookie-config
+  labels:
+    app: app-frontend
+    version: v1
+data:
+  set-cookie.conf: |
+    # Set canary-user cookie for v1 frontend
+    add_header Set-Cookie "canary-user=false; Path=/; Max-Age=600; SameSite=Lax" always;
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: frontend-v2-cookie-config
+  labels:
+    app: app-frontend
+    version: v2
+data:
+  set-cookie.conf: |
+    # Set canary-user cookie for v2 frontend
+    add_header Set-Cookie "canary-user=true; Path=/; Max-Age=600; SameSite=Lax" always;
+
+{{- end }}

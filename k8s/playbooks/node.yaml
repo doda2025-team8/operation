@@ -1,6 +1,6 @@
 # playbooks/node.yaml
 - name: Join worker nodes to Kubernetes cluster
-  hosts: workers
+  hosts: nodes
   become: true
   tasks:
     # Step 18: Generate join command from controller
@@ -21,15 +21,4 @@
       command: "{{ join_command.stdout }}"
       when: not kubelet_conf.stat.exists
 
-    - name: Wait for node to be ready
-      become: yes
-      become_user: vagrant
-      command: kubectl wait --for=condition=Ready node/{{ inventory_hostname }} --timeout=120s
-      delegate_to: ctrl
-      environment:
-        KUBECONFIG: /home/vagrant/.kube/config
-      retries: 3
-      delay: 10
-      register: node_ready
-      until: node_ready.rc == 0
-      when: not kubelet_conf.stat.exists
+    

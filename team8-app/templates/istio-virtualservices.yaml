@@ -1,0 +1,173 @@
+{{- if .Values.istio.enabled}}
+
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: grafana-vs
+spec:
+  hosts:
+    - {{ .Values.rechability.grafanaHostname | quote }}
+  gateways:
+    - my-gateway
+  http:
+    - route:
+      - destination:
+          host: myprom-grafana.default.svc.cluster.local
+          port:
+            number: 80
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: prometheus-vs
+spec:
+  hosts:
+    - {{ .Values.rechability.prometheusHostname | quote }}
+  gateways:
+    - my-gateway
+  http:
+    - route:
+      - destination:
+          host: myprom-kube-prometheus-sta-prometheus.default.svc.cluster.local
+          port:
+            number: 9090
+
+---
+# VirtualService for stable version (with 90/10 canary split)
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: my-vs
+spec:
+  hosts:
+    - {{ .Values.rechability.hostname | quote }}
+  gateways:
+    - my-gateway
+  http:
+    # Match rules when cookies are set for canary 
+    - match:
+        - uri:
+            prefix: "/sms"
+          headers: 
+            cookie:
+              regex: "^(.*?;)?(canary-user=true)(;.*)?$"
+      route:
+        - destination:
+            host: app-service
+            subset: v2
+     # Match default route for /sms, split is performed on first request which hits frontend
+    - match:
+        - uri:
+            prefix: "/sms"
+      route:
+        - destination:
+            host: app-service
+            subset: v1
+    # Match rules when cookies are set to true or false
+    - match:
+        - headers: 
+            cookie:
+              regex: "^(.*?;)?(canary-user=true)(;.*)?$"
+      route:
+        - destination:
+            host: app-frontend
+            subset: v2
+    - match:
+        - headers: 
+            cookie:
+              regex: "^(.*?;)?(canary-user=false)(;.*)?$"
+      route:
+        - destination:
+            host: app-frontend
+            subset: v1
+    # Default route which performs 90/10 split
+    - route:
+      - destination:
+          host: app-frontend
+          subset: v1
+        weight: {{ .Values.istio.canary.stableWeight }}
+      - destination:
+          host: app-frontend
+          subset: v2
+        weight: {{ .Values.istio.canary.canaryWeight }}
+
+---
+# VirtualService for direct canary/pre-release access (100% to v2)
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: canary-vs
+spec:
+  hosts:
+    - {{ .Values.rechability.canaryHostname | quote }}
+  gateways:
+    - my-gateway
+  http:
+    - match:
+        - uri:
+            prefix: "/sms"
+      route:
+        - destination:
+            host: app-service
+            subset: v2
+    - route:
+        - destination:
+            host: app-frontend
+            subset: v2
+
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata: 
+  name: app-service-vs
+spec:
+  hosts:
+    - app-service
+  http:
+  - match:
+    - sourceLabels:
+        version: v2
+    route:
+    - destination:
+        host: app-service
+        subset: v2
+  - route:
+    - destination:
+        host: app-service
+        subset: v1
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata: 
+  name: model-service-vs
+spec:
+  hosts:
+    - model-service
+  http:
+  - match:
+    - sourceLabels:
+        version: v1
+    route:
+    - destination:
+        host: model-service
+        subset: v1
+    mirror:
+        host: model-service
+        subset: v3
+    mirrorPercentage:
+      value: 100.0
+  - match:
+    - sourceLabels:
+        version: v2
+    route:
+    - destination:
+        host: model-service
+        subset: v2
+    mirror:
+        host: model-service
+        subset: v3
+    mirrorPercentage:
+      value: 100.0
+
+{{- end }}
