@@ -6,7 +6,7 @@ One identified shortcoming of the release engineering process is the lack of sec
 
 The proposal is to introduce a security gate in the CI/CD pipelines which build the images. This security gate scans the built images before they are pushed to the registry for the following:
 
-1. Known Vulnerabilities and Exposuures 
+1. Known Vulnerabilities and Exposures 
 2. Outdated or vulnerable packages
 3. Misconfigurations in container that could be exploited
 
@@ -14,14 +14,36 @@ The reports of these scans should be published at a known and reachable location
 
 ## Implemenation plan
 
-1. Integrate into CI/CD: identifly pipelines which create docker images and introduce steps to set up Trivy and run the vulnerability scanner. Github has an action to achive this, find code snippets here[https://github.com/aquasecurity/trivy-action].
+1. Pick some existing software which helps with vulnerability scanning. There are a lot of tools that can be used to scan docker images for vulnerabilities. It is recommended to make use of an external tool that is maintained and updated, instead of creating one. For this extension we propose to use Trivy which is nicely integrated with Githbu through Github actions. In other settings, more time should be spent 
 
-2. Define severity thersholds: define which vulnerabilities are high, critical, medium or just warnings. 
+2. Integrate into CI/CD: Currently, repositories model-service, app-frontend and app-service each have 2 Github workflows release.yml and prerelease.yml, which build and push containers to the Github Container registry. Both workflows need to be updated in each repository, so that they contain a step where the built docker images are scanned for vulnerabilities. The current setup uses an action that builds and pushes at the same step; to implement image scanning we need to split this process in 2 different jobs and add the scanning step(s) in between.
 
-3. Use admission controllers in Kubernetes to prevent unscanned images: this can be implemented as an environment config, see https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/ 
+A possible code snippet for the scanning step is:
 
-4. Save scan results 
+```
+- name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'docker.io/my-organization/my-app:${{ github.sha }}'
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          format: 'template'
+          template: '@/contrib/sarif.tpl'
+          output: 'trivy-results.sarif'
+          severity: 'CRITICAL,HIGH'
+```
 
+Save image scan result:
+
+```
+- name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: 'trivy-results.sarif'
+```
+
+If results are acceptable we create a signing + attestation mechanism. Attestation will be verified by pods before pulling the images.
 ## Success metrics
 
 - all images are scanned before deployment
