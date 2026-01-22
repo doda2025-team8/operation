@@ -13,8 +13,6 @@ Horia Zaharia
 - [Architecture Overview](#architecture-overview)
 - [Deployment Structure](#deployment-structure) 
 - [Data Flow of Requests](#data-flow-of-requests)
-- [Quick Reference: How to Access the Application](#quick-reference-how-to-access-the-application)
-
 
 ## Introduction 
 The goal of this document is to describe the deployment structure  and deployment data flow of the SMS Checker app. The app is deployed in Kubernetes with Istio service mesh. Additionally, it implements a canary release to a small fraction of its users (90/10 traffic split) with Sticky Sessions and an additional use case, a Shadow Launch, which mirrors traffic to a new model version. An experiment is run to evaluate a canary release of the app to a small fraction of its users which enables caching model responses to improve latency. This document presents an overview of the deployment architecture, provides information on all deployed components and their relationships, a description of the request flow through the deployed cluster and a quick reference guide on how to access the application.
@@ -60,8 +58,194 @@ It is unnecessary to include all details for each CRD, but effects and relations
 ![High level diagram of application deployment](./images/deployment_detailed.png)
 Figure 2: Deployment Structure Diagram  
 
-<!--Figure 2 provides a detailed view of all deployed components and their connections. The application can be accessed in two ways, either through a basic Kubernetes Ingress handled by an Ingress Controller, which enables static routing to the application or one through an Istio based ingress, handled by an IngressGateway, that allows for advanced traffic management (90/10 canary release split) and experimentation.-->
+Figure 2 provides a detailed view of all deployed components and their connections. Details of all deployed resource types and their relations can be found below.
 
+### Deployed Components
+
+### Routing
+---
+
+### 1. Gateway (my-gateway) 
+**Name:**  
+**Type:**  
+**Description:**  
+**Connections:**
+
+### SMS Checker App
+---
+### 2. VirtualService (my-vs)
+**Name:**  
+**Type:**  
+**Description:**  
+**Connections:**
+
+### 3. DestinationRule (app-frontend-dr)
+**Name:**  
+**Type:**  
+**Description:**  
+**Connections:**
+
+### 4. Service (app-frontend)
+**Name:**  
+**Type:**  
+**Description:**  
+**Connections:**
+
+### 5. Deployment (app-frontend-v1)
+**Name:**  
+**Type:**  
+**Description:**  
+**Connections:**
+
+### 6. Deployment (app-frontend-v2)
+**Name:**  
+**Type:**  
+**Description:**  
+**Connections:**
+
+### 7. ConfigMap (frontend-v1-cookie-config)
+**Name:**  
+**Type:**  
+**Description:**  
+**Connections:**
+
+### 8. ConfigMap (frontend-v2-cookie-config)
+**Name:**  
+**Type:**  
+**Description:**  
+**Connections:**
+
+### 9. VirtualService (app-service-vs)
+**Name:**  
+**Type:**  
+**Description:**  
+**Connections:**
+
+### 10. DestinationRule (app-service-dr)
+**Name:**  
+**Type:**  
+**Description:**  
+**Connections:**
+
+### 11. Service (app-service)
+**Name:**  
+**Type:**  
+**Description:**  
+**Connections:**
+
+### 12. Deployment (app-service-v1)
+**Name:**  
+**Type:**  
+**Description:**  
+**Connections:**
+
+### 13. Deployment (app-service-v2)
+**Name:**  
+**Type:**  
+**Description:**  
+**Connections:**
+
+### 9. VirtualService (model-service-vs)
+**Name:**  
+**Type:**  
+**Description:**  
+**Connections:**
+
+### 10. DestinationRule (model-service-dr)
+**Name:**  
+**Type:**  
+**Description:**  
+**Connections:**
+
+### 11. Service (model-service)
+**Name:**  
+**Type:**  
+**Description:**  
+**Connections:**
+
+### 12. Deployment (model-service-v1)
+**Name:**  
+**Type:**  
+**Description:**  
+**Connections:**
+
+### 14. Deployment (model-service-v2)
+**Name:**  
+**Type:**  
+**Description:**  
+**Connections:**
+
+### 15. Deployment (model-service-v3)
+**Name:**  
+**Type:**  
+**Description:**  
+**Connections:**
+
+<!--Which component implements the additional use case?-->
+
+
+### Grafana
+---
+### 16. VirtualService (grafana-vs)
+**Name:**  
+**Type:**  
+**Description:**  
+**Connections:**
+
+### 17. ConfigMap (grafana-dashboards-sms-app)
+**Name:**  
+**Type:**  
+**Description:**  
+**Connections:**
+
+### Prometheus
+---
+### 18. VirtualService (premetheus-vs)
+**Name:**  
+**Type:**  
+**Description:**  
+**Connections:**
+
+### 19. ServiceMonitor (mymonitor)
+**Name:**  
+**Type:**  
+**Description:**  
+**Connections:**
+
+### 19. PrometheusRule (sms-app-alert)
+**Name:**  
+**Type:**  
+**Description:**  
+**Connections:**
+
+### 20. Alertmanager (email-alert)
+**Name:**  
+**Type:**  
+**Description:**  
+**Connections:**
+
+### 21. AlertmanagerConfig (email-config)
+**Name:**  
+**Type:**  
+**Description:**  
+**Connections:**
+
+### 22. Secret (alertmanager-smtp-secret)
+**Name:**  
+**Type:**  
+**Description:**  
+**Connections:**
+
+
+
+
+
+
+####
+
+
+
+<!--
 ### Kubernetes:
 #### Deployments
 #### Services
@@ -77,6 +261,7 @@ Figure 2: Deployment Structure Diagram
 #### Additional Use Case: Shadow Launch
 
 #### App Monitoring
+-->
 
 ## Data Flow of Requests
 <!--Describe the flow of incoming requests to the cluster. Show and elaborate the flow of requests in the cluster, including the
@@ -84,7 +269,3 @@ dynamic traffic routing in your experiment.
 • Which path does a typical request take through your deployment?
 • Where is the 90/10 split configured? Where is the routing decision taken?
 Add data flow diagrams-->
-
-## Quick Reference: How to Access the Application
-<!--Here there is a list/table of all hostname, paths, ports, headers.. that are necessary to access the application-->
-
