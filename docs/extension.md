@@ -10,13 +10,13 @@ The proposal is to introduce a security gate in the CI/CD pipelines which build 
 2. Outdated or vulnerable packages
 3. Misconfigurations in container that could be exploited
 
-The reports of these scans should be published at a known and reachable location such as the artifact repository. A good tool choice here is Trivy[https://github.com/aquasecurity/trivy], a popular security scanner.
+The reports of these scans should be published at a known and reachable location such as the artifact repository. Images which are have an acceptable scan result will be signed after pushing, using Cosign [https://github.com/sigstore/cosign]. A good tool choice for scanning the images is Trivy[https://github.com/aquasecurity/trivy], a popular security scanner.
 
 ## Implemenation plan
 
-1. Pick some existing software which helps with vulnerability scanning. There are a lot of tools that can be used to scan docker images for vulnerabilities. It is recommended to make use of an external tool that is maintained and updated, instead of creating one. For this extension we propose to use Trivy which is nicely integrated with Githbu through Github actions. In other settings, more time should be spent 
+1. Pick some existing software which helps with vulnerability scanning. There are a lot of tools that can be used to scan docker images for vulnerabilities. It is recommended to make use of an external tool that is maintained and updated, instead of creating one. For this extension we propose to use Trivy which is nicely integrated with Githbu through Github actions. In other settings, more time should be spent on market analysis.
 
-2. Integrate into CI/CD: Currently, repositories model-service, app-frontend and app-service each have 2 Github workflows release.yml and prerelease.yml, which build and push containers to the Github Container registry. Both workflows need to be updated in each repository, so that they contain a step where the built docker images are scanned for vulnerabilities. The current setup uses an action that builds and pushes at the same step; to implement image scanning we need to split this process in 2 different jobs and add the scanning step(s) in between.
+2. Integrate scanning into CI/CD: Currently, repositories model-service, app-frontend and app-service each have 2 Github workflows release.yml and prerelease.yml, which build and push containers to the Github Container registry. Both workflows need to be updated in each repository, so that they contain a step where the built docker images are scanned for vulnerabilities. The current setup uses an action that builds and pushes at the same step; to implement image scanning we need to split this process in 2 different jobs and add the scanning step(s) in between.
 
 A possible code snippet for the scanning step is:
 
@@ -24,14 +24,15 @@ A possible code snippet for the scanning step is:
 - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: 'docker.io/my-organization/my-app:${{ github.sha }}'
+          image-ref: ${{ buildstage.outputs.image }}
           exit-code: '1'
-          ignore-unfixed: true
+          ignore-unfixed: false
           vuln-type: 'os,library'
           format: 'template'
           template: '@/contrib/sarif.tpl'
           output: 'trivy-results.sarif'
           severity: 'CRITICAL,HIGH'
+          exit-code: '1'
 ```
 
 Save image scan result:
@@ -43,7 +44,22 @@ Save image scan result:
           sarif_file: 'trivy-results.sarif'
 ```
 
-If results are acceptable we create a signing + attestation mechanism. Attestation will be verified by pods before pulling the images.
+If scan results are acceptable push image to Github registry and sign the image. A possible code snippet for this is:
+
+```
+- name: Install cosign
+  uses: sigstore/cosign-installer@v3
+
+- name: Sign pushed image
+  env:
+    COSIGN_EXPERIMENTAL: "1"
+  run: |
+    set -euo pipefail
+    cosign sign --yes "regostry_path_to_pushed_container"
+```
+
+3. Add Admission controller
+
 ## Success metrics
 
 - all images are scanned before deployment
