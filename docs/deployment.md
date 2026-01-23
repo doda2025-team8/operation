@@ -66,176 +66,215 @@ Figure 2 provides a detailed view of all deployed components and their connectio
 ---
 
 ### 1. Gateway (my-gateway) 
-**Name:**  
-**Type:**  
-**Description:**  
-**Connections:**
+**Name:**  my-gateway   
+**Type:** Gateway   
+**Description:**  It defines how external traffic enters the cluster. It declares the hosts and ports that the Istio Ingress Gateway should handle for accessing the SMS Checker App, Grafana and Prometheus.   
+**Connections:** 
+- Binds to Istio Ingress Gateway
+- Referenced by VirtualService resources (my-vs, grafana-vs, prometheus-vs)
 
 ### SMS Checker App
 ---
 ### 2. VirtualService (my-vs)
-**Name:**  
-**Type:**  
-**Description:**  
-**Connections:**
+**Name:**  my-vs   
+**Type:**  VirtualService    
+**Description:**  The Virtual Service defines how traffic is routed once it enters the mesh via a Gateway. my-vs is responsible for routing incoming traffic from the Gateway to the app-frontend Service. It implements the 90/10 traffic split, directing 90% of the requests to the stable version (v1) and 10% to the canary version (v2). It enforces cookie-based sticky sessions such that when a user has been assigned to v1 or v2, subsequent requests are routed to the same version. 
+- Requests with cookie `canary-user=false` are routed to the stable version (v1) 
+- Requests with cookie `canary-user=true` are routed to the canary version (v2) 
+- Any request without the cookie is handled according to the 90/10 and a cookie is set later by the frontend.
+
+**Connections:**  
+- Routes to Service (app-frontend) subsets stable (v1) or canary (v2) based on the DestinationRule for app-frontend. 
 
 ### 3. DestinationRule (app-frontend-dr)
-**Name:**  
-**Type:**  
-**Description:**  
-**Connections:**
+**Name:**  app-frontend-dr   
+**Type:**  DestinationRule      
+**Description:** It defines traffic policies and subsets (v1, v2) for the frontend service using pod labels.     
+**Connections:**  
+- It applies to Service (app-frontend) to the deployments app-frontend-v1 and app-frontend-v2.
 
 ### 4. Service (app-frontend)
-**Name:**  
-**Type:**  
-**Description:**  
-**Connections:**
+**Name:** app-frontend       
+**Type:** Service
+**Description:**  Provides a stable endpoint for accessing the app-frontend's pods based on the defined DestinationRule subsets.    
+**Connections:** 
+- Routes to app-frontend (v1) pods created by `app-frontend-v1`Deployment and app-frontend (v2) pods created by `app-frontend-v2` based on the DestinationRule subsets. 
+
 
 ### 5. Deployment (app-frontend-v1)
-**Name:**  
-**Type:**  
-**Description:**  
-**Connections:**
+**Name:** app-frontend-v1    
+**Type:** Deployment    
+**Description:** Creates the pods that run the stable version of the frontend which are injected with an Istio sidecar proxy and are labeled with version v1. It receives 90% of the traffic.      
+**Connections:**      
+- It mounts ConfigMap (frontend-v1-cookie-config) which sets cookie `canary-user=false` for the stable release. 
 
 ### 6. Deployment (app-frontend-v2)
-**Name:**  
-**Type:**  
-**Description:**  
-**Connections:**
+**Name:** app-frontend-v2   
+**Type:** Deployment   
+**Description:** Creates the pods that run the canary version of the App Frontend which are injected with an Istio sidecar proxy and are labeled with version v2. It receives 10% of the traffic.      
+**Connections:** 
+- It mounts ConfigMap (frontend-v2-cookie-config) which sets cookie `canary-user=true` for the canary release.
 
 ### 7. ConfigMap (frontend-v1-cookie-config)
-**Name:**  
-**Type:**  
-**Description:**  
+**Name:**  frontend-v1-cookie-config  
+**Type:**  ConfigMap  
+**Description:**  Configures the cookie `canary-user=false` for the stable release.   
 **Connections:**
-
+- It gets mounted by `app-frontend-v1`.
 ### 8. ConfigMap (frontend-v2-cookie-config)
-**Name:**  
-**Type:**  
-**Description:**  
+**Name:**  frontend-v2-cookie-config  
+**Type:**  ConfigMap  
+**Description:**   Configures the `canary-user=true` cookie for the canary release.      
+**Connections:**
+- It gets mounted by `app-frontend-v2`.
+
+### 8. VirtualService (app-service-vs)
+**Name:**  app-service-vs   
+**Type:**  VirtualService   
+**Description:**  It routes traffic to the App Service.    
+**Connections:**
+- Routes to Service (app-service) subsets stable (v1) or canary (v2) based on the DestinationRule for app-service.
+- Receives traffic from either `app-frontend-v1` pods or `app-frontend-v2` pods.
+
+### 9. DestinationRule (app-service-dr)
+**Name:**  app-service-dr      
+**Type:**  DestinationRule      
+**Description:**  It defines traffic policies and subsets (v1, v2) for the App Service using pod labels.   
+**Connections:**      
+- It applies to Service (app-service) to the deployments app-service-v1 and app-service-v2.
+
+### 10. Service (app-service)
+**Name:**  app-service
+**Type:**  Service
+**Description:**  Provides a stable endpoint for accessing the app service's pods based on the defined DestinationRule subsets.   
+**Connections:**  
+- Routes to app-service (v1) pods created by `app-service-v1` Deployment and app-service (v2) pods created by `app-service-v2` based on the DestinationRule subsets. 
+
+### 11. Deployment (app-service-v1)
+**Name:**  app-service-v1   
+**Type:**  Deployment   
+**Description:**  Creates the pods that run the stable version of the app service which are injected with an Istio sidecar proxy and are labeled with version v1. It receives 90% of the traffic.      
+**Connections:**
+- Receives traffic from the frontend
+
+### 12. Deployment (app-service-v2)
+**Name:**  app-service-v2    
+**Type:**  Deployment    
+**Description:** Creates the pods that run the canary version of the app service which are injected with an Istio sidecar proxy and are labeled with version v2. It receives 10% of the traffic. This instance is a prerealese of app service implementing the experiment.      
+**Connections:**
+- Receives traffic from the frontend
+
+### 13. VirtualService (model-service-vs)
+**Name:**  model-service-vs    
+**Type:**  VirtualService    
+**Description:**  It routes traffic to the Model Service and implements the additional use case the Shadow Launch.    
+**Connections:**  
+- Routes to Service (model-service) subsets stable (v1) or canary (v2) based on the DestinationRule for app-frontend and mirrors 100% of the traffic (copy requests) to another model-service subset (v3).
+- Receives traffic from either `app-service-v1` pods or `app-service-v2` pods.
+
+### 14. DestinationRule (model-service-dr)
+**Name:**  model-service-dr     
+**Type:**  DestinationRule     
+**Description:**  It defines traffic policies and subsets (v1, v2, v3) for the Model Service using pod labels.   
+**Connections:**   
+- It applies to Service (model-service) to the deployments model-service-v1, model-service-v2 and model-service-v3.
+
+### 15. Service (model-service)
+**Name:**  model-service      
+**Type:**  Service      
+**Description:**   Provides a stable endpoint for accessing the model-service's pods based on the defined DestinationRule subsets.
+**Connections:**    
+- Routes to model-service (v1) pods created by `model-service-v1` Deployment, model-service (v2) pods created by `model-service-v2` and model-service (v3) pods created by `model-service-v3`  based on the DestinationRule subsets. 
+
+### 16. Deployment (model-service-v1)
+**Name:** model-service-v1   
+**Type:**  Deployment   
+**Description:**  Creates the pods that run the stable version of the model service which are injected with an Istio sidecar proxy and are labeled with version v1. It receives 90% of the traffic.    
+**Connections:**
+It receives traffic from app-service pods of version (v1).
+
+### 17. Deployment (model-service-v2)
+**Name:**  model-service-v2     
+**Type:**  Deployment 
+**Description:**  Creates the pods that run the canary version of the model service which are injected with an Istio sidecar proxy and are labeled with version v2. It receives 10% of the traffic.
 **Connections:**
 
-### 9. VirtualService (app-service-vs)
-**Name:**  
-**Type:**  
-**Description:**  
+### 18. Deployment (model-service-v3)
+**Name:**  model-service-v3       
+**Type:**  Deployment   
+**Description:**  This is a shadow Deployment of the model-service which uses a newer version of the model. Pods receive mirrored traffic without sending responses to the client.
 **Connections:**
-
-### 10. DestinationRule (app-service-dr)
-**Name:**  
-**Type:**  
-**Description:**  
-**Connections:**
-
-### 11. Service (app-service)
-**Name:**  
-**Type:**  
-**Description:**  
-**Connections:**
-
-### 12. Deployment (app-service-v1)
-**Name:**  
-**Type:**  
-**Description:**  
-**Connections:**
-
-### 13. Deployment (app-service-v2)
-**Name:**  
-**Type:**  
-**Description:**  
-**Connections:**
-
-### 9. VirtualService (model-service-vs)
-**Name:**  
-**Type:**  
-**Description:**  
-**Connections:**
-
-### 10. DestinationRule (model-service-dr)
-**Name:**  
-**Type:**  
-**Description:**  
-**Connections:**
-
-### 11. Service (model-service)
-**Name:**  
-**Type:**  
-**Description:**  
-**Connections:**
-
-### 12. Deployment (model-service-v1)
-**Name:**  
-**Type:**  
-**Description:**  
-**Connections:**
-
-### 14. Deployment (model-service-v2)
-**Name:**  
-**Type:**  
-**Description:**  
-**Connections:**
-
-### 15. Deployment (model-service-v3)
-**Name:**  
-**Type:**  
-**Description:**  
-**Connections:**
-
-<!--Which component implements the additional use case?-->
+- It receives mirror traffic from VirtualService `model-service-vs`.
 
 
 ### Grafana
 ---
-### 16. VirtualService (grafana-vs)
-**Name:**  
-**Type:**  
-**Description:**  
+### 19. VirtualService (grafana-vs)
+**Name:**  grafana-vs    
+**Type:**  VirtualService    
+**Description:**  It routes traffic from the Gateway to the Grafana service.   
 **Connections:**
+- Routes to Service `myprop-grafana.default.svc.cluster.local`. 
 
-### 17. ConfigMap (grafana-dashboards-sms-app)
-**Name:**  
-**Type:**  
-**Description:**  
-**Connections:**
+### 20. ConfigMap (grafana-dashboards-sms-app)
+**Name:**  grafana-dashboards-sms-app   
+**Type:**  ConfigMap   
+**Description:**  It defines two dashboards (one for the SMS Checker App and one for the experiment) which collect data from the Prometheus instance.  `grafana_dashboard: "1"` is set for Grafana to automatically detect and pick up the dashboards when the pods are deployed.   
+**Connections:**   
+- It gets mounted by Grafana deployed pods.
 
 ### Prometheus
 ---
-### 18. VirtualService (premetheus-vs)
-**Name:**  
-**Type:**  
-**Description:**  
-**Connections:**
+### 21. VirtualService (premetheus-vs)
+**Name:**   VirtualService  
+**Type:**    
+**Description:**  It routes traffic from the Gateway to the Prometheus service.     
+**Connections:**  
+- Routes to Service `myprom-kube-prometheus-sta-prometheus.default.svc.cluster.local`.
 
-### 19. ServiceMonitor (mymonitor)
-**Name:**  
-**Type:**  
-**Description:**  
+### 22. ServiceMonitor (mymonitor)
+**Name:**  mymonitor
+**Type:**  ServiceMonitor
+**Description:**  It is defined to make the app-service discoverable by Prometheus such that it can scrape the metrics defined at the `/metrics` endpoint in the app-service.
 **Connections:**
+- It watches app-service and its endpoints.
 
-### 19. PrometheusRule (sms-app-alert)
-**Name:**  
-**Type:**  
-**Description:**  
-**Connections:**
+### 23. PrometheusRule (sms-app-alert)
+**Name:**  sms-app-alert   
+**Type:**  PrometheusRule  
+**Description:**  It defines alerting rules for the SMS App Check app. It specifies that if the app receives more than 15 requests per minute for two minutes straight, Prometheus should fire an alert.  
+**Connections:**   
+ - It is evaluated by Prometheus through collecting app metrics.    
 
-### 20. Alertmanager (email-alert)
-**Name:**  
-**Type:**  
-**Description:**  
-**Connections:**
+Description: This PrometheusRule defines alerting conditions for the SMS App Check application. For example, it specifies that if the app receives more than 15 requests per minute for a continuous two-minute period, Prometheus should generate an alert. Note that the rule itself does not send notifications—Prometheus evaluates the condition, and any resulting alerts are handled by Alertmanager.
+Connections / Usage:
 
-### 21. AlertmanagerConfig (email-config)
-**Name:**  
-**Type:**  
-**Description:**  
-**Connections:**
+Evaluated by Prometheus against metrics scraped from the app.
 
-### 22. Secret (alertmanager-smtp-secret)
-**Name:**  
-**Type:**  
-**Description:**  
-**Connections:**
+Alerts generated are sent to Alertmanager for notification and routing.
 
+### 24. Alertmanager (email-alert)
+**Name:**  email-alert   
+**Type:**  Alertmanager  
+**Description:**  It receives alerts, defined in PrometheusRules, by Prometheus and sends notifications. Here it configured to send emails.   
+**Connections:**  
+- It receives alert from Prometheus
+- Sends notifications according to configuration in AlertmanagerConfig.
+
+
+### 25. AlertmanagerConfig (email-config)
+**Name:**  email-config   
+**Type:**  AlertmanagerConfig   
+**Description:**  It configures all settings for sending a notification e.g. the type of notification, the recipient email address if the notification is email.
+**Connections:**   
+- It is used by Alertmanager to define alert behavior.
+
+### 26. Secret (alertmanager-smtp-secret)
+**Name:**  alertmanager-smtp-secret   
+**Type:**  Secret   
+**Description:**  It defines a secret for storing sensitive information. Here it stores `SMTP_PASSWORD`, a password that it is used by email receives via SMTP settings.   
+**Connections:**   
+- It it mounted to AlertmanagerConfig.  
 
 
 
