@@ -16,8 +16,7 @@ This repository is the home of the submission for the project of Team 8 in the c
     - [Vagrant](#vagrant)
     - [Minikube](#minikube)
 - [How to install with helm](#how-to-install-with-helm)
-  - [1. Add Prometheus + Grafana dependencies](#1-add-prometheus--grafana-dependencies)
-  - [1.1 Add Istio (Only on Minikube)](#11-add-istio-only-on-minikube)
+  - [1 Add Istio (Only on Minikube)](#1-add-istio-only-on-minikube)
   - [2. Install Applications](#2-install-applications)
   - [2.1 Ingress Gateway Configuration](#21-ingress-gateway-configuration)
   - [2.2 AlertManager Configuration (Email Alerts)](#22-alertmanager-configuration-email-alerts)
@@ -179,16 +178,8 @@ For Windows: `C:\Windows\System32\drivers\etc\hosts`
 
 Make sure you have [Kubernetes](https://kubernetes.io/) and [helm](https://helm.sh/) installed.
 
-## 1. Add Prometheus + Grafana dependencies
+## 1 Add Istio (Only on Minikube)
 
-```bash
-vagrant ssh ctrl # Only on vagrant
-helm repo add prom-repo https://prometheus-community.github.io/helm-charts
-helm repo update
-helm install myprom prom-repo/kube-prometheus-stack --timeout 10m
-```
-
-## 1.1 Add Istio (Only on Minikube)
 Download Istio from the official website
 
 ```bash
@@ -198,19 +189,19 @@ kubectl label namespace default istio-injection=enabled
 
 ## 2. Install Applications
 
-Deploy application chart (app-frontend, app-service, model-service, and ingress) to the Kubernetes cluster using Helm.
+Deploy the dependiencies (grafana and prometheus) and application chart (app-frontend, app-service, model-service and ingress) to the Kubernetes cluster using Helm.
 
 In `values.yaml`, istio can be enabled or disabled.
 
 On Vagrant:
 ```bash
 vagrant ssh ctrl # Only with vagrant
-helm install team8-app /home/vagrant/team8-app
+helm install team8-app /home/vagrant/team8-app --dependency-update
 ```
 
 On Minikube:
 ```bash
-helm install team8-app ./team8-app
+helm install team8-app ./team8-app --dependency-update
 ```
 Container creation takes appprox. 20 sec
 
