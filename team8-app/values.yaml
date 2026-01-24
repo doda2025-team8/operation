@@ -1,6 +1,6 @@
 frontend:
   replicaCount: 1
-  image: ghcr.io/doda2025-team8/app-frontend:latest
+  image: ghcr.io/doda2025-team8/app-frontend:0.1.6
   service:
     port: 80
     targetPort: 8080
@@ -15,7 +15,7 @@ backend:
     targetPort: 8080
   modelHost: "http://model-service:8081"
   v1:
-    image: ghcr.io/doda2025-team8/app-service:latest
+    image: ghcr.io/doda2025-team8/app-service:0.1.9
   v2:
     image: ghcr.io/doda2025-team8/app-service:0.1.7-20260116194934-continuous-experimentation
     env:
@@ -32,7 +32,7 @@ rechability:
 
 model:
   replicaCount: 1
-  image: ghcr.io/doda2025-team8/model-service:latest
+  image: ghcr.io/doda2025-team8/model-service:0.1.6
 
   service:
     port: 8081
