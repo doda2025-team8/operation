@@ -3,7 +3,7 @@ kind: PrometheusRule
 metadata:
   name: sms-app-alert
   labels:
-    release: myprom
+    release: {{ .Release.Name }}
 spec:
   groups:
     - name: sms-app-rules 

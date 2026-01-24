@@ -3,7 +3,7 @@ kind: Alertmanager
 metadata:
   name: email-alert
   labels:
-    release: myprom
+    release: {{ .Release.Name }}
 spec:
   replicas: 1
   alertmanagerConfigSelector:
