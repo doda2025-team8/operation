@@ -11,5 +11,5 @@ spec:
   endpoints: 
     - port: http
       interval: 15s
-      path: /actuator/prometheus
+      path: /sms/metrics
 
