@@ -85,4 +85,4 @@ Main benefits of introducing this extention are:
 
 ## Other related work
 
-This extension is a good step towards a secure release engineering process, however not sufficient on its own. It should be accompanied by other initiatives such as pre-commit hooks, local code scanning, branching and release(change) policy. 
+Image scanning and cryptographic signing form foundational controls in secure release engineering by identifying known vulnerabilities and establishing the provenance and integrity of released artifacts. Complementary initiatives include static application security testing (code scanning), secret scanning, dependency and license analysis, and supply-chain provenance generation to reduce the risk of introducing vulnerable or "non-compliant" components. Collectively, these mechanisms enable end-to-end, verifiable guarantees over the production and deployment of software artifacts, rather than relying on procedural or trust-based assurances.
