@@ -7,33 +7,35 @@ WORKER_MEMORY = 6144
 WORKER_CPU = 2
 N_WORKERS = 2
 
-# Generate dynamic inventory file
-inventory_content = <<~INV
-[control_plane]
-ctrl ansible_host=192.168.56.100 ansible_user=vagrant ansible_ssh_private_key_file=.vagrant/machines/ctrl/virtualbox/private_key ansible_python_interpreter=/usr/bin/python3
+require "fileutils"
 
-[workers]
-INV
+INVENTORY_PATH = File.expand_path("inventory/inventory.cfg", __dir__)
 
-(1..N_WORKERS).each do |i|
-  inventory_content += "node-#{i} ansible_host=192.168.56.#{100 + i} ansible_user=vagrant ansible_ssh_private_key_file=.vagrant/machines/node-#{i}/virtualbox/private_key ansible_python_interpreter=/usr/bin/python3\n"
+def write_inventory(n_workers)
+  FileUtils.mkdir_p(File.dirname(INVENTORY_PATH))
+
+  ctrl_ip = "192.168.56.100"
+  workers = (1..n_workers).map { |i| ["node-#{i}", "192.168.56.#{100 + i}"] }
+
+  content = +""
+  content << "[control_plane]\n"
+  content << "ctrl ansible_host=#{ctrl_ip} ansible_user=vagrant ansible_ssh_private_key_file=.vagrant/machines/ctrl/virtualbox/private_key ansible_python_interpreter=/usr/bin/python3\n\n"
+
+  content << "[workers]\n"
+  workers.each do |name, ip|
+    content << "#{name} ansible_host=#{ip} ansible_user=vagrant ansible_ssh_private_key_file=.vagrant/machines/#{name}/virtualbox/private_key ansible_python_interpreter=/usr/bin/python3\n"
+  end
+  content << "\n[kubernetes:children]\ncontrol_plane\nworkers\n"
+
+  File.write(INVENTORY_PATH, content)
 end
-
-inventory_content += <<~INV
-
-[kubernetes:children]
-control_plane
-workers
-INV
-
-
-Dir.mkdir("inventory") unless Dir.exist?("inventory")
-File.write("inventory/hosts.ini", inventory_content)
 
 Vagrant.configure("2") do |config|
   config.vm.box = "bento/ubuntu-24.04"
   config.vm.box_version = "202510.26.0"
   config.vm.synced_folder "../team8-app", "/home/vagrant/team8-app"
+
+  write_inventory(N_WORKERS)
 
   # Control node
   config.vm.define "ctrl" do |ctrl|

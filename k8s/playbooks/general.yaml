@@ -105,7 +105,7 @@
     #- name: Install sshpass for cross-VM communication
     #  apt:
     #    name: sshpass
-    #   state: present
+    #    state: present
         
     # Step 10
     - name: Install container runtime and Kubernetes tools

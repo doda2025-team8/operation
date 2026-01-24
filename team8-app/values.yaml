@@ -7,22 +7,28 @@ frontend:
   labels:
     app: app-frontend
     component: frontend
-  hostname: "team8.local"
 
 backend:
   replicaCount: 1
-  image: ghcr.io/doda2025-team8/app-service:latest
   service:
     port: 8080
     targetPort: 8080
   modelHost: "http://model-service:8081"
   v1:
-    enableCache: "false"
+    image: ghcr.io/doda2025-team8/app-service:latest
   v2:
-    enableCache: "true"
+    image: ghcr.io/doda2025-team8/app-service:0.1.7-20260116194934-continuous-experimentation
+    env:
+      ENABLE_CACHE: "true"
   labels:
     app: app-service
     component: backend
+
+rechability:
+  hostname: "team8.local"
+  canaryHostname: "canary.team8.local"
+  grafanaHostname: "grafana.team8.local"
+  prometheusHostname: "prometheus.team8.local"
 
 model:
   replicaCount: 1
@@ -69,3 +75,7 @@ istio:
     hosts:
       - "*"
     port: 80
+  
+  canary:
+    stableWeight: 90
+    canaryWeight: 10
