@@ -40,7 +40,7 @@ spec:
             name: app-service
             port:
               number: 8080
-      - path: /actuator/prometheus
+      - path: /sms/metrics
         pathType: Prefix
         backend:
           service:
