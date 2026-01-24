@@ -11,3 +11,4 @@ __pycache__/
 .DS_Store
 cookie.txt
 team8-app/charts/
+team8-app/Chart.lock
