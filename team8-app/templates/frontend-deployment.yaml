@@ -28,12 +28,15 @@ spec:
           ports:
             - containerPort: {{ .Values.frontend.service.targetPort }}
               name: http
-          {{- if .Values.istio.enabled }}
           volumeMounts:
+            {{- if .Values.istio.enabled }}
             - name: cookie-config
               mountPath: /etc/nginx/extra-conf
               readOnly: true
-          {{- end }}
+            {{- end }}
+            - name: shared-storage
+              mountPath: /usr/share/nginx/html/shared
+              readOnly: true
           livenessProbe:
             httpGet:
               path: /health
@@ -46,12 +49,15 @@ spec:
               port: {{ .Values.frontend.service.targetPort }}
             initialDelaySeconds: 5
             periodSeconds: 5
-      {{- if .Values.istio.enabled }}
       volumes:
+        {{- if .Values.istio.enabled }}
         - name: cookie-config
           configMap:
             name: frontend-v1-cookie-config
-      {{- end }}
+        {{- end }}
+        - name: shared-storage
+          persistentVolumeClaim:
+            claimName: shared-storage-pvc
 {{- if .Values.istio.enabled}}
 ---
 apiVersion: apps/v1
@@ -83,12 +89,15 @@ spec:
           ports:
             - containerPort: {{ .Values.frontend.service.targetPort }}
               name: http
-          {{- if .Values.istio.enabled }}
           volumeMounts:
+            {{- if .Values.istio.enabled }}
             - name: cookie-config
               mountPath: /etc/nginx/extra-conf
               readOnly: true
-          {{- end }}
+            {{- end }}
+            - name: shared-storage
+              mountPath: /usr/share/nginx/html/shared
+              readOnly: true
           livenessProbe:
             httpGet:
               path: /health
@@ -101,10 +110,13 @@ spec:
               port: {{ .Values.frontend.service.targetPort }}
             initialDelaySeconds: 5
             periodSeconds: 5
-      {{- if .Values.istio.enabled }}
       volumes:
+        {{- if .Values.istio.enabled }}
         - name: cookie-config
           configMap:
             name: frontend-v2-cookie-config
-      {{- end }}
+        {{- end }}
+        - name: shared-storage
+          persistentVolumeClaim:
+            claimName: shared-storage-pvc
 {{- end }}

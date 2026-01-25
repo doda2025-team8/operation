@@ -17,7 +17,7 @@ This repository is the home of the submission for the project of Team 8 in the c
     - [Minikube](#minikube)
 - [How to install with helm](#how-to-install-with-helm)
   - [1. Add Prometheus + Grafana dependencies](#1-add-prometheus--grafana-dependencies)
-  - [1.1 Add Istio (Only on Minikube)](#11-add-istio-only-on-minikube)
+  - [1.1 Add Istio (only on Minikube)](#11-add-istio-only-on-minikube)
   - [2. Install Applications](#2-install-applications)
   - [2.1 Ingress Gateway Configuration](#21-ingress-gateway-configuration)
   - [2.2 AlertManager Configuration (Email Alerts)](#22-alertmanager-configuration-email-alerts)
@@ -161,6 +161,8 @@ For Windows: `C:\Windows\System32\drivers\etc\hosts`
    ```bash
    ansible-playbook -i k8s/inventory/hosts.ini k8s/playbooks/finalization.yml -u vagrant
    ```
+
+4. Use the `k8s/shared` folder to include extra images that can be served by the `app-frontend`. The files will be visible at `http://team8.local/shared/<filename>`
 
 ### Minikube
 
