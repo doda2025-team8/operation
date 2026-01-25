@@ -15,10 +15,9 @@ Horia Zaharia
 - [Data Flow of Requests](#data-flow-of-requests)
 
 ## Introduction 
-The goal of this document is to describe the deployment structure  and deployment data flow of the SMS Checker app. The app is deployed in Kubernetes with Istio service mesh. Additionally, it implements a canary release to a small fraction of its users (90/10 traffic split) with Sticky Sessions and an additional use case, a Shadow Launch, which mirrors traffic to a new model version. An experiment is run to evaluate a canary release of the app to a small fraction of its users which enables caching model responses to improve latency. This document presents an overview of the deployment architecture, provides information on all deployed components and their relationships, a description of the request flow through the deployed cluster and a quick reference guide on how to access the application.
+The goal of this document is to describe the deployment structure  and data flow of the SMS Checker app. The app is deployed in Kubernetes with Istio service mesh. Additionally, it implements a canary release to a small fraction of its users (90/10 traffic split) with Sticky Sessions and an additional use case, a Shadow Launch, which mirrors traffic to a new model version. An experiment is run to evaluate a canary release of the app to a small fraction of its users which enables caching model responses to improve latency. This document presents an overview of the deployment architecture, provides information on all deployed components and their relationships and a description of the request flow through the deployed cluster.
 
 ## Architecture Overview 
-<!--Add a high level diagram of the architecture and a general description.-->
 ![High level diagram of application deployment](./images/highleveldiagram.png)
 Figure 1: High level diagram of application deployment    
 
@@ -31,16 +30,17 @@ The current deployment uses the following hostnames and paths:
 
 | Hostname                 | Port | Path |  |
 |--------------------------|------|------|---------|
-| team8.local              | 8080   | /    | SMS Checker app |
+| team8.local              | 8080   | /    | SMS Checker App Frontend|
+| team8.local              | 8080   | /sms    | Proxy serves request to App Serive |
 | canary.team8.local       | 8080   | /    | Prereleased app (canary version) used for experimentation |
 | prometheus.team8.local   | 8080   | /    | Prometheus web UI for metrics inspection and alerting|
 | grafana.team8.local      | 8080   | /    | Grafana web UI for dashboarding 
 
-An istio `VirtualService` (my-vs) is attached to the `Gateway` which is responsible for traffic routing to the SMS Checker app frontend, weighted traffic splitting (90/10) and Sticky Sessions. Sticky Sessions are implemented using a cookie (canary-user=true or canary-user=false), set by the frontend, such that the user selected for the canary version consistently sees the same version on subsequent requests. `DestinationRules` resources are responsible for defining subsets for the stable and canary releases and also for the Shadow Launch, enabling version-aware routing.
+An istio `VirtualService` (my-vs) is attached to the `Gateway` which is responsible for traffic routing to the SMS Checker App Frontend and App Service, weighted traffic splitting (90/10) and Sticky Sessions. Sticky Sessions are implemented using a cookie (canary-user=true or canary-user=false), set by the frontend, such that the user selected for the canary version consistently sees the same version on subsequent requests. `DestinationRules` resources are responsible for defining subsets for the stable and canary releases and also for the Shadow Launch, enabling version-aware routing.
 
-The app and its services (app-frontend, app-service, model) are deployed in multiple versions:
-- A **Stable (v1)** deployment which serves most of the user (90%).
-- A **Canary (v2)** deployment which serves a small fraction of the users (10%) and it is used for experimentation. This pre-release version of the `app-service` introduces a new feature in the app service. This new feature allows for caching model responses to improve latency.
+The app and its services (app-frontend, app-service, model-service) are deployed in multiple versions:
+- A **Stable (v1)** deployment which serves most of the users (90%).
+- A **Canary (v2)** deployment which serves a small fraction of the users (10%) and it is used for experimentation. This pre-release version of the `app-service` introduces a new feature in the App Service. This new feature allows for caching model responses to improve latency.
 - A **Shadow Launch (v3)** deployment introduces a new instance of the model service which mirrors existing traffic from v1 and v2 and runs a newer model version. The new model version is not exposed to the users and custom metrics are implemented in `model-service` to evaluate the new version.
 
 `Virtual Services` app-service-vs and model-service-vs are implemented for ensuring that traffic is routed to the correct version (v1/v2) of the corresponding service.
@@ -78,13 +78,13 @@ Figure 2 provides a detailed view of all deployed components and their connectio
 ### 2. VirtualService (my-vs)
 **Name:**  my-vs   
 **Type:**  VirtualService    
-**Description:**  The Virtual Service defines how traffic is routed once it enters the mesh via a Gateway. my-vs is responsible for routing incoming traffic from the Gateway to the app-frontend Service. It implements the 90/10 traffic split, directing 90% of the requests to the stable version (v1) and 10% to the canary version (v2). It enforces cookie-based sticky sessions such that when a user has been assigned to v1 or v2, subsequent requests are routed to the same version. 
+**Description:**  The Virtual Service defines how traffic is routed once it enters the mesh via a Gateway. my-vs is responsible for routing incoming traffic from the Gateway to the app-frontend Service and the app-service Service. Any request to /sms is routed to the app-service for processing the request and returning the model response to the user. It implements the 90/10 traffic split, directing 90% of the requests to the stable version (v1) and 10% to the canary version (v2). It enforces cookie-based sticky sessions such that when a user has been assigned to v1 or v2, subsequent requests are routed to the same version. 
 - Requests with cookie `canary-user=false` are routed to the stable version (v1) 
 - Requests with cookie `canary-user=true` are routed to the canary version (v2) 
-- Any request without the cookie is handled according to the 90/10 and a cookie is set later by the frontend.
+- Any request without the cookie is handled according to the 90/10 split and a cookie is set later by the frontend.
 
 **Connections:**  
-- Routes to Service (app-frontend) subsets stable (v1) or canary (v2) based on the DestinationRule for app-frontend. 
+- Routes to Service (app-frontend, app-service) subsets stable (v1) or canary (v2) based on the DestinationRule for app-frontend and app-service. 
 
 ### 3. DestinationRule (app-frontend-dr)
 **Name:**  app-frontend-dr   
@@ -95,16 +95,16 @@ Figure 2 provides a detailed view of all deployed components and their connectio
 
 ### 4. Service (app-frontend)
 **Name:** app-frontend       
-**Type:** Service
+**Type:** Service  
 **Description:**  Provides a stable endpoint for accessing the app-frontend's pods based on the defined DestinationRule subsets.    
 **Connections:** 
-- Routes to app-frontend (v1) pods created by `app-frontend-v1`Deployment and app-frontend (v2) pods created by `app-frontend-v2` based on the DestinationRule subsets. 
+- Routes to app-frontend (v1) pods created by `app-frontend-v1` Deployment and app-frontend (v2) pods created by `app-frontend-v2` based on the DestinationRule subsets. 
 
 
 ### 5. Deployment (app-frontend-v1)
 **Name:** app-frontend-v1    
 **Type:** Deployment    
-**Description:** Creates the pods that run the stable version of the frontend which are injected with an Istio sidecar proxy and are labeled with version v1. It receives 90% of the traffic.      
+**Description:** Creates the pods that run the stable version of the App Frontend which are injected with an Istio sidecar proxy and are labeled with version v1. It receives 90% of the traffic.      
 **Connections:**      
 - It mounts ConfigMap (frontend-v1-cookie-config) which sets cookie `canary-user=false` for the stable release. 
 
@@ -131,10 +131,9 @@ Figure 2 provides a detailed view of all deployed components and their connectio
 ### 8. VirtualService (app-service-vs)
 **Name:**  app-service-vs   
 **Type:**  VirtualService   
-**Description:**  It routes traffic to the App Service.    
+**Description:**  It routes traffic to the App Service for internal communication with the Model Service.    
 **Connections:**
 - Routes to Service (app-service) subsets stable (v1) or canary (v2) based on the DestinationRule for app-service.
-- Receives traffic from either `app-frontend-v1` pods or `app-frontend-v2` pods.
 
 ### 9. DestinationRule (app-service-dr)
 **Name:**  app-service-dr      
@@ -144,8 +143,8 @@ Figure 2 provides a detailed view of all deployed components and their connectio
 - It applies to Service (app-service) to the deployments app-service-v1 and app-service-v2.
 
 ### 10. Service (app-service)
-**Name:**  app-service
-**Type:**  Service
+**Name:**  app-service   
+**Type:**  Service   
 **Description:**  Provides a stable endpoint for accessing the app service's pods based on the defined DestinationRule subsets.   
 **Connections:**  
 - Routes to app-service (v1) pods created by `app-service-v1` Deployment and app-service (v2) pods created by `app-service-v2` based on the DestinationRule subsets. 
@@ -155,21 +154,21 @@ Figure 2 provides a detailed view of all deployed components and their connectio
 **Type:**  Deployment   
 **Description:**  Creates the pods that run the stable version of the app service which are injected with an Istio sidecar proxy and are labeled with version v1. It receives 90% of the traffic.      
 **Connections:**
-- Receives traffic from the frontend
+- Receives traffic from App Frontend.
 
 ### 12. Deployment (app-service-v2)
 **Name:**  app-service-v2    
 **Type:**  Deployment    
 **Description:** Creates the pods that run the canary version of the app service which are injected with an Istio sidecar proxy and are labeled with version v2. It receives 10% of the traffic. This instance is a prerealese of app service implementing the experiment.      
 **Connections:**
-- Receives traffic from the frontend
+- Receives traffic from App Frontend.
 
 ### 13. VirtualService (model-service-vs)
 **Name:**  model-service-vs    
 **Type:**  VirtualService    
 **Description:**  It routes traffic to the Model Service and implements the additional use case the Shadow Launch.    
 **Connections:**  
-- Routes to Service (model-service) subsets stable (v1) or canary (v2) based on the DestinationRule for app-frontend and mirrors 100% of the traffic (copy requests) to another model-service subset (v3).
+- Routes to Service (model-service) subsets stable (v1) or canary (v2) based on the DestinationRule for model-service and mirrors 100% of the traffic (copy requests) to another model-service subset (v3).
 - Receives traffic from either `app-service-v1` pods or `app-service-v2` pods.
 
 ### 14. DestinationRule (model-service-dr)
@@ -191,18 +190,19 @@ Figure 2 provides a detailed view of all deployed components and their connectio
 **Type:**  Deployment   
 **Description:**  Creates the pods that run the stable version of the model service which are injected with an Istio sidecar proxy and are labeled with version v1. It receives 90% of the traffic.    
 **Connections:**
-It receives traffic from app-service pods of version (v1).
+It receives traffic from app-service pods of version v1.
 
 ### 17. Deployment (model-service-v2)
 **Name:**  model-service-v2     
-**Type:**  Deployment 
-**Description:**  Creates the pods that run the canary version of the model service which are injected with an Istio sidecar proxy and are labeled with version v2. It receives 10% of the traffic.
+**Type:**  Deployment    
+**Description:**  Creates the pods that run the canary version of the model service which are injected with an Istio sidecar proxy and are labeled with version v2. It receives 10% of the traffic.  
 **Connections:**
+It receives traffic from app-service pods of version v2.
 
 ### 18. Deployment (model-service-v3)
 **Name:**  model-service-v3       
 **Type:**  Deployment   
-**Description:**  This is a shadow Deployment of the model-service which uses a newer version of the model. Pods receive mirrored traffic without sending responses to the client.
+**Description:**  This is a shadow Deployment of the model-service which uses a newer version of the model. Pods receive mirrored traffic without sending responses to the client.  
 **Connections:**
 - It receives mirror traffic from VirtualService `model-service-vs`.
 
@@ -233,9 +233,9 @@ It receives traffic from app-service pods of version (v1).
 - Routes to Service `myprom-kube-prometheus-sta-prometheus.default.svc.cluster.local`.
 
 ### 22. ServiceMonitor (mymonitor)
-**Name:**  mymonitor
-**Type:**  ServiceMonitor
-**Description:**  It is defined to make the app-service discoverable by Prometheus such that it can scrape the metrics defined at the `/metrics` endpoint in the app-service.
+**Name:**  mymonitor   
+**Type:**  ServiceMonitor  
+**Description:**  It is defined to make the app-service discoverable by Prometheus such that it can scrape the metrics defined at the `/metrics` endpoint in the app-service.  
 **Connections:**
 - It watches app-service and its endpoints.
 
@@ -246,61 +246,28 @@ It receives traffic from app-service pods of version (v1).
 **Connections:**   
  - It is evaluated by Prometheus through collecting app metrics.    
 
-Description: This PrometheusRule defines alerting conditions for the SMS App Check application. For example, it specifies that if the app receives more than 15 requests per minute for a continuous two-minute period, Prometheus should generate an alert. Note that the rule itself does not send notifications—Prometheus evaluates the condition, and any resulting alerts are handled by Alertmanager.
-Connections / Usage:
-
-Evaluated by Prometheus against metrics scraped from the app.
-
-Alerts generated are sent to Alertmanager for notification and routing.
-
 ### 24. Alertmanager (email-alert)
 **Name:**  email-alert   
 **Type:**  Alertmanager  
-**Description:**  It receives alerts, defined in PrometheusRules, by Prometheus and sends notifications. Here it configured to send emails.   
+**Description:**  It receives alerts, defined in PrometheusRules, by Prometheus and sends notifications. Here it is configured to send emails.   
 **Connections:**  
-- It receives alert from Prometheus
+- It receives alerts from Prometheus.
 - Sends notifications according to configuration in AlertmanagerConfig.
 
 
 ### 25. AlertmanagerConfig (email-config)
 **Name:**  email-config   
 **Type:**  AlertmanagerConfig   
-**Description:**  It configures all settings for sending a notification e.g. the type of notification, the recipient email address if the notification is email.
+**Description:**  It configures all settings for sending a notification e.g. the type of notification, the recipient email address (if the notification is email).
 **Connections:**   
 - It is used by Alertmanager to define alert behavior.
 
 ### 26. Secret (alertmanager-smtp-secret)
 **Name:**  alertmanager-smtp-secret   
 **Type:**  Secret   
-**Description:**  It defines a secret for storing sensitive information. Here it stores `SMTP_PASSWORD`, a password that it is used by email receives via SMTP settings.   
+**Description:**  It defines a secret for storing sensitive information. Here it stores `SMTP_PASSWORD`, a password that it is used by email clients via SMTP settings.   
 **Connections:**   
 - It it mounted to AlertmanagerConfig.  
-
-
-
-
-
-####
-
-
-
-<!--
-### Kubernetes:
-#### Deployments
-#### Services
-#### Alerting
-#### Ingress 
-
-### Istio Service Mesh:
-
-#### Traffic Management and Continuous Experimentation:
-#### VirtualServices
-#### Configmaps
-
-#### Additional Use Case: Shadow Launch
-
-#### App Monitoring
--->
 
 ## Data Flow of Requests
 <!--Describe the flow of incoming requests to the cluster. Show and elaborate the flow of requests in the cluster, including the
