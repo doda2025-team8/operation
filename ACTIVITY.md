@@ -195,3 +195,9 @@ No work done.
 - Vincent \
   https://github.com/doda2025-team8/operation/pull/94 \
   Autogenerate the inventory files such that a differnet number of worker nodes is supported in the Ansible playobok
+
+### Week Q2.9 (Jan 19+)
+
+- Yanzhi 
+  https://github.com/doda2025-team8/operation/pull/104
+  This week I worked on finalizing and refactoring readme files based on the feedbacks we received.
