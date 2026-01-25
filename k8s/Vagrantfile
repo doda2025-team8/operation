@@ -45,12 +45,6 @@ Vagrant.configure("2") do |config|
       v.memory = CTRL_MEMORY
       v.cpus = CTRL_CPU
     end
-
-    ctrl.vm.provision :ansible do |ansible|
-      ansible.playbook = "playbooks/ctrl.yaml"
-      ansible.become = true
-      ansible.compatibility_mode = "2.0"
-    end
   end
 
   # Worker nodes 
@@ -63,22 +57,34 @@ Vagrant.configure("2") do |config|
         v.cpus = WORKER_CPU
       end
 
-      node.vm.provision :ansible do |ansible|
-        ansible.playbook = "playbooks/node.yaml"
-        ansible.become = true
-        ansible.groups = {
-          "nodes" => ["node-#{i}"]
-        }
-        ansible.compatibility_mode = "2.0"
+      # Only trigger provisioning after all VMs are up
+      if i == N_WORKERS
+        node.vm.provision :ansible do |ansible|
+          ansible.limit = "all"
+          ansible.playbook = "playbooks/general.yaml"
+          ansible.inventory_path = "inventory/inventory.ini"
+          ansible.become = true
+          ansible.extra_vars = { "nodes" => N_WORKERS }
+          ansible.compatibility_mode = "2.0"
+        end
+
+        node.vm.provision :ansible do |ansible|
+          ansible.limit = "control_plane"
+          ansible.playbook = "playbooks/ctrl.yaml"
+          ansible.inventory_path = "inventory/inventory.ini"
+          ansible.become = true
+          ansible.compatibility_mode = "2.0"
+        end
+
+        node.vm.provision :ansible do |ansible|
+          ansible.limit = "workers"
+          ansible.playbook = "playbooks/node.yaml"
+          ansible.inventory_path = "inventory/inventory.ini"
+          ansible.become = true
+          ansible.compatibility_mode = "2.0"
+        end
       end
     end
   end
 
-  # General setup runs on ALL VMs
-  config.vm.provision :ansible do |ansible|
-    ansible.playbook = "playbooks/general.yaml"
-    ansible.become = true
-    ansible.extra_vars = { "nodes" => N_WORKERS }
-    ansible.compatibility_mode = "2.0"
-  end
 end

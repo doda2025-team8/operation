@@ -1,6 +1,6 @@
 # playbooks/node.yaml
 - name: Join worker nodes to Kubernetes cluster
-  hosts: nodes
+  hosts: workers
   become: true
   tasks:
     # Step 18: Generate join command from controller
@@ -20,5 +20,3 @@
     - name: Join the Kubernetes cluster
       command: "{{ join_command.stdout }}"
       when: not kubelet_conf.stat.exists
-
-    
