@@ -224,3 +224,7 @@ No work done.
   The following PR sets the grafana and prometheus stack as a helm dependency, allowing for automatic installation. It also addresses some erros in the experimentation guide and readme. https://github.com/doda2025-team8/operation/pull/107  
   Lastly, a shared folder was implemented to support serving additional files with app-frontend.
   https://github.com/doda2025-team8/operation/pull/111
+
+- Andriana   
+  https://github.com/doda2025-team8/operation/pull/96      
+  This week I continued working on the deployment documentation. I created a detailed diagram of the deployment,depicting all the deployed resources and added descriptions for each resource. Moreover, I spent time reviewing PRs.
