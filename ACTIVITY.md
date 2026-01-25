@@ -217,3 +217,10 @@ No work done.
 - Yanzhi 
   https://github.com/doda2025-team8/operation/pull/104
   This week I worked on finalizing and refactoring readme files based on the feedbacks we received.
+
+- Hendrik  
+  This week I worked on a lot of small issues we had. This first PR sets specific image versions for the helm chart and docker-compose configurations. https://github.com/doda2025-team8/operation/pull/108  
+  This second PR is to speed up vagrant provisioning by running the ansible playbooks in parallel.https://github.com/doda2025-team8/operation/pull/109  
+  The following PR sets the grafana and prometheus stack as a helm dependency, allowing for automatic installation. It also addresses some erros in the experimentation guide and readme. https://github.com/doda2025-team8/operation/pull/107  
+  Lastly, a shared folder was implemented to support serving additional files with app-frontend.
+  https://github.com/doda2025-team8/operation/pull/111
