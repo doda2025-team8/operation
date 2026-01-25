@@ -1,3 +1,4 @@
+{{- if not .Values.istio.enabled}}
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -10,6 +11,26 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
+  - host: {{ .Values.rechability.grafanaHostname | quote }}
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: myprom-grafana
+            port:
+              number: 80
+  - host: {{ .Values.rechability.prometheusHostname | quote }}
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: myprom-kube-prometheus-sta-prometheus
+            port:
+              number: 9090
   - http:
       paths:
       - path: /sms
@@ -19,7 +40,7 @@ spec:
             name: app-service
             port:
               number: 8080
-      - path: /actuator/prometheus
+      - path: /sms/metrics
         pathType: Prefix
         backend:
           service:
@@ -33,3 +54,4 @@ spec:
             name: app-frontend
             port:
               number: 8080
+{{- end }}

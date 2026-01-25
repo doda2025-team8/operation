@@ -107,6 +107,31 @@
       shell: helm repo update
       changed_when: false
 
+    # TLS key
+    - name: Copy TLS certificate to VM
+      copy:
+        src: "files/tls.crt"
+        dest: "/home/vagrant/tls.crt"
+        owner: vagrant
+        group: vagrant
+        mode: '0644'
+
+    - name: Copy TLS key to VM
+      copy:
+        src: "files/tls.key"
+        dest: "/home/vagrant/tls.key"
+        owner: vagrant
+        group: vagrant
+        mode: '0600'
+
+    - name: Create TLS secret for dashboard
+      shell: >
+        kubectl create secret tls dashboard-tls
+        --cert=/home/vagrant/tls.crt
+        --key=/home/vagrant/tls.key
+        -n kubernetes-dashboard
+        --dry-run=client -o yaml | kubectl apply -f -
+
     # step 23: Install Istio
     - name: Determine CPU Architecture
       set_fact:
@@ -182,6 +207,10 @@
       become: yes
       become_user: vagrant
 
+    - name: Enable Istio sidecar injection for default namespace
+      shell: kubectl label namespace default istio-injection=enabled --overwrite
+      register: istio_label
+      changed_when: "'labeled' in istio_label.stdout"
 
     - name: Install Kubernetes Dashboard
       shell: >

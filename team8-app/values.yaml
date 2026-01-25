@@ -1,36 +1,38 @@
 frontend:
   replicaCount: 1
-  image: ghcr.io/doda2025-team8/app-frontend:latest
+  image: ghcr.io/doda2025-team8/app-frontend:0.1.6
   service:
     port: 80
     targetPort: 8080
   labels:
     app: app-frontend
     component: frontend
-  hostname: "team8.local"
-  canaryHostname: "canary.team8.local" 
 
 backend:
   replicaCount: 1
-  image: ghcr.io/doda2025-team8/app-service:latest
   service:
     port: 8080
     targetPort: 8080
   modelHost: "http://model-service:8081"
-  # Cache configuration for continuous experimentation
-  # v1 (stable): cache disabled - every request calls model-service
-  # v2 (canary): cache enabled - repeated SMS messages return cached predictions
   v1:
-    enableCache: "false"
+    image: ghcr.io/doda2025-team8/app-service:0.1.9
   v2:
-    enableCache: "true"
+    image: ghcr.io/doda2025-team8/app-service:0.1.7-20260116194934-continuous-experimentation
+    env:
+      ENABLE_CACHE: "true"
   labels:
     app: app-service
     component: backend
 
+rechability:
+  hostname: "team8.local"
+  canaryHostname: "canary.team8.local"
+  grafanaHostname: "grafana.team8.local"
+  prometheusHostname: "prometheus.team8.local"
+
 model:
   replicaCount: 1
-  image: ghcr.io/doda2025-team8/model-service:latest
+  image: ghcr.io/doda2025-team8/model-service:0.1.6
 
   service:
     port: 8081
@@ -39,7 +41,7 @@ model:
   env:
     MODEL_SERVICE_PORT: "8081"
     MODEL_DIR: "/app/models"
-    MODEL_VERSION: "latest"
+    MODEL_VERSION: "v1.0.2"
     GITHUB_REPO: "doda2025-team8/model-service"
 
 model_shadow:
@@ -73,3 +75,7 @@ istio:
     hosts:
       - "*"
     port: 80
+  
+  canary:
+    stableWeight: 90
+    canaryWeight: 10

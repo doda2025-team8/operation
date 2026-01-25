@@ -7,10 +7,35 @@ WORKER_MEMORY = 6144
 WORKER_CPU = 2
 N_WORKERS = 2
 
+require "fileutils"
+
+INVENTORY_PATH = File.expand_path("inventory/inventory.cfg", __dir__)
+
+def write_inventory(n_workers)
+  FileUtils.mkdir_p(File.dirname(INVENTORY_PATH))
+
+  ctrl_ip = "192.168.56.100"
+  workers = (1..n_workers).map { |i| ["node-#{i}", "192.168.56.#{100 + i}"] }
+
+  content = +""
+  content << "[control_plane]\n"
+  content << "ctrl ansible_host=#{ctrl_ip} ansible_user=vagrant ansible_ssh_private_key_file=.vagrant/machines/ctrl/virtualbox/private_key ansible_python_interpreter=/usr/bin/python3\n\n"
+
+  content << "[workers]\n"
+  workers.each do |name, ip|
+    content << "#{name} ansible_host=#{ip} ansible_user=vagrant ansible_ssh_private_key_file=.vagrant/machines/#{name}/virtualbox/private_key ansible_python_interpreter=/usr/bin/python3\n"
+  end
+  content << "\n[kubernetes:children]\ncontrol_plane\nworkers\n"
+
+  File.write(INVENTORY_PATH, content)
+end
+
 Vagrant.configure("2") do |config|
   config.vm.box = "bento/ubuntu-24.04"
   config.vm.box_version = "202510.26.0"
   config.vm.synced_folder "../team8-app", "/home/vagrant/team8-app"
+
+  write_inventory(N_WORKERS)
 
   # Control node
   config.vm.define "ctrl" do |ctrl|
@@ -19,11 +44,6 @@ Vagrant.configure("2") do |config|
     ctrl.vm.provider "virtualbox" do |v|
       v.memory = CTRL_MEMORY
       v.cpus = CTRL_CPU
-    end
-
-    ctrl.vm.provision :ansible do |ansible|
-      ansible.playbook = "playbooks/ctrl.yaml"
-      ansible.become = true
     end
   end
 
@@ -36,14 +56,35 @@ Vagrant.configure("2") do |config|
         v.memory = WORKER_MEMORY
         v.cpus = WORKER_CPU
       end
-    end
-  end
 
-  # General setup runs on ALL VMs
-  config.vm.provision :ansible do |ansible|
-    ansible.playbook = "playbooks/general.yaml"
-    ansible.become = true
-    ansible.extra_vars = { "nodes" => N_WORKERS }
+      # Only trigger provisioning after all VMs are up
+      if i == N_WORKERS
+        node.vm.provision :ansible do |ansible|
+          ansible.limit = "all"
+          ansible.playbook = "playbooks/general.yaml"
+          ansible.inventory_path = "inventory/inventory.ini"
+          ansible.become = true
+          ansible.extra_vars = { "nodes" => N_WORKERS }
+          ansible.compatibility_mode = "2.0"
+        end
+
+        node.vm.provision :ansible do |ansible|
+          ansible.limit = "control_plane"
+          ansible.playbook = "playbooks/ctrl.yaml"
+          ansible.inventory_path = "inventory/inventory.ini"
+          ansible.become = true
+          ansible.compatibility_mode = "2.0"
+        end
+
+        node.vm.provision :ansible do |ansible|
+          ansible.limit = "workers"
+          ansible.playbook = "playbooks/node.yaml"
+          ansible.inventory_path = "inventory/inventory.ini"
+          ansible.become = true
+          ansible.compatibility_mode = "2.0"
+        end
+      end
+    end
   end
 
 end

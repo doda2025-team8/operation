@@ -6,19 +6,21 @@ This document describes the canary release experiment for testing response cachi
 
 We're testing whether adding a cache to `app-service` improves response latency for repeated SMS predictions.
 
-| Version | Configuration | Behavior |
-|---------|---------------|----------|
-| v1 (Stable) | `ENABLE_CACHE=false` | Every request calls model-service |
-| v2 (Canary) | `ENABLE_CACHE=true` | Repeated SMS messages return cached results |
+| Version     | Image                                             | Behavior                                    |
+| ----------- | ------------------------------------------------- | ------------------------------------------- |
+| v1 (Stable) | `latest`                                          | Every request calls model-service           |
+| v2 (Canary) | `0.1.7-20260116194934-continuous-experimentation` | Repeated SMS messages return cached results |
 
-Both versions use the same container image—only the environment variable differs. The cache setting is configured in `values.yaml`:
+The different images are configured in `values.yaml`:
 
 ```yaml
 backend:
   v1:
-    enableCache: "false"
+    image: ghcr.io/doda2025-team8/app-service:latest
   v2:
-    enableCache: "true"
+    image: ghcr.io/doda2025-team8/app-service:0.1.7-20260116194934-continuous-experimentation
+    env:
+      ENABLE_CACHE: "true"
 ```
 
 ## Hypothesis
@@ -32,13 +34,13 @@ Reject if: Canary latency ≥ Stable latency OR error rate increases
 
 The `app-service` exposes these metrics at `/actuator/prometheus`:
 
-| Metric | Type | Description |
-|--------|------|-------------|
-| `app_sms_requests_total` | Counter | Total SMS requests |
-| `app_sms_latency_seconds` | Histogram | Request processing time |
-| `app_sms_active_requests` | Gauge | Currently processing requests |
-| `app_cache_hits_total` | Counter | Cache hits (v2 only) |
-| `app_cache_misses_total` | Counter | Cache misses (v2 only) |
+| Metric                    | Type      | Description                   |
+| ------------------------- | --------- | ----------------------------- |
+| `app_sms_requests_total`  | Counter   | Total SMS requests            |
+| `app_sms_latency_seconds` | Histogram | Request processing time       |
+| `app_sms_active_requests` | Gauge     | Currently processing requests |
+| `app_cache_hits_total`    | Counter   | Cache hits (v2 only)          |
+| `app_cache_misses_total`  | Counter   | Cache misses (v2 only)        |
 
 All metrics include a `version` label (`stable` or `canary`) for filtering.
 
@@ -62,6 +64,7 @@ Sticky sessions ensure users stay on the same version (via `canary-user` cookie)
 ## Decision Process
 
 The Grafana dashboard "Canary Experiment Dashboard" shows:
+
 - Request rate by version
 - Traffic split (pie chart)
 - Average and P95 latency comparison
@@ -80,11 +83,11 @@ Promote if improvement ≥ 50% and no error increase. Rollback otherwise.
 
 ![Canary Experiment Dashboard](./images/experiment-dashboard.png)
 
-| Metric | Stable (v1) | Canary (v2) |
-|--------|-------------|-------------|
-| Total Requests | 253 | 22 |
-| Average Latency | 13.7ms | 516μs |
-| Error Rate | 0% | 0% |
+| Metric          | Stable (v1) | Canary (v2) |
+| --------------- | ----------- | ----------- |
+| Total Requests  | 253         | 22          |
+| Average Latency | 13.7ms      | 516μs       |
+| Error Rate      | 0%          | 0%          |
 
 The canary shows 96% latency reduction (26x faster), confirming our hypothesis. Traffic split (~92/8) matches the configured 90/10 ratio.
 

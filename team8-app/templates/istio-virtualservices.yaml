@@ -7,7 +7,7 @@ metadata:
   name: grafana-vs
 spec:
   hosts:
-    - "grafana.team8.local"
+    - {{ .Values.rechability.grafanaHostname | quote }}
   gateways:
     - my-gateway
   http:
@@ -23,7 +23,7 @@ metadata:
   name: prometheus-vs
 spec:
   hosts:
-    - "prometheus.team8.local"
+    - {{ .Values.rechability.prometheusHostname | quote }}
   gateways:
     - my-gateway
   http:
@@ -41,20 +41,22 @@ metadata:
   name: my-vs
 spec:
   hosts:
-    - {{ .Values.frontend.hostname | quote }}
+    - {{ .Values.rechability.hostname | quote }}
   gateways:
     - my-gateway
   http:
+    # Match rules when cookies are set for canary 
     - match:
         - uri:
             prefix: "/sms"
           headers: 
             cookie:
-              regex: "^(.*?;)?(canary-user=)(.*)?$"
+              regex: "^(.*?;)?(canary-user=true)(;.*)?$"
       route:
         - destination:
             host: app-service
             subset: v2
+     # Match default route for /sms, split is performed on first request which hits frontend
     - match:
         - uri:
             prefix: "/sms"
@@ -62,28 +64,33 @@ spec:
         - destination:
             host: app-service
             subset: v1
-          weight: 90
-        - destination:
-            host: app-service
-            subset: v2
-          weight: 10
+    # Match rules when cookies are set to true or false
     - match:
         - headers: 
             cookie:
-              regex: "^(.*?;)?(canary-user=)(.*)?$"
+              regex: "^(.*?;)?(canary-user=true)(;.*)?$"
       route:
         - destination:
             host: app-frontend
             subset: v2
+    - match:
+        - headers: 
+            cookie:
+              regex: "^(.*?;)?(canary-user=false)(;.*)?$"
+      route:
+        - destination:
+            host: app-frontend
+            subset: v1
+    # Default route which performs 90/10 split
     - route:
       - destination:
           host: app-frontend
           subset: v1
-        weight: 90
+        weight: {{ .Values.istio.canary.stableWeight }}
       - destination:
           host: app-frontend
           subset: v2
-        weight: 10
+        weight: {{ .Values.istio.canary.canaryWeight }}
 
 ---
 # VirtualService for direct canary/pre-release access (100% to v2)
@@ -93,7 +100,7 @@ metadata:
   name: canary-vs
 spec:
   hosts:
-    - {{ .Values.frontend.canaryHostname | quote }}
+    - {{ .Values.rechability.canaryHostname | quote }}
   gateways:
     - my-gateway
   http:

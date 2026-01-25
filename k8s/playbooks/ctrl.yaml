@@ -40,7 +40,7 @@
         src: /etc/kubernetes/admin.conf
         dest: /vagrant/admin.conf
         remote_src: yes
-        mode: "0600"
+        mode: '0644'
 
     # Step 15 (Pod network)
     - name: Download Flannel manifest
@@ -61,7 +61,19 @@
         host: 192.168.56.100
         port: 6443
         timeout: 300
-        delay: 5
+        delay: 4
+
+    # Also ensure the control plane pods are ready
+    - name: Wait for control plane pods to be ready
+      become: yes
+      become_user: vagrant
+      command: kubectl wait --for=condition=Ready --namespace=kube-system pod --selector=tier=control-plane --timeout=300s
+      environment:
+        KUBECONFIG: /home/vagrant/.kube/config
+      retries: 3
+      delay: 10
+      register: control_plane_ready
+      until: control_plane_ready.rc == 0
 
     - name: Apply Flannel network
       become: yes
