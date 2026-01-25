@@ -344,7 +344,7 @@ With port-forward: `http://prometheus.team8.local:8080`
 
 (Prometheus runs on port 9090 internally, but Istio routes it through port 80)
 
-**App-service metrics** at `/actuator/prometheus`:
+**App-service metrics** at `/sms/metrics`:
 
 | Metric | Type | What it tracks |
 |--------|------|----------------|
@@ -428,7 +428,7 @@ The canary hostname can be changed in `values.yaml` under `rechability.canaryHos
 ```
 for i in {1..20}; do
   echo "Request $i:"
-  curl -s -X POST http://localhost/sms \
+  curl -s -X POST http://team8.local/sms\
     -H "Content-Type: application/json" \
     -d '{"sms": "traffic split test"}'
 done
@@ -463,7 +463,7 @@ Steps:
    ```
 2. Send a request in a new terminal:
    ```
-   curl -v -X POST http://localhost:8080/sms   -H "Host: team8.local"   -H "Content-Type: application/json"   -d '{"sms": "test shadow launch"}'
+   curl -v -X POST http://team8.local/sms -H "Content-Type: application/json"   -d '{"sms": "test shadow launch"}'
    ```
 3. Inspoect the logs. 
    * You will see that v1 processes the request and returns an output.
