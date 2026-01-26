@@ -195,7 +195,7 @@ kubectl label namespace default istio-injection=enabled
 
 ## 2. Install Applications
 
-Deploy the dependiencies (grafana and prometheus) and application chart (app-frontend, app-service, model-service and ingress) to the Kubernetes cluster using Helm.
+Deploy the dependencies (grafana and prometheus) and application chart (app-frontend, app-service, model-service and ingress) to the Kubernetes cluster using Helm.
 
 In `values.yaml`, istio can be enabled or disabled.
 
@@ -265,7 +265,6 @@ The alert fires when the app gets more than 15 requests/min for 2 minutes (see `
    * `app-service`
 * `kubectl get ingress` should show an `app-ingress` is running. By navigating to its IP address in your browser, you should see the running app and use it.
 * `kubectl get pods -n istio-system` should show you that Istio is running.
-* Run `istioctl dashboard kiali` to see the details of Istio and how its running.
 
 ## 4. Access applications
 
@@ -372,12 +371,12 @@ Go to `http://grafana.team8.local` (or `:8080` with port-forward)
 
 For vagrant:
 ```bash
-vagrant ssh ctrl -c "kubectl get secret myprom-grafana -o jsonpath='{.data.admin-password}' | base64 --decode"
+vagrant ssh ctrl -c "kubectl get secret team8-app-grafana  -o jsonpath='{.data.admin-password}' | base64 --decode"
 ```
 
 For minikube:
 ```bash
-kubectl get secret myprom-grafana -o jsonpath='{.data.admin-password}' | base64 --decode
+kubectl get secret team8-app-grafana -o jsonpath='{.data.admin-password}' | base64 --decode
 ```
 
 ### 4. Access Kubernetes Dashboard (Vagrant only)
@@ -459,7 +458,7 @@ Steps:
    ```
    curl -v -X POST http://team8.local/sms -H "Content-Type: application/json"   -d '{"sms": "test shadow launch"}'
    ```
-3. Inspoect the logs. 
+3. Inspect the logs. 
    * You will see that v1 processes the request and returns an output.
    * v3 receives the mirrored request internally but does not output anything.
 4. Metrics are exposed in model-service to evaluate the new model version. 
