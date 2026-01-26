@@ -115,7 +115,13 @@ For Linux/macOS: `/etc/hosts`
 For Windows: `C:\Windows\System32\drivers\etc\hosts`
 
 ```bash
-# K8s Cluster Services (Vagrant cluster - use 192.168.56.91)
+# K8s Cluster Services - Istio Gateway (Vagrant cluster - use 192.168.56.92)
+192.168.56.92  team8.local
+192.168.56.92  canary.team8.local
+192.168.56.92  grafana.team8.local
+192.168.56.92  prometheus.team8.local
+
+# K8s Cluster Services - Ingress Controller (Vagrant cluster - use 192.168.56.91)
 192.168.56.91  team8.local
 192.168.56.91  canary.team8.local
 192.168.56.91  grafana.team8.local
@@ -123,10 +129,10 @@ For Windows: `C:\Windows\System32\drivers\etc\hosts`
 192.168.56.91  dashboard.local
 
 # For Minikube, use 127.0.0.1 instead:
-# 127.0.0.1  team8.local
-# 127.0.0.1  canary.team8.local
-# 127.0.0.1  grafana.team8.local
-# 127.0.0.1  prometheus.team8.local
+127.0.0.1  team8.local
+127.0.0.1  canary.team8.local
+127.0.0.1  grafana.team8.local
+127.0.0.1  prometheus.team8.local
 ```
 
 ### Vagrant
@@ -159,7 +165,7 @@ For Windows: `C:\Windows\System32\drivers\etc\hosts`
 
 3. Finalize Cluster Services
    ```bash
-   ansible-playbook -i k8s/inventory/hosts.ini k8s/playbooks/finalization.yml -u vagrant
+   ansible-playbook -i k8s/inventory/inventory.cfg k8s/playbooks/finalization.yml -u vagrant
    ```
 
 ### Minikube
@@ -204,7 +210,7 @@ In `values.yaml`, istio can be enabled or disabled.
 
 On Vagrant:
 ```bash
-vagrant ssh ctrl # Only with vagrant
+vagrant ssh ctrl 
 helm install team8-app /home/vagrant/team8-app
 ```
 
@@ -329,13 +335,12 @@ Then add `:8080` to all URLs:
 
 ### 1b. Vagrant cluster
 
-On Vagrant, MetalLB gives the Istio gateway a fixed IP (`192.168.56.91`), so no port-forwarding needed. Just make sure your `/etc/hosts` is set up and go to:
+On Vagrant, MetalLB gives the Istio gateway a fixed IP (`192.168.56.92`), so no port-forwarding needed. Just make sure your `/etc/hosts` is set up.
+
+### 1. Access the App
 
 - App: `http://team8.local`
 - Canary: `http://canary.team8.local`
-- Grafana: `http://grafana.team8.local`
-- Prometheus: `http://prometheus.team8.local`
-- K8s Dashboard: `https://dashboard.local`
 
 ### 2. Access Prometheus
 
@@ -388,7 +393,7 @@ kubectl get secret myprom-grafana -o jsonpath='{.data.admin-password}' | base64 
 
 ### 4. Access Kubernetes Dashboard (Vagrant only)
 
-Make sure `dashboard.local` points to `192.168.56.91` in your `/etc/hosts`.
+Make sure `dashboard.local` points to `192.168.56.92` in your `/etc/hosts`.
 
 1. Go to `https://dashboard.local`
 2. You'll get a certificate warning - just click through it (self-signed cert)
