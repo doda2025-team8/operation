@@ -2,8 +2,8 @@ apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
   name: mymonitor
-  labels: 
-    release: myprom 
+  labels:
+    release: {{ .Release.Name }}
 spec:
   selector:
     matchLabels: 
