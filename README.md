@@ -276,23 +276,6 @@ The alert fires when the app gets more than 15 requests/min for 2 minutes (see `
 * `kubectl get pods -n istio-system` should show you that Istio is running.
 * Run `istioctl dashboard kiali` to see the details of Istio and how its running.
 
-### Automatic Installation
-
-Dashboards are automatically installed via ConfigMap when deploying with Helm. The ConfigMap is labeled with `grafana_dashboard: "1"` for automatic discovery by Grafana's sidecar.
-
-### Manual Import (if needed)
-
-If dashboards don't appear automatically:
-
-1. Access Grafana UI (see below)
-2. Go to **Dashboards** → **New** → **Import**
-3. Click **Upload JSON file**
-4. Upload JSON files from `team8-app/dashboards/`:
-   - `app-metrics.json` - SMS App monitoring metrics
-   - `experiment-dashboard.json` - Canary release comparison (A4)
-5. Select the Prometheus datasource when prompted
-6. Click **Import**
-
 ## 4. Access applications
 
 To access the applications, you need to be able to access the ingress
@@ -374,6 +357,21 @@ Check that the dashboard configmap exists:
 ```bash
 kubectl get configmap | grep grafana
 ```
+
+Dashboards are automatically installed via ConfigMap when deploying with Helm. The ConfigMap is labeled with `grafana_dashboard: "1"` for automatic discovery by Grafana's sidecar.
+
+### Manual Import (if needed)
+
+If dashboards don't appear automatically:
+
+1. Access Grafana UI (see below)
+2. Go to **Dashboards** → **New** → **Import**
+3. Click **Upload JSON file**
+4. Upload JSON files from `team8-app/dashboards/`:
+   - `app-metrics.json` - SMS App monitoring metrics
+   - `experiment-dashboard.json` - Canary release comparison (A4)
+5. Select the Prometheus datasource when prompted
+6. Click **Import**
 
 Go to `http://grafana.team8.local` (or `:8080` with port-forward)
 
