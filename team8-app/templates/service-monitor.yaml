@@ -18,7 +18,7 @@ kind: ServiceMonitor
 metadata:
   name: mymonitor-model
   labels: 
-    release: myprom 
+    release: {{ .Release.Name }}
 spec:
   selector:
     matchLabels: 
@@ -26,5 +26,4 @@ spec:
   endpoints: 
     - port: http
       interval: 15s
-      path: /sms/metrics
-
+      path: /metrics
