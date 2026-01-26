@@ -4,7 +4,7 @@ metadata:
   name: grafana-dashboards-sms-app
   namespace: {{ .Values.grafana.namespace | default "default" }}  # Must match Grafana's namespace
   labels:
-    release: myprom  # Match Prometheus release name
+    release: {{ .Release.Name }}  # Match Prometheus release name
     grafana_dashboard: "1"  # Required for Grafana sidecar to pick it up
 data:
   app-metrics.json: |
