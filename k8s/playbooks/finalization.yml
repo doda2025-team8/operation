@@ -98,7 +98,7 @@
       until: wait_ingress_pods.rc == 0
 
     # Step 22: Install Kubernetes Dashboard
-    - name: Add kubernets dashboard
+    - name: Add kubernetes dashboard
       shell: helm repo add kubernetes-dashboard https://kubernetes.github.io/dashboard/
       register: add_dashboard_repo
       changed_when: add_dashboard_repo.rc == 0
@@ -106,6 +106,14 @@
     - name: Update Helm repositories
       shell: helm repo update
       changed_when: false
+    
+    - name: Install Kubernetes Dashboard
+      shell: >
+        helm upgrade --install kubernetes-dashboard kubernetes-dashboard/kubernetes-dashboard 
+        --namespace kubernetes-dashboard 
+        --create-namespace
+      register: install_dashboard
+      changed_when: "'installed' in install_dashboard.stdout or 'upgraded' in install_dashboard.stdout"
 
     # TLS key
     - name: Copy TLS certificate to VM
@@ -129,8 +137,42 @@
         kubectl create secret tls dashboard-tls
         --cert=/home/vagrant/tls.crt
         --key=/home/vagrant/tls.key
-        -n kubernetes-dashboard
+        -n ingress-nginx
         --dry-run=client -o yaml | kubectl apply -f -
+
+        # login to the dashboard with admin-user
+    # mode 0644: 6-> vagrant read & write; 4-> group only read; 4-> others read only
+    - name: Copy Dashboard Admin User Config to VM
+      copy:
+        src: "files/dashboard-admin-user.yaml"
+        dest: "/home/vagrant/dashboard-admin-user.yaml"
+        owner: vagrant
+        group: vagrant
+        mode: '0644'
+    - name: Apply Dashboard Admin User Configuration
+      shell: "kubectl apply -f /home/vagrant/dashboard-admin-user.yaml"
+
+    # Create an ingress to provide convenient access to the dashboard
+    - name: Copy Dashboard Ingress Config to VM
+      copy: 
+        src: "files/dashboard-ingress.yaml"
+        dest: "/home/vagrant/dashboard-ingress.yaml"
+        owner: vagrant
+        group: vagrant
+        mode: '0644'
+    - name: Apply Dashboard Ingress Configuration
+      shell: "kubectl apply -f /home/vagrant/dashboard-ingress.yaml"
+
+    # generate the login token for admin-user
+    - name: Generate and Print Admin User Token
+      shell: >
+        kubectl -n kubernetes-dashboard 
+        create token admin-user
+      register: admin_user_token
+      changed_when: false
+    - name: Display Admin User Token
+      debug:
+        msg: "Kubernetes Dashboard Admin User Token: {{ admin_user_token.stdout }}"
 
     # step 23: Install Istio
     - name: Determine CPU Architecture
@@ -149,12 +191,6 @@
         dest: "tmp/istio-1.25.2-linux-{{ istio_arch }}.tar.gz"
         mode: '0644'
         force: yes
-
-    # - name: Remove existing Istio directory
-    #   file:
-    #     path: "/opt/istio-1.25.2"
-    #     state: absent
-    #   become_user: root
 
     - name: Extract Istio to /opt
       unarchive:
@@ -211,45 +247,3 @@
       shell: kubectl label namespace default istio-injection=enabled --overwrite
       register: istio_label
       changed_when: "'labeled' in istio_label.stdout"
-
-    - name: Install Kubernetes Dashboard
-      shell: >
-        helm upgrade --install kubernetes-dashboard kubernetes-dashboard/kubernetes-dashboard 
-        --namespace kubernetes-dashboard 
-        --create-namespace
-      register: install_dashboard
-      changed_when: "'installed' in install_dashboard.stdout or 'upgraded' in install_dashboard.stdout"
-
-    # login to the dashboard with admin-user
-    # mode 0644: 6-> vagrant read & write; 4-> group only read; 4-> others read only
-    - name: Copy Dashboard Admin User Config to VM
-      copy:
-        src: "files/dashboard-admin-user.yaml"
-        dest: "/home/vagrant/dashboard-admin-user.yaml"
-        owner: vagrant
-        group: vagrant
-        mode: '0644'
-    - name: Apply Dashboard Admin User Configuration
-      shell: "kubectl apply -f /home/vagrant/dashboard-admin-user.yaml"
-
-    # Create an ingress to provide convenient access to the dashboard
-    - name: Copy Dashboard Ingress Config to VM
-      copy: 
-        src: "files/dashboard-ingress.yaml"
-        dest: "/home/vagrant/dashboard-ingress.yaml"
-        owner: vagrant
-        group: vagrant
-        mode: '0644'
-    - name: Apply Dashboard Ingress Configuration
-      shell: "kubectl apply -f /home/vagrant/dashboard-ingress.yaml"
-
-    # generate the login token for admin-user
-    - name: Generate and Print Admin User Token
-      shell: >
-        kubectl -n kubernetes-dashboard 
-        create token admin-user
-      register: admin_user_token
-      changed_when: false
-    - name: Display Admin User Token
-      debug:
-        msg: "Kubernetes Dashboard Admin User Token: {{ admin_user_token.stdout }}"
