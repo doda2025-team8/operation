@@ -255,7 +255,7 @@
       "gridPos": { "h": 6, "w": 12, "x": 12, "y": 19 },
       "options": {
         "mode": "markdown",
-        "content": "### Promotion Criteria\n\n✅ **Promote canary if:**\n- Canary latency ≤ Stable latency\n- No significant error rate increase\n- Traffic split shows ~10% to canary\n\n❌ **Rollback if:**\n- Canary latency > 1.5x Stable latency\n- Error rate increases significantly"
+        "content": "### Promotion Criteria\n\n **Promote canary if:**\n- Canary latency ≤ Stable latency\n- No significant error rate increase\n- Traffic split shows ~10% to canary\n\n **Rollback if:**\n- Canary latency > 1.5x Stable latency\n- Error rate increases significantly"
       }
     }
   ],

@@ -3,3 +3,8 @@ name: team8-app
 description: Helm chart for DODA Team 8 SMS Checker
 type: application
 version: 0.1.0
+
+dependencies:
+  - name: kube-prometheus-stack
+    version: "~81.2.2"
+    repository: https://prometheus-community.github.io/helm-charts
