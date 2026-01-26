@@ -218,7 +218,7 @@ istio:
 This works out of the box with the default Istio setup. If your cluster uses a different gateway name, override it like this:
 
 ```bash
-helm install team8-app ./team8-app --set istio.ingressGatewaySelector.istio=my-custom-gateway
+helm install team8-app ./team8-app --dependency-update --set istio.ingressGatewaySelector.istio=my-custom-gateway
 ```
 
 You can also change the hostnames if needed:
@@ -369,7 +369,7 @@ Go to `http://grafana.team8.local` (or `:8080` with port-forward)
 
 For vagrant:
 ```bash
-vagrant ssh ctrl -c "kubectl get secret myprom-grafana -o jsonpath='{.data.admin-password}' | base64 --decode"
+vagrant ssh ctrl -c "kubectl get secret team8-app-grafana -o jsonpath='{.data.admin-password}' | base64 --decode"
 ```
 
 For minikube:
@@ -452,6 +452,9 @@ Steps:
    # Terminal B
    kubectl logs -f -l version=v3 --all-containers=true
    ```
+
+   If you cannot see the logs of all pods, add the `--max-log-requests=10` argument to the commands above.
+
 2. Send a request in a new terminal:
    ```
    curl -v -X POST http://localhost:8080/sms   -H "Host: team8.local"   -H "Content-Type: application/json"   -d '{"sms": "test shadow launch"}'
@@ -468,5 +471,3 @@ Steps:
    kubectl port-forward $(kubectl get pods | grep model-service-v3 | awk '{print $1}') 8082:8081
    ```
    Navigate to `http://localhost:8082/metrics`
-
-
