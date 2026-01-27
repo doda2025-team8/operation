@@ -2,8 +2,8 @@ apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
   name: mymonitor
-  labels: 
-    release: myprom 
+  labels:
+    release: {{ .Release.Name }}
 spec:
   selector:
     matchLabels: 
@@ -12,4 +12,18 @@ spec:
     - port: http
       interval: 15s
       path: /sms/metrics
-
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: mymonitor-model
+  labels: 
+    release: {{ .Release.Name }}
+spec:
+  selector:
+    matchLabels: 
+      app: model-service
+  endpoints: 
+    - port: http
+      interval: 15s
+      path: /metrics

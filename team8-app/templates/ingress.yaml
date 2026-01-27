@@ -18,7 +18,7 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: myprom-grafana
+            name: {{ .Release.Name }}-grafana
             port:
               number: 80
   - host: {{ .Values.rechability.prometheusHostname | quote }}
@@ -28,7 +28,7 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: myprom-kube-prometheus-sta-prometheus
+            name: {{ .Release.Name }}-kube-prometheus-prometheus
             port:
               number: 9090
   - http:

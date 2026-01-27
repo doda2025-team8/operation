@@ -236,3 +236,13 @@ No work done.
   I add a requirement in A2: Provide SSL/TLS keys to the dashboard in this PR.  
   https://github.com/doda2025-team8/operation/pull/105    
   I change it to the correct prometheus metric path in this PR.
+
+- Horia
+  https://github.com/doda2025-team8/operation/pull/103
+  This week I enhanced the extension proposal based on the received feedback
+
+### Week Q2.10
+  
+- Horia
+  https://github.com/doda2025-team8/operation/pull/116
+  Added docs on routing and monitoring

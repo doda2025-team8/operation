@@ -9,5 +9,6 @@ spec:
   selector:
     app: model-service
   ports:
-    - port: {{ .Values.model.service.port }}
+    - name: http
+      port: {{ .Values.model.service.port }}
       targetPort: {{ .Values.model.service.targetPort }}
