@@ -10,9 +10,9 @@ The proposal is to introduce a security gate in the CI/CD pipelines which build 
 2. Outdated or vulnerable packages
 3. Misconfigurations in container that could be exploited
 
-The reports of these scans should be published at a known and reachable location such as the artifact repository. Images which are have an acceptable scan result will be signed after pushing, using Cosign [https://github.com/sigstore/cosign]. A good tool choice for scanning the images is Trivy[https://github.com/aquasecurity/trivy], a popular security scanner. The signature of the images will be used to make sure we only run scanned images within our environment.
+The reports of these scans should be published at a known and reachable location such as the artifact repository. Images which have an acceptable scan result will be signed after pushing, using Cosign [https://github.com/sigstore/cosign]. A good tool choice for scanning the images is Trivy[https://github.com/aquasecurity/trivy], a popular security scanner. The signature of the images will be used to make sure we only run scanned images within our environment.
 
-## Implemenation plan
+## Implementation plan
 
 1. Pick some existing software which helps with vulnerability scanning. There are a lot of tools that can be used to scan docker images for vulnerabilities. It is recommended to make use of an external tool that is maintained and updated, instead of creating one. For this extension we propose to use Trivy which is nicely integrated with Github through Github actions. In other settings, more time should be spent on "market" analysis.
 
