@@ -211,3 +211,15 @@ No work done.
   https://github.com/doda2025-team8/app-frontend/pull/10
   http://github.com/doda2025-team8/app-service/pull/22
   This week I removed all metric endpoints which was based on the Micrometer Lib. I rewrote these endpoints with the same function. And I aslo added one UI-related metric endpoint. It tracks the changes from the frontend of the app.
+
+### Week Q2.9
+
+  - Horia
+    https://github.com/doda2025-team8/operation/pull/103
+    This week I enhanced the extension proposal based on the received feedback
+
+### Week Q2.10
+  - Horia
+    https://github.com/doda2025-team8/operation/pull/116
+    Added docs on routing and monitoring
+

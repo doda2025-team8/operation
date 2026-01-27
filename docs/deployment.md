@@ -13,7 +13,7 @@ Horia Zaharia
 - [Architecture Overview](#architecture-overview)
 - [Deployment Structure](#deployment-structure) 
 - [Data Flow of Requests](#data-flow-of-requests)
-- [Monitoring]
+- [Monitoring](#monitoring)
 
 ## Introduction 
 The goal of this document is to describe the deployment structure  and data flow of the SMS Checker app. The app is deployed in Kubernetes with Istio service mesh. Additionally, it implements a canary release to a small fraction of its users (90/10 traffic split) with Sticky Sessions and an additional use case, a Shadow Launch, which mirrors traffic to a new model version. An experiment is run to evaluate a canary release of the app to a small fraction of its users which enables caching model responses to improve latency. This document presents an overview of the deployment architecture, provides information on all deployed components and their relationships and a description of the request flow through the deployed cluster.
@@ -50,11 +50,7 @@ An additional istio `VirtualService` (prometheus-vs) is attached to the `Gateway
 
 Similarly, an istio `VirtualService` (grafana-vs) is attached to the `Gateway` for routing traffic to the Grafana instance, allowing access to its UI (grafana.team8.local). Grafana is configured for visualizing the metrics. Two custom dashboards have been created that can be automatically added to Grafana during the app installation. One dashboard is for visualizing the general operation of the app and the other dashboard is used to illustrate the differences between the deployed versions in the experiment.
 
-<!--More detailed info of the above will be provided below-->
-
 ## Deployment Structure
-<!--Include all deployed resource types and their relations.
-It is unnecessary to include all details for each CRD, but effects and relations should become clear. Mention about canary release(90/10) split, experiment (not in detail has each own doc), alerting, additional use case. Dont forget to mention here plain K8s deployment with Ingress (no Istio) Which component implements the additional use case?-->
 
 ![High level diagram of application deployment](./images/deployment_detailed.png)
 Figure 2: Deployment Structure Diagram  
@@ -268,15 +264,9 @@ It receives traffic from app-service pods of version v2.
 **Type:**  Secret   
 **Description:**  It defines a secret for storing sensitive information. Here it stores `SMTP_PASSWORD`, a password that it is used by email clients via SMTP settings.   
 **Connections:**   
-- It it mounted to AlertmanagerConfig.  
+- It is mounted to AlertmanagerConfig.  
 
 ## Data Flow of Requests
-<!--Describe the flow of incoming requests to the cluster. Show and elaborate the flow of requests in the cluster, including the
-dynamic traffic routing in your experiment. 
-• Which path does a typical request take through your deployment?
-• Where is the 90/10 split configured? Where is the routing decision taken?
-Add data flow diagrams-->
-
 
 The Istio Ingress gateway(my-gateway) is the single entrypoint of the app. The virtual services attached to the gateway match and route the traffic to the appropriate pods. The canary experiment routing is implemented in the `my-vs` virtual service and dictates how the traffic should be split based on canary weight values set in `values.yaml`. 
 
