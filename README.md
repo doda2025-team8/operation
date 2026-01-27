@@ -121,17 +121,17 @@ For Windows: `C:\Windows\System32\drivers\etc\hosts`
 192.168.56.92  prometheus.team8.local
 
 # K8s Cluster Services - Ingress Controller (Vagrant cluster - use 192.168.56.91)
-192.168.56.91  team8.local
-192.168.56.91  canary.team8.local
-192.168.56.91  grafana.team8.local
-192.168.56.91  prometheus.team8.local
-192.168.56.91  dashboard.local
+#192.168.56.91  team8.local
+#192.168.56.91  canary.team8.local
+#192.168.56.91  grafana.team8.local
+#192.168.56.91  prometheus.team8.local
+#192.168.56.91  dashboard.local
 
 # For Minikube, use 127.0.0.1 instead:
-127.0.0.1  team8.local
-127.0.0.1  canary.team8.local
-127.0.0.1  grafana.team8.local
-127.0.0.1  prometheus.team8.local
+#127.0.0.1  team8.local
+#127.0.0.1  canary.team8.local
+#127.0.0.1  grafana.team8.local
+#127.0.0.1  prometheus.team8.local
 ```
 
 ### Vagrant
@@ -381,7 +381,7 @@ kubectl get secret team8-app-grafana -o jsonpath='{.data.admin-password}' | base
 
 ### 4. Access Kubernetes Dashboard (Vagrant only)
 
-Make sure `dashboard.local` points to `192.168.56.92` in your `/etc/hosts`.
+Make sure `dashboard.local` points to `192.168.56.91` in your `/etc/hosts`.
 
 1. Go to `https://dashboard.local`
 2. You'll get a certificate warning - just click through it (self-signed cert)
