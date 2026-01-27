@@ -54,7 +54,7 @@ If scan results are acceptable push image to Github registry and sign the image;
     COSIGN_EXPERIMENTAL: "1"
   run: |
     set -euo pipefail
-    cosign sign --yes "regostry_path_to_pushed_container:version"
+    cosign sign --yes "registry_path_to_pushed_container:version"
 ```
 
 3. Add Admission controller which verifies the signature of docker images before running them in pods. The verified signature assures that we are not going to run an unscanned image. Implementation of the verify-signature mechanism can be achieved via an AdmissionController and a policy engine. Images with mutable tags(latest), or without proper signatures will be denied. This should be enforced on pods, deployments and jobs. 
@@ -73,9 +73,9 @@ If scan results are acceptable push image to Github registry and sign the image;
 
 ## Added value
 
-The effect of this extension is a more secure release engineering process and an automation of scanning for vulnerabilities. Without an automation, it is very hard to mainatin an overview of the possibly compromised dependencies of a project. The signature proves that it is us who scanned the docker image, preventing any man in the middle attacks.
+The effect of this extension is a more secure release engineering process and an automation of scanning for vulnerabilities. Without an automation, it is very hard to maintain an overview of the possibly compromised dependencies of a project. The signature proves that it is us who scanned the docker image, preventing any man in the middle attacks.
 
-Main benefits of introducing this extention are:
+Main benefits of introducing this extension are:
 - Provenance assurance: every running image can be traced to a known builder, repository, and workflow.
 - Integrity guarantees: images are immutable and protected against registry overwrite, tag mutation, and supply-chain tampering.
 - Policy enforcement: deployments must originate from approved pipelines, eliminating ad-hoc or manual image builds.

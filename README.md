@@ -34,7 +34,7 @@ This repository is the home of the submission for the project of Team 8 in the c
   - [Testing Approach](#testing-approach)
     - [Verify Traffic Split (90/10)](#verify-traffic-split-9010-check-the-number-of-v1-and-v2)
     - [Verify Consistent Routing](#verify-consistent-routing)
-- [Additional Use Case - Shadow launch](#aditional-use-case---shadow-launch)
+- [Additional Use Case - Shadow launch](#additional-use-case---shadow-launch)
   - [Testing Approach](#testing-approach-1)
 
 
@@ -209,7 +209,7 @@ On Minikube:
 ```bash
 helm install team8-app ./team8-app --dependency-update
 ```
-Container creation takes appprox. 20 sec
+Container creation takes aprox. 20 sec
 
 ## 2.1 Ingress Gateway Configuration
 
@@ -440,8 +440,8 @@ Steps:
 2. Send a request using the command from Step 2.
 Logs should scroll in only one terminal (either all v1 or all v2), proving that the full call chain (Frontend → Backend → Model) is version-consistent.
 
-# Aditional Use Case - Shadow launch
-A second instance of the model-service (v3) is deployed which uses a new version of the model (v1.0.2) and is used to mirror existing traffic to the other two instanses v1 and v2.
+# Additional Use Case - Shadow launch
+A second instance of the model-service (v3) is deployed which uses a new version of the model (v1.0.2) and is used to mirror existing traffic to the other two instances v1 and v2.
 
 ## Testing Approach
 Steps:
