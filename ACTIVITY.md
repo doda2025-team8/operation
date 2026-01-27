@@ -212,14 +212,30 @@ No work done.
   http://github.com/doda2025-team8/app-service/pull/22
   This week I removed all metric endpoints which was based on the Micrometer Lib. I rewrote these endpoints with the same function. And I aslo added one UI-related metric endpoint. It tracks the changes from the frontend of the app.
 
-### Week Q2.9
+### Week Q2.9 (Jan 19+)
 
-  - Horia
-    https://github.com/doda2025-team8/operation/pull/103
-    This week I enhanced the extension proposal based on the received feedback
+- Yanzhi 
+  https://github.com/doda2025-team8/operation/pull/104
+  This week I worked on finalizing and refactoring readme files based on the feedbacks we received.
+
+- Hendrik  
+  This week I worked on a lot of small issues we had. This first PR sets specific image versions for the helm chart and docker-compose configurations. https://github.com/doda2025-team8/operation/pull/108  
+  This second PR is to speed up vagrant provisioning by running the ansible playbooks in parallel.https://github.com/doda2025-team8/operation/pull/109  
+  The following PR sets the grafana and prometheus stack as a helm dependency, allowing for automatic installation. It also addresses some erros in the experimentation guide and readme. https://github.com/doda2025-team8/operation/pull/107  
+  Lastly, a shared folder was implemented to support serving additional files with app-frontend.
+  https://github.com/doda2025-team8/operation/pull/111
+
+- Andriana   
+  https://github.com/doda2025-team8/operation/pull/96      
+  This week I continued working on the deployment documentation. I created a detailed diagram of the deployment,depicting all the deployed resources and added descriptions for each resource. Moreover, I spent time reviewing PRs.
+
+- Horia
+  https://github.com/doda2025-team8/operation/pull/103
+  This week I enhanced the extension proposal based on the received feedback
 
 ### Week Q2.10
-  - Horia
-    https://github.com/doda2025-team8/operation/pull/116
-    Added docs on routing and monitoring
+  
+- Horia
+  https://github.com/doda2025-team8/operation/pull/116
+  Added docs on routing and monitoring
 
