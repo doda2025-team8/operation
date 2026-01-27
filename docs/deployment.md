@@ -13,6 +13,7 @@ Horia Zaharia
 - [Architecture Overview](#architecture-overview)
 - [Deployment Structure](#deployment-structure) 
 - [Data Flow of Requests](#data-flow-of-requests)
+- [Monitoring](#monitoring)
 
 ## Introduction 
 The goal of this document is to describe the deployment structure  and data flow of the SMS Checker app. The app is deployed in Kubernetes with Istio service mesh. Additionally, it implements a canary release to a small fraction of its users (90/10 traffic split) with Sticky Sessions and an additional use case, a Shadow Launch, which mirrors traffic to a new model version. An experiment is run to evaluate a canary release of the app to a small fraction of its users which enables caching model responses to improve latency. This document presents an overview of the deployment architecture, provides information on all deployed components and their relationships and a description of the request flow through the deployed cluster.
@@ -49,11 +50,7 @@ An additional istio `VirtualService` (prometheus-vs) is attached to the `Gateway
 
 Similarly, an istio `VirtualService` (grafana-vs) is attached to the `Gateway` for routing traffic to the Grafana instance, allowing access to its UI (grafana.team8.local). Grafana is configured for visualizing the metrics. Two custom dashboards have been created that can be automatically added to Grafana during the app installation. One dashboard is for visualizing the general operation of the app and the other dashboard is used to illustrate the differences between the deployed versions in the experiment.
 
-<!--More detailed info of the above will be provided below-->
-
 ## Deployment Structure
-<!--Include all deployed resource types and their relations.
-It is unnecessary to include all details for each CRD, but effects and relations should become clear. Mention about canary release(90/10) split, experiment (not in detail has each own doc), alerting, additional use case. Dont forget to mention here plain K8s deployment with Ingress (no Istio) Which component implements the additional use case?-->
 
 ![High level diagram of application deployment](./images/deployment_detailed.png)
 Figure 2: Deployment Structure Diagram  
@@ -267,11 +264,36 @@ It receives traffic from app-service pods of version v2.
 **Type:**  Secret   
 **Description:**  It defines a secret for storing sensitive information. Here it stores `SMTP_PASSWORD`, a password that it is used by email clients via SMTP settings.   
 **Connections:**   
-- It it mounted to AlertmanagerConfig.  
+- It is mounted to AlertmanagerConfig.  
 
 ## Data Flow of Requests
-<!--Describe the flow of incoming requests to the cluster. Show and elaborate the flow of requests in the cluster, including the
-dynamic traffic routing in your experiment. 
-• Which path does a typical request take through your deployment?
-• Where is the 90/10 split configured? Where is the routing decision taken?
-Add data flow diagrams-->
+
+The Istio Ingress gateway(my-gateway) is the single entrypoint of the app. The virtual services attached to the gateway match and route the traffic to the appropriate pods. The canary experiment routing is implemented in the `my-vs` virtual service and dictates how the traffic should be split based on canary weight values set in `values.yaml`. 
+
+![App-Frontend route call flow](./images/frontendcookiecall.png)
+
+The diagram above describes the flow of an http call to http://team8.local/ without setting the canary-user cookie. The call is picked up by the gateway and the virtual service assigns it to a pod labeled v1 or v2, based on the set canary weight 90%/10%. The traffic reaches these pods through the istio injected sidecar.
+
+![/sms route call flow](./images/modelcall.png)
+
+The diagram above describes the flow of an http call to http://team8.local/sms . The call is picked up by the gateway and the virtual service assigns it to an app-service pod. If the cookie "canary-user" has value true, the call is routed to the canary app-service, otherwise the default route points to the stable app-service. The virtual service `model-service-vs` routes calls that pass through app-service v1 to the the stable model and the ones that pass through app-service v2 to the canary release. 100% of the traffic routed to model v1 and model v2 is mirrored to the shadow launch model v3.
+
+![canary user call flow](./images/canaryfrontend.png)
+
+The diagram above describes the flow of an http call to http://team8.local/ with canary-user=true cookie. This ensures that the canary version of the app is in use.
+
+![stable version call flow](./images/frontendcookiecall-stable.png)
+
+The diagram above describes the flow of an http call to http://team8.local/ with canary-user=false cookie. This ensures that the stable version of the app is in use.
+
+## Monitoring
+
+Monitoring of the kubernetes stack is provides observability of the behaviour of the application and enables engineers to make informed decision by supporting continous experimenation. Monitoring is implemented using Prometheus, Grafana and an Alert Manager. Prometheus and Grafana are added directly by specifying the kube-prometheus-stack as a dependency in the helm chart.
+
+**Prometheus** scrapes available app-services for metrics, every 15 seconds. These metrics are then passed to Grafana for vizualisation and evaluated against the alert rule for alert firing.
+
+**Grafana** provides vizualisation for the app metrics through dashboards. The application contains 2 dashboards, one for vizualising the app metrics and another for vizualizing quantitative evidence of the experiment.
+
+**Alert Manager** fires alerts based on the rule defined in `prometheusrule.yaml`. It uses an alert manager configuration defined in `alertmanager-cfg.yaml` to send an alert email to the mailbox configured in `values.yaml`
+
+![Monitoring Stack](./images/monitoring-stack.png)
