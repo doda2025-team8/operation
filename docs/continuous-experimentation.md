@@ -32,7 +32,7 @@ Reject if: Canary latency ≥ Stable latency OR error rate increases
 
 ## Metrics
 
-The `app-service` exposes these metrics at `/actuator/prometheus`:
+The `app-service` exposes these metrics at `/sms/metrics`:
 
 | Metric                    | Type      | Description                   |
 | ------------------------- | --------- | ----------------------------- |
@@ -46,15 +46,15 @@ All metrics include a `version` label (`stable` or `canary`) for filtering.
 
 ## Traffic Routing
 
-Traffic split is configured in `istio-ingress.yaml` using a VirtualService:
+Traffic split is configured in `istio-virtualservices.yaml` using a VirtualService:
 
-- **Main endpoint** (`frontend.hostname`): 90% to v1, 10% to v2
-- **Canary endpoint** (`frontend.canaryHostname`): 100% to v2
+- **Main endpoint** (`rechability.hostname`): 90% to v1, 10% to v2
+- **Canary endpoint** (`rechability.canaryHostname`): 100% to v2
 
 Both hostnames are configurable in `values.yaml`:
 
 ```yaml
-frontend:
+rechability:
   hostname: "team8.local"
   canaryHostname: "canary.team8.local"
 ```

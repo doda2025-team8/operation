@@ -10,9 +10,9 @@ The proposal is to introduce a security gate in the CI/CD pipelines which build 
 2. Outdated or vulnerable packages
 3. Misconfigurations in container that could be exploited
 
-The reports of these scans should be published at a known and reachable location such as the artifact repository. Images which are have an acceptable scan result will be signed after pushing, using Cosign [https://github.com/sigstore/cosign]. A good tool choice for scanning the images is Trivy[https://github.com/aquasecurity/trivy], a popular security scanner. The signature of the images will be used to make sure we only run scanned images within our environment.
+The reports of these scans should be published at a known and reachable location such as the artifact repository. Images which have an acceptable scan result will be signed after pushing, using Cosign [https://github.com/sigstore/cosign]. A good tool choice for scanning the images is Trivy[https://github.com/aquasecurity/trivy], a popular security scanner. The signature of the images will be used to make sure we only run scanned images within our environment.
 
-## Implemenation plan
+## Implementation plan
 
 1. Pick some existing software which helps with vulnerability scanning. There are a lot of tools that can be used to scan docker images for vulnerabilities. It is recommended to make use of an external tool that is maintained and updated, instead of creating one. For this extension we propose to use Trivy which is nicely integrated with Github through Github actions. In other settings, more time should be spent on "market" analysis.
 
@@ -54,7 +54,7 @@ If scan results are acceptable push image to Github registry and sign the image;
     COSIGN_EXPERIMENTAL: "1"
   run: |
     set -euo pipefail
-    cosign sign --yes "regostry_path_to_pushed_container:version"
+    cosign sign --yes "registry_path_to_pushed_container:version"
 ```
 
 3. Add Admission controller which verifies the signature of docker images before running them in pods. The verified signature assures that we are not going to run an unscanned image. Implementation of the verify-signature mechanism can be achieved via an AdmissionController and a policy engine. Images with mutable tags(latest), or without proper signatures will be denied. This should be enforced on pods, deployments and jobs. 
@@ -73,9 +73,9 @@ If scan results are acceptable push image to Github registry and sign the image;
 
 ## Added value
 
-The effect of this extension is a more secure release engineering process and an automation of scanning for vulnerabilities. Without an automation, it is very hard to mainatin an overview of the possibly compromised dependencies of a project. The signature proves that it is us who scanned the docker image, preventing any man in the middle attacks.
+The effect of this extension is a more secure release engineering process and an automation of scanning for vulnerabilities. Without an automation, it is very hard to maintain an overview of the possibly compromised dependencies of a project. The signature proves that it is us who scanned the docker image, preventing any man in the middle attacks.
 
-Main benefits of introducing this extention are:
+Main benefits of introducing this extension are:
 - Provenance assurance: every running image can be traced to a known builder, repository, and workflow.
 - Integrity guarantees: images are immutable and protected against registry overwrite, tag mutation, and supply-chain tampering.
 - Policy enforcement: deployments must originate from approved pipelines, eliminating ad-hoc or manual image builds.
