@@ -95,7 +95,7 @@ If you want, you can change the variables as defined in the [`.env`](https://git
    - `NGINX_PORT` - internal port used by NGINX to route traffic
 
    #### Exposed port on localhost
-   - `EXPOSED_PORT` - port exposed on localhost tor accessing the application
+   - `EXPOSED_PORT` - port exposed on localhost for accessing the application
 
    #### MODEL SERVICE location
    - `MODEL_HOST` - hostname on where the model service is reachable
@@ -468,7 +468,7 @@ Steps:
    * `model_predictions_total`
    * `model_prediction_latency_seconds`
 
-   To acess the metrics run:
+   To access the metrics run:
    ```
    kubectl port-forward $(kubectl get pods | grep model-service-v3 | awk '{print $1}') 8082:8081
    ```
