@@ -229,6 +229,14 @@ No work done.
   https://github.com/doda2025-team8/operation/pull/96      
   This week I continued working on the deployment documentation. I created a detailed diagram of the deployment,depicting all the deployed resources and added descriptions for each resource. Moreover, I spent time reviewing PRs.
 
+- Yuchen    
+  https://github.com/doda2025-team8/app-service/pull/24    
+  I updated the README file of the app-service in this PR.
+  https://github.com/doda2025-team8/operation/pull/100     
+  I add a requirement in A2: Provide SSL/TLS keys to the dashboard in this PR.  
+  https://github.com/doda2025-team8/operation/pull/105    
+  I change it to the correct prometheus metric path in this PR.
+
 - Horia
   https://github.com/doda2025-team8/operation/pull/103
   This week I enhanced the extension proposal based on the received feedback
@@ -238,4 +246,3 @@ No work done.
 - Horia
   https://github.com/doda2025-team8/operation/pull/116
   Added docs on routing and monitoring
-
