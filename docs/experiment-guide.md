@@ -27,9 +27,9 @@ The experiment is designed based on real user traffic. When a user without a can
 # Send 100 requests (90% go to stable, 10% to canary)
 for i in {1..100}; do
   # Load and save the canary-user cookie
-  curl -c cookie.tmp -s http://team8.local:8080/ > /dev/null
+  curl -c cookie.tmp -s http://team8.local/ > /dev/null
   # Request with cookie
-  curl -b cookie.tmp -s -X POST http://team8.local:8080/sms \
+  curl -b cookie.tmp -s -X POST http://team8.local/sms \
     -H "Content-Type: application/json" \
     -d '{"sms": "Congratulations! You won a free iPhone"}'
   echo " - Request $i"
