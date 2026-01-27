@@ -1,3 +1,5 @@
+# Grafana Dashboards ConfigMap
+# Dynamically loads all JSON dashboard files from the 'dashboards' directory
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -7,116 +9,7 @@ metadata:
     release: {{ .Release.Name }}  # Match Prometheus release name
     grafana_dashboard: "1"  # Required for Grafana sidecar to pick it up
 data:
-  app-metrics.json: |
-    {
-      "annotations": {"list": []},
-      "editable": true,
-      "fiscalYearStartMonth": 0,
-      "graphTooltip": 0,
-      "id": null,
-      "links": [],
-      "panels": [
-        {
-          "id": 1,
-          "title": "Total SMS Requests (Rate)",
-          "type": "timeseries",
-          "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0},
-          "datasource": {"type": "prometheus", "uid": "${datasource}"},
-          "targets": [{"expr": "rate(app_sms_requests_total[$__rate_interval])", "legendFormat": "Requests/sec", "refId": "A"}],
-          "fieldConfig": {"defaults": {"color": {"mode": "palette-classic"}, "custom": {"lineWidth": 2, "fillOpacity": 20}, "unit": "reqps"}, "overrides": []},
-          "options": {"legend": {"displayMode": "list", "placement": "bottom"}, "tooltip": {"mode": "single"}}
-        },
-        {
-          "id": 2,
-          "title": "Active Requests",
-          "type": "gauge",
-          "gridPos": {"h": 8, "w": 6, "x": 12, "y": 0},
-          "datasource": {"type": "prometheus", "uid": "${datasource}"},
-          "targets": [{"expr": "app_sms_active_requests", "legendFormat": "Active", "refId": "A"}],
-          "fieldConfig": {"defaults": {"color": {"mode": "thresholds"}, "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}, {"color": "yellow", "value": 5}, {"color": "red", "value": 10}]}, "min": 0, "max": 20, "unit": "none"}, "overrides": []},
-          "options": {"reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "showThresholdLabels": false, "showThresholdMarkers": true}
-        },
-        {
-          "id": 3,
-          "title": "Total Requests Count",
-          "type": "stat",
-          "gridPos": {"h": 8, "w": 6, "x": 18, "y": 0},
-          "datasource": {"type": "prometheus", "uid": "${datasource}"},
-          "targets": [{"expr": "app_sms_requests_total", "legendFormat": "Total", "refId": "A"}],
-          "fieldConfig": {"defaults": {"color": {"mode": "thresholds"}, "thresholds": {"mode": "absolute", "steps": [{"color": "blue", "value": null}]}, "unit": "none"}, "overrides": []},
-          "options": {"reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "colorMode": "value", "graphMode": "area", "justifyMode": "auto", "textMode": "auto"}
-        },
-        {
-          "id": 4,
-          "title": "Request Latency Distribution",
-          "type": "histogram",
-          "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8},
-          "datasource": {"type": "prometheus", "uid": "${datasource}"},
-          "targets": [{"expr": "rate(app_sms_latency_seconds_bucket[$__rate_interval])", "legendFormat": "{{ "{{le}}" }}", "refId": "A", "format": "heatmap"}],
-          "fieldConfig": {"defaults": {"color": {"mode": "palette-classic"}, "unit": "s"}, "overrides": []},
-          "options": {"bucketSize": 10, "combine": false, "legend": {"displayMode": "list", "placement": "bottom"}}
-        },
-        {
-          "id": 5,
-          "title": "Average Latency",
-          "type": "timeseries",
-          "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8},
-          "datasource": {"type": "prometheus", "uid": "${datasource}"},
-          "targets": [{"expr": "rate(app_sms_latency_seconds_sum[$__rate_interval]) / rate(app_sms_latency_seconds_count[$__rate_interval])", "legendFormat": "Avg Latency", "refId": "A"}],
-          "fieldConfig": {"defaults": {"color": {"mode": "palette-classic"}, "custom": {"lineWidth": 2, "fillOpacity": 10}, "unit": "s"}, "overrides": []},
-          "options": {"legend": {"displayMode": "list", "placement": "bottom"}, "tooltip": {"mode": "single"}}
-        },
-        {
-          "id": 6,
-          "title": "P95 Latency",
-          "type": "timeseries",
-          "gridPos": {"h": 8, "w": 24, "x": 0, "y": 16},
-          "datasource": {"type": "prometheus", "uid": "${datasource}"},
-          "targets": [
-            {"expr": "histogram_quantile(0.95, rate(app_sms_latency_seconds_bucket[$__rate_interval]))", "legendFormat": "P95 Latency", "refId": "A"},
-            {"expr": "histogram_quantile(0.50, rate(app_sms_latency_seconds_bucket[$__rate_interval]))", "legendFormat": "P50 Latency", "refId": "B"}
-          ],
-          "fieldConfig": {"defaults": {"color": {"mode": "palette-classic"}, "custom": {"lineWidth": 2, "fillOpacity": 10}, "unit": "s"}, "overrides": []},
-          "options": {"legend": {"displayMode": "list", "placement": "bottom"}, "tooltip": {"mode": "multi"}}
-        }
-      ],
-      "refresh": "5s",
-      "schemaVersion": 38,
-      "tags": ["sms-app", "monitoring"],
-      "templating": {"list": [{"current": {"selected": false, "text": "Prometheus", "value": "prometheus"}, "hide": 0, "includeAll": false, "label": "Datasource", "multi": false, "name": "datasource", "options": [], "query": "prometheus", "refresh": 1, "regex": "", "skipUrlSync": false, "type": "datasource"}]},
-      "time": {"from": "now-1h", "to": "now"},
-      "timepicker": {"refresh_intervals": ["5s", "10s", "30s", "1m", "5m"]},
-      "timezone": "browser",
-      "title": "SMS App Metrics",
-      "uid": "sms-app-metrics",
-      "version": 1
-    }
-  experiment-dashboard.json: |
-    {
-      "annotations": {"list": []},
-      "editable": true,
-      "fiscalYearStartMonth": 0,
-      "graphTooltip": 0,
-      "id": null,
-      "links": [],
-      "panels": [
-        {"id": 1, "title": "Experiment Overview", "type": "text", "gridPos": {"h": 3, "w": 24, "x": 0, "y": 0}, "options": {"mode": "markdown", "content": "## Canary Release Comparison\nComparing **stable** (v1) vs **canary** (v2) versions of app-service."}},
-        {"id": 2, "title": "Request Rate by Version", "type": "timeseries", "gridPos": {"h": 8, "w": 12, "x": 0, "y": 3}, "datasource": {"type": "prometheus", "uid": "${datasource}"}, "targets": [{"expr": "sum(rate(app_sms_requests_total{version=\"stable\"}[$__rate_interval])) or vector(0)", "legendFormat": "Stable (v1)", "refId": "A"}, {"expr": "sum(rate(app_sms_requests_total{version=\"canary\"}[$__rate_interval])) or vector(0)", "legendFormat": "Canary (v2)", "refId": "B"}], "fieldConfig": {"defaults": {"color": {"mode": "palette-classic"}, "custom": {"lineWidth": 2, "fillOpacity": 20}, "unit": "reqps"}, "overrides": [{"matcher": {"id": "byName", "options": "Stable (v1)"}, "properties": [{"id": "color", "value": {"fixedColor": "green", "mode": "fixed"}}]}, {"matcher": {"id": "byName", "options": "Canary (v2)"}, "properties": [{"id": "color", "value": {"fixedColor": "blue", "mode": "fixed"}}]}]}, "options": {"legend": {"displayMode": "list", "placement": "bottom"}, "tooltip": {"mode": "multi"}}},
-        {"id": 3, "title": "Traffic Split", "type": "piechart", "gridPos": {"h": 8, "w": 6, "x": 12, "y": 3}, "datasource": {"type": "prometheus", "uid": "${datasource}"}, "targets": [{"expr": "sum(increase(app_sms_requests_total{version=\"stable\"}[$__range])) or vector(0)", "legendFormat": "Stable", "refId": "A"}, {"expr": "sum(increase(app_sms_requests_total{version=\"canary\"}[$__range])) or vector(0)", "legendFormat": "Canary", "refId": "B"}], "fieldConfig": {"defaults": {"color": {"mode": "palette-classic"}}, "overrides": []}, "options": {"legend": {"displayMode": "list", "placement": "right"}, "pieType": "pie", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "tooltip": {"mode": "single"}}},
-        {"id": 4, "title": "Total Requests by Version", "type": "bargauge", "gridPos": {"h": 8, "w": 6, "x": 18, "y": 3}, "datasource": {"type": "prometheus", "uid": "${datasource}"}, "targets": [{"expr": "sum(increase(app_sms_requests_total{version=\"stable\"}[$__range])) or vector(0)", "legendFormat": "Stable", "refId": "A"}, {"expr": "sum(increase(app_sms_requests_total{version=\"canary\"}[$__range])) or vector(0)", "legendFormat": "Canary", "refId": "B"}], "fieldConfig": {"defaults": {"color": {"mode": "thresholds"}, "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}]}, "unit": "none"}, "overrides": []}, "options": {"displayMode": "gradient", "orientation": "horizontal", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "showUnfilled": true}},
-        {"id": 5, "title": "Average Latency Comparison", "type": "timeseries", "gridPos": {"h": 8, "w": 12, "x": 0, "y": 11}, "datasource": {"type": "prometheus", "uid": "${datasource}"}, "targets": [{"expr": "sum(rate(app_sms_latency_seconds_sum{version=\"stable\"}[$__rate_interval])) / sum(rate(app_sms_latency_seconds_count{version=\"stable\"}[$__rate_interval]))", "legendFormat": "Stable Avg Latency", "refId": "A"}, {"expr": "sum(rate(app_sms_latency_seconds_sum{version=\"canary\"}[$__rate_interval])) / sum(rate(app_sms_latency_seconds_count{version=\"canary\"}[$__rate_interval]))", "legendFormat": "Canary Avg Latency", "refId": "B"}], "fieldConfig": {"defaults": {"color": {"mode": "palette-classic"}, "custom": {"lineWidth": 2, "fillOpacity": 10}, "unit": "s"}, "overrides": [{"matcher": {"id": "byName", "options": "Stable Avg Latency"}, "properties": [{"id": "color", "value": {"fixedColor": "green", "mode": "fixed"}}]}, {"matcher": {"id": "byName", "options": "Canary Avg Latency"}, "properties": [{"id": "color", "value": {"fixedColor": "blue", "mode": "fixed"}}]}]}, "options": {"legend": {"displayMode": "list", "placement": "bottom"}, "tooltip": {"mode": "multi"}}},
-        {"id": 6, "title": "P95 Latency Comparison", "type": "timeseries", "gridPos": {"h": 8, "w": 12, "x": 12, "y": 11}, "datasource": {"type": "prometheus", "uid": "${datasource}"}, "targets": [{"expr": "histogram_quantile(0.95, sum(rate(app_sms_latency_seconds_bucket{version=\"stable\"}[$__rate_interval])) by (le))", "legendFormat": "Stable P95", "refId": "A"}, {"expr": "histogram_quantile(0.95, sum(rate(app_sms_latency_seconds_bucket{version=\"canary\"}[$__rate_interval])) by (le))", "legendFormat": "Canary P95", "refId": "B"}], "fieldConfig": {"defaults": {"color": {"mode": "palette-classic"}, "custom": {"lineWidth": 2, "fillOpacity": 10}, "unit": "s"}, "overrides": [{"matcher": {"id": "byName", "options": "Stable P95"}, "properties": [{"id": "color", "value": {"fixedColor": "green", "mode": "fixed"}}]}, {"matcher": {"id": "byName", "options": "Canary P95"}, "properties": [{"id": "color", "value": {"fixedColor": "blue", "mode": "fixed"}}]}]}, "options": {"legend": {"displayMode": "list", "placement": "bottom"}, "tooltip": {"mode": "multi"}}},
-        {"id": 7, "title": "Latency Comparison (Current)", "type": "stat", "gridPos": {"h": 6, "w": 12, "x": 0, "y": 19}, "datasource": {"type": "prometheus", "uid": "${datasource}"}, "targets": [{"expr": "avg(rate(app_sms_latency_seconds_sum{version=\"stable\"}[5m]) / rate(app_sms_latency_seconds_count{version=\"stable\"}[5m]))", "legendFormat": "Stable", "refId": "A"}, {"expr": "avg(rate(app_sms_latency_seconds_sum{version=\"canary\"}[5m]) / rate(app_sms_latency_seconds_count{version=\"canary\"}[5m]))", "legendFormat": "Canary", "refId": "B"}], "fieldConfig": {"defaults": {"color": {"mode": "thresholds"}, "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}, {"color": "yellow", "value": 0.5}, {"color": "red", "value": 1}]}, "unit": "s"}, "overrides": []}, "options": {"reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "colorMode": "value", "graphMode": "none", "justifyMode": "center", "textMode": "auto"}},
-        {"id": 8, "title": "Decision Support", "type": "text", "gridPos": {"h": 6, "w": 12, "x": 12, "y": 19}, "options": {"mode": "markdown", "content": "### Promotion Criteria\n\n✅ **Promote canary if:**\n- Canary latency ≤ Stable latency\n- No significant error rate increase\n\n❌ **Rollback if:**\n- Canary latency > 1.5x Stable latency"}}
-      ],
-      "refresh": "10s",
-      "schemaVersion": 38,
-      "tags": ["sms-app", "experiment", "canary"],
-      "templating": {"list": [{"current": {"selected": false, "text": "Prometheus", "value": "prometheus"}, "hide": 0, "includeAll": false, "label": "Datasource", "multi": false, "name": "datasource", "options": [], "query": "prometheus", "refresh": 1, "regex": "", "skipUrlSync": false, "type": "datasource"}]},
-      "time": {"from": "now-30m", "to": "now"},
-      "timepicker": {"refresh_intervals": ["5s", "10s", "30s", "1m", "5m"]},
-      "timezone": "browser",
-      "title": "Canary Experiment Dashboard",
-      "uid": "sms-experiment",
-      "version": 1
-    }
+{{- range $path, $_ := .Files.Glob "dashboards/*.json" }}
+  {{ base $path }}: |-
+{{ $.Files.Get $path | indent 4 }}
+{{- end }}
