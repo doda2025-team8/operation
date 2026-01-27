@@ -167,6 +167,8 @@ For Windows: `C:\Windows\System32\drivers\etc\hosts`
    ansible-playbook -i k8s/inventory/inventory.cfg k8s/playbooks/finalization.yml -u vagrant
    ```
 
+4. Use the `k8s/shared` folder to include extra images that can be served by the `app-frontend`. The files will be visible at `http://team8.local/shared/<filename>`
+
 ### Minikube
 
 1. Clear previous installs
