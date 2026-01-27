@@ -16,8 +16,7 @@ This repository is the home of the submission for the project of Team 8 in the c
     - [Vagrant](#vagrant)
     - [Minikube](#minikube)
 - [How to install with helm](#how-to-install-with-helm)
-  - [1. Add Prometheus + Grafana dependencies](#1-add-prometheus--grafana-dependencies)
-  - [1.1 Add Istio (Only on Minikube)](#11-add-istio-only-on-minikube)
+  - [1 Add Istio (Only on Minikube)](#1-add-istio-only-on-minikube)
   - [2. Install Applications](#2-install-applications)
   - [2.1 Ingress Gateway Configuration](#21-ingress-gateway-configuration)
   - [2.2 AlertManager Configuration (Email Alerts)](#22-alertmanager-configuration-email-alerts)
@@ -115,18 +114,24 @@ For Linux/macOS: `/etc/hosts`
 For Windows: `C:\Windows\System32\drivers\etc\hosts`
 
 ```bash
-# K8s Cluster Services (Vagrant cluster - use 192.168.56.91)
-192.168.56.91  team8.local
-192.168.56.91  canary.team8.local
-192.168.56.91  grafana.team8.local
-192.168.56.91  prometheus.team8.local
-192.168.56.91  dashboard.local
+# K8s Cluster Services - Istio Gateway (Vagrant cluster - use 192.168.56.92)
+192.168.56.92  team8.local
+192.168.56.92  canary.team8.local
+192.168.56.92  grafana.team8.local
+192.168.56.92  prometheus.team8.local
+
+# K8s Cluster Services - Ingress Controller (Vagrant cluster - use 192.168.56.91)
+#192.168.56.91  team8.local
+#192.168.56.91  canary.team8.local
+#192.168.56.91  grafana.team8.local
+#192.168.56.91  prometheus.team8.local
+#192.168.56.91  dashboard.local
 
 # For Minikube, use 127.0.0.1 instead:
-# 127.0.0.1  team8.local
-# 127.0.0.1  canary.team8.local
-# 127.0.0.1  grafana.team8.local
-# 127.0.0.1  prometheus.team8.local
+#127.0.0.1  team8.local
+#127.0.0.1  canary.team8.local
+#127.0.0.1  grafana.team8.local
+#127.0.0.1  prometheus.team8.local
 ```
 
 ### Vagrant
@@ -159,7 +164,7 @@ For Windows: `C:\Windows\System32\drivers\etc\hosts`
 
 3. Finalize Cluster Services
    ```bash
-   ansible-playbook -i k8s/inventory/hosts.ini k8s/playbooks/finalization.yml -u vagrant
+   ansible-playbook -i k8s/inventory/inventory.cfg k8s/playbooks/finalization.yml -u vagrant
    ```
 
 ### Minikube
@@ -179,16 +184,8 @@ For Windows: `C:\Windows\System32\drivers\etc\hosts`
 
 Make sure you have [Kubernetes](https://kubernetes.io/) and [helm](https://helm.sh/) installed.
 
-## 1. Add Prometheus + Grafana dependencies
+## 1 Add Istio (Only on Minikube)
 
-```bash
-vagrant ssh ctrl # Only on vagrant
-helm repo add prom-repo https://prometheus-community.github.io/helm-charts
-helm repo update
-helm install myprom prom-repo/kube-prometheus-stack --timeout 10m
-```
-
-## 1.1 Add Istio (Only on Minikube)
 Download Istio from the official website
 
 ```bash
@@ -198,19 +195,19 @@ kubectl label namespace default istio-injection=enabled
 
 ## 2. Install Applications
 
-Deploy application chart (app-frontend, app-service, model-service, and ingress) to the Kubernetes cluster using Helm.
+Deploy the dependencies (grafana and prometheus) and application chart (app-frontend, app-service, model-service and ingress) to the Kubernetes cluster using Helm.
 
 In `values.yaml`, istio can be enabled or disabled.
 
 On Vagrant:
 ```bash
 vagrant ssh ctrl # Only with vagrant
-helm install team8-app /home/vagrant/team8-app
+helm install team8-app /home/vagrant/team8-app --dependency-update
 ```
 
 On Minikube:
 ```bash
-helm install team8-app ./team8-app
+helm install team8-app ./team8-app --dependency-update
 ```
 Container creation takes appprox. 20 sec
 
@@ -227,7 +224,7 @@ istio:
 This works out of the box with the default Istio setup. If your cluster uses a different gateway name, override it like this:
 
 ```bash
-helm install team8-app ./team8-app --set istio.ingressGatewaySelector.istio=my-custom-gateway
+helm install team8-app ./team8-app --dependency-update --set istio.ingressGatewaySelector.istio=my-custom-gateway
 ```
 
 You can also change the hostnames if needed:
@@ -268,24 +265,6 @@ The alert fires when the app gets more than 15 requests/min for 2 minutes (see `
    * `app-service`
 * `kubectl get ingress` should show an `app-ingress` is running. By navigating to its IP address in your browser, you should see the running app and use it.
 * `kubectl get pods -n istio-system` should show you that Istio is running.
-* Run `istioctl dashboard kiali` to see the details of Istio and how its running.
-
-### Automatic Installation
-
-Dashboards are automatically installed via ConfigMap when deploying with Helm. The ConfigMap is labeled with `grafana_dashboard: "1"` for automatic discovery by Grafana's sidecar.
-
-### Manual Import (if needed)
-
-If dashboards don't appear automatically:
-
-1. Access Grafana UI (see below)
-2. Go to **Dashboards** → **New** → **Import**
-3. Click **Upload JSON file**
-4. Upload JSON files from `team8-app/dashboards/`:
-   - `app-metrics.json` - SMS App monitoring metrics
-   - `experiment-dashboard.json` - Canary release comparison (A4)
-5. Select the Prometheus datasource when prompted
-6. Click **Import**
 
 ## 4. Access applications
 
@@ -329,13 +308,12 @@ Then add `:8080` to all URLs:
 
 ### 1b. Vagrant cluster
 
-On Vagrant, MetalLB gives the Istio gateway a fixed IP (`192.168.56.91`), so no port-forwarding needed. Just make sure your `/etc/hosts` is set up and go to:
+On Vagrant, MetalLB gives the Istio gateway a fixed IP (`192.168.56.92`), so no port-forwarding needed. Just make sure your `/etc/hosts` is set up.
+
+### 1. Access the App
 
 - App: `http://team8.local`
 - Canary: `http://canary.team8.local`
-- Grafana: `http://grafana.team8.local`
-- Prometheus: `http://prometheus.team8.local`
-- K8s Dashboard: `https://dashboard.local`
 
 ### 2. Access Prometheus
 
@@ -370,6 +348,21 @@ Check that the dashboard configmap exists:
 kubectl get configmap | grep grafana
 ```
 
+Dashboards are automatically installed via ConfigMap when deploying with Helm. The ConfigMap is labeled with `grafana_dashboard: "1"` for automatic discovery by Grafana's sidecar.
+
+### Manual Import (if needed)
+
+If dashboards don't appear automatically:
+
+1. Access Grafana UI (see below)
+2. Go to **Dashboards** → **New** → **Import**
+3. Click **Upload JSON file**
+4. Upload JSON files from `team8-app/dashboards/`:
+   - `app-metrics.json` - SMS App monitoring metrics
+   - `experiment-dashboard.json` - Canary release comparison (A4)
+5. Select the Prometheus datasource when prompted
+6. Click **Import**
+
 Go to `http://grafana.team8.local` (or `:8080` with port-forward)
 
 **Login:**
@@ -378,12 +371,12 @@ Go to `http://grafana.team8.local` (or `:8080` with port-forward)
 
 For vagrant:
 ```bash
-vagrant ssh ctrl -c "kubectl get secret myprom-grafana -o jsonpath='{.data.admin-password}' | base64 --decode"
+vagrant ssh ctrl -c "kubectl get secret team8-app-grafana -o jsonpath='{.data.admin-password}' | base64 --decode"
 ```
 
 For minikube:
 ```bash
-kubectl get secret myprom-grafana -o jsonpath='{.data.admin-password}' | base64 --decode
+kubectl get secret team8-app-grafana -o jsonpath='{.data.admin-password}' | base64 --decode
 ```
 
 ### 4. Access Kubernetes Dashboard (Vagrant only)
@@ -461,11 +454,14 @@ Steps:
    # Terminal B
    kubectl logs -f -l version=v3 --all-containers=true
    ```
+
+   If you cannot see the logs of all pods, add the `--max-log-requests=10` argument to the commands above.
+
 2. Send a request in a new terminal:
    ```
    curl -v -X POST http://team8.local/sms -H "Content-Type: application/json"   -d '{"sms": "test shadow launch"}'
    ```
-3. Inspoect the logs. 
+3. Inspect the logs. 
    * You will see that v1 processes the request and returns an output.
    * v3 receives the mirrored request internally but does not output anything.
 4. Metrics are exposed in model-service to evaluate the new model version. 
@@ -477,5 +473,3 @@ Steps:
    kubectl port-forward $(kubectl get pods | grep model-service-v3 | awk '{print $1}') 8082:8081
    ```
    Navigate to `http://localhost:8082/metrics`
-
-

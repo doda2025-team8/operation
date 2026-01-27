@@ -13,7 +13,7 @@ spec:
   http:
     - route:
       - destination:
-          host: myprom-grafana.default.svc.cluster.local
+          host: {{ .Release.Name }}-grafana.default.svc.cluster.local
           port:
             number: 80
 ---
@@ -29,7 +29,7 @@ spec:
   http:
     - route:
       - destination:
-          host: myprom-kube-prometheus-sta-prometheus.default.svc.cluster.local
+          host: {{ .Release.Name }}-kube-prometheus-prometheus.default.svc.cluster.local
           port:
             number: 9090
 
